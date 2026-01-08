@@ -38,7 +38,7 @@ function AccordionItem({ title, open, onHeaderClick, children }) {
         <span style={{
           fontSize: '13px',
           fontWeight: '400',
-          color: '#e4e4e7',
+          color: '#1e293b',
           letterSpacing: '3px',
           textTransform: 'uppercase'
         }}>{title}</span>
@@ -354,12 +354,12 @@ export default function BajaLuxuryGuide() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#1e293b',
+      background: '#f8fafc',
       position: 'relative',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* REAL GOLFER GROUP BACKGROUND IMAGE */}
+      {/* REAL GOLFER GROUP BACKGROUND IMAGE - BRIGHT DAYTIME */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -369,18 +369,18 @@ export default function BajaLuxuryGuide() {
         backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.25,
+        opacity: 0.35,
         zIndex: 0
       }} />
 
-      {/* LIGHTER GRADIENT OVERLAY */}
+      {/* VERY LIGHT OVERLAY - BRIGHT AND AIRY */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(30,41,59,0.75) 50%, rgba(30,41,59,0.85) 100%)',
+        background: 'linear-gradient(180deg, rgba(248,250,252,0.75) 0%, rgba(248,250,252,0.85) 50%, rgba(248,250,252,0.9) 100%)',
         pointerEvents: 'none',
         zIndex: 1
       }} />
@@ -443,7 +443,7 @@ export default function BajaLuxuryGuide() {
           <h1 style={{
             fontSize: isMobile ? '36px' : '72px',
             fontWeight: '200',
-            color: '#e4e4e7',
+            color: '#1e293b',
             letterSpacing: isMobile ? '8px' : '16px',
             marginBottom: '16px',
             lineHeight: '1'
@@ -454,7 +454,7 @@ export default function BajaLuxuryGuide() {
           {/* Subtitle */}
           <p style={{
             fontSize: isMobile ? '12px' : '14px',
-            color: '#94a3b8',
+            color: '#64748b',
             letterSpacing: '6px',
             textTransform: 'uppercase',
             marginBottom: '24px'
@@ -520,7 +520,7 @@ export default function BajaLuxuryGuide() {
                       height: isMobile ? '320px' : '400px',
                       overflow: 'hidden',
                       cursor: 'pointer',
-                      background: '#1e293b'
+                      background: '#ffffff'
                     }}
                   >
                     {/* Image */}
@@ -559,7 +559,7 @@ export default function BajaLuxuryGuide() {
                       <h3 style={{
                         fontSize: '20px',
                         fontWeight: '300',
-                        color: '#e4e4e7',
+                        color: '#1e293b',
                         marginBottom: '8px',
                         letterSpacing: '1px'
                       }}>
@@ -567,7 +567,7 @@ export default function BajaLuxuryGuide() {
                       </h3>
                       <p style={{
                         fontSize: '11px',
-                        color: '#94a3b8',
+                        color: '#64748b',
                         marginBottom: '16px'
                       }}>
                         {item.location}
@@ -607,7 +607,7 @@ export default function BajaLuxuryGuide() {
               </p>
               <p style={{
                 fontSize: '14px',
-                color: '#94a3b8',
+                color: '#64748b',
                 marginBottom: '32px',
                 maxWidth: '500px',
                 margin: '0 auto 32px',
@@ -632,7 +632,7 @@ export default function BajaLuxuryGuide() {
                     padding: '16px 20px',
                     background: 'rgba(15,23,42,0.8)',
                     border: '1px solid rgba(148,163,184,0.3)',
-                    color: '#e4e4e7',
+                    color: '#1e293b',
                     fontSize: '13px',
                     outline: 'none',
                     transition: 'border-color 0.3s'
@@ -694,13 +694,13 @@ export default function BajaLuxuryGuide() {
                           <h3 style={{
                             fontSize: '16px',
                             fontWeight: '400',
-                            color: '#e4e4e7',
+                            color: '#1e293b',
                             marginBottom: '8px',
                             letterSpacing: '0.5px'
                           }}>{est.name}</h3>
                           <p style={{
                             fontSize: '12px',
-                            color: '#94a3b8',
+                            color: '#64748b',
                             lineHeight: '1.6',
                             marginBottom: '20px'
                           }}>{est.description || est.city}</p>
@@ -711,7 +711,7 @@ export default function BajaLuxuryGuide() {
                                 padding: '10px 20px',
                                 background: 'transparent',
                                 border: '1px solid rgba(148,163,184,0.3)',
-                                color: '#94a3b8',
+                                color: '#64748b',
                                 fontSize: '10px',
                                 letterSpacing: '2px',
                                 cursor: 'pointer',
@@ -740,7 +740,7 @@ export default function BajaLuxuryGuide() {
                                 padding: '10px 20px',
                                 background: 'transparent',
                                 border: '1px solid rgba(148,163,184,0.3)',
-                                color: '#94a3b8',
+                                color: '#64748b',
                                 fontSize: '10px',
                                 letterSpacing: '2px',
                                 cursor: 'pointer',
@@ -822,13 +822,13 @@ export default function BajaLuxuryGuide() {
                     <h2 style={{
                       fontSize: isMobile ? '64px' : '120px',
                       fontWeight: '100',
-                      color: '#e4e4e7',
+                      color: '#1e293b',
                       letterSpacing: '20px',
                       marginBottom: '24px'
                     }}>
                       {magazinePages[magazinePage].title}
                     </h2>
-                    <p style={{ fontSize: '12px', color: '#94a3b8', letterSpacing: '4px' }}>
+                    <p style={{ fontSize: '12px', color: '#64748b', letterSpacing: '4px' }}>
                       {magazinePages[magazinePage].subtitle}
                     </p>
                   </>
@@ -837,7 +837,7 @@ export default function BajaLuxuryGuide() {
                     <h2 style={{
                       fontSize: isMobile ? '24px' : '36px',
                       fontWeight: '200',
-                      color: '#e4e4e7',
+                      color: '#1e293b',
                       letterSpacing: '6px',
                       marginBottom: '40px'
                     }}>
@@ -925,7 +925,7 @@ export default function BajaLuxuryGuide() {
               <p style={{ fontSize: '10px', color: '#cba658', letterSpacing: '4px', marginBottom: '8px', textTransform: 'uppercase' }}>
                 {t.journal.title}
               </p>
-              <p style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>
+              <p style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>
                 {t.journal.subtitle}
               </p>
             </div>
@@ -972,14 +972,14 @@ export default function BajaLuxuryGuide() {
                     <h3 style={{
                       fontSize: isMobile ? '20px' : '24px',
                       fontWeight: '300',
-                      color: '#e4e4e7',
+                      color: '#1e293b',
                       marginBottom: '12px',
                       letterSpacing: '0.5px',
                       lineHeight: '1.3'
                     }}>{article.title}</h3>
                     <p style={{
                       fontSize: '14px',
-                      color: '#94a3b8',
+                      color: '#64748b',
                       lineHeight: '1.7',
                       marginBottom: '16px'
                     }}>{article.excerpt}</p>
@@ -1045,7 +1045,7 @@ export default function BajaLuxuryGuide() {
                   }}>
                     <p style={{
                       fontSize: '12px',
-                      color: '#e4e4e7',
+                      color: '#1e293b',
                       letterSpacing: '1px',
                       fontWeight: '500'
                     }}>{benefit}</p>
@@ -1101,7 +1101,7 @@ export default function BajaLuxuryGuide() {
           </p>
           <p style={{
             fontSize: '11px',
-            color: '#94a3b8',
+            color: '#64748b',
             letterSpacing: '2px'
           }}>
             +52 646 340 2686
