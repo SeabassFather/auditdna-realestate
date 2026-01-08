@@ -23,7 +23,7 @@ function AccordionItem({ title, open, onHeaderClick, children, color }) {
     <div style={{
       background: 'rgba(15, 23, 42, 0.8)',
       border: '1px solid rgba(203, 166, 88, 0.3)',
-      borderRadius: '12px',
+      borderRadius: '0px',
       marginBottom: '20px',
       overflow: 'hidden',
       backdropFilter: 'blur(10px)'
@@ -99,7 +99,7 @@ export default function MexicoRealEstateAccordion() {
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }}>
       
-      {/* YACHT MARINA BACKGROUND */}
+      {/* YACHT MARINA BACKGROUND - BRIGHT AND ALIVE */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -113,14 +113,14 @@ export default function MexicoRealEstateAccordion() {
         zIndex: 0
       }} />
 
-      {/* DARK OVERLAY */}
+      {/* LIGHTER OVERLAY - SEE THE SAILBOAT */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.9) 100%)',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.55) 0%, rgba(15,23,42,0.65) 100%)',
         zIndex: 0
       }} />
 
@@ -135,7 +135,7 @@ export default function MexicoRealEstateAccordion() {
         <div style={{
           background: 'rgba(15, 23, 42, 0.7)',
           backdropFilter: 'blur(12px)',
-          borderRadius: '12px',
+          borderRadius: '0px',
           padding: '40px',
           marginBottom: '40px',
           border: '1px solid rgba(203, 166, 88, 0.3)',
@@ -232,32 +232,20 @@ export default function MexicoRealEstateAccordion() {
         <div style={{
           background: 'rgba(15, 23, 42, 0.8)',
           backdropFilter: 'blur(10px)',
-          borderRadius: '12px',
+          borderRadius: '0px',
           padding: '40px',
           border: '1px solid rgba(203, 166, 88, 0.3)',
           textAlign: 'center',
           marginTop: '40px'
         }}>
-          <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#f4e4bc', marginBottom: '12px', letterSpacing: '1px' }}>
+          <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#f4e4bc', marginBottom: '16px', letterSpacing: '1px' }}>
             {t.contact}
           </h3>
-          <p style={{ fontSize: '16px', fontWeight: '600', color: '#cba658', marginBottom: '8px' }}>
-            Saul Garcia
+          <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '12px' }}>
+            info@enjoybaja.com
           </p>
-          <p style={{ fontSize: '14px', fontWeight: '700', color: '#cba658', marginBottom: '6px' }}>
-            NMLS #337526
-          </p>
-          <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '4px' }}>
-            Everwise Home Loans & Realty
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-            Company NMLS #1739012 | DRE #02067255
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-            15615 Alton Pkwy, Suite 450, Irvine, CA 92618
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8' }}>
-            Phone: 1-844-853-9300
+          <p style={{ fontSize: '16px', fontWeight: '600', color: '#cba658' }}>
+            WhatsApp: +52 646 340 2686
           </p>
         </div>
       </div>
