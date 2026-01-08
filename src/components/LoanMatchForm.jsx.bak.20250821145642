@@ -1,0 +1,49 @@
+import React, { useState } from "react";
+export default function LoanMatchForm({ onSearch }){
+  const [f,setF]=useState({
+    name:"", email:"", phone:"", consent:false,
+    address:"", propType:"Single Family", occupancy:"Primary", purpose:"Purchase",
+    price:"", value:"", loanAmount:"", product:"Conventional",
+    credit:"680-719", dti:"", ltv:"", income:"", assets:"", state:"", closeTarget:"", lockPref:""
+  });
+  const set = k => e => setF(s=>({...s,[k]: e.target.type==="checkbox"? e.target.checked : e.target.value}));
+  const submit = e => { e.preventDefault(); onSearch?.(f); };
+  return (
+    <form onSubmit={submit} className="card">
+      <div className="card-title">Borrower</div>
+      <input className="filter" placeholder="Name" value={f.name} onChange={set("name")} />
+      <input className="filter" placeholder="Email" value={f.email} onChange={set("email")} />
+      <input className="filter" placeholder="Phone" value={f.phone} onChange={set("phone")} />
+      <label className="subtext"><input type="checkbox" checked={f.consent} onChange={set("consent")}/> NMLS/soft-pull consent</label>
+
+      <div className="card-title" style={{marginTop:10}}>Property</div>
+      <input className="filter" placeholder="Address" value={f.address} onChange={set("address")}/>
+      <input className="filter" placeholder="State (e.g. CA)" value={f.state} onChange={set("state")}/>
+      <select className="filter" value={f.propType} onChange={set("propType")}>
+        <option>Single Family</option><option>Condo</option><option>Multi-Unit</option><option>Manufactured</option>
+      </select>
+      <select className="filter" value={f.occupancy} onChange={set("occupancy")}><option>Primary</option><option>Second</option><option>Investment</option></select>
+      <select className="filter" value={f.purpose} onChange={set("purpose")}><option>Purchase</option><option>Refinance</option></select>
+
+      <div className="card-title" style={{marginTop:10}}>Financial</div>
+      <select className="filter" value={f.credit} onChange={set("credit")}>
+        <option>760+</option><option>720-759</option><option>680-719</option><option>640-679</option><option>580-639</option><option><580</option>
+      </select>
+      <input className="filter" placeholder="DTI %" value={f.dti} onChange={set("dti")}/>
+      <input className="filter" placeholder="LTV %" value={f.ltv} onChange={set("ltv")}/>
+      <input className="filter" placeholder="Income (annual)" value={f.income} onChange={set("income")}/>
+      <input className="filter" placeholder="Assets" value={f.assets} onChange={set("assets")}/>
+      <input className="filter" placeholder="Purchase Price" value={f.price} onChange={set("price")}/>
+      <input className="filter" placeholder="Est. Value" value={f.value} onChange={set("value")}/>
+      <input className="filter" placeholder="Loan Amount" value={f.loanAmount} onChange={set("loanAmount")}/>
+      <select className="filter" value={f.product} onChange={set("product")}>
+        <option>Conventional</option><option>FHA</option><option>VA</option><option>USDA</option><option>Jumbo</option>
+      </select>
+
+      <div className="card-title" style={{marginTop:10}}>Timing</div>
+      <input className="filter" placeholder="Close Target (YYYY-MM-DD)" value={f.closeTarget} onChange={set("closeTarget")}/>
+      <input className="filter" placeholder="Lock Preference" value={f.lockPref} onChange={set("lockPref")}/>
+      <button className="btn" type="submit">Search Lenders</button>
+    </form>
+  );
+}

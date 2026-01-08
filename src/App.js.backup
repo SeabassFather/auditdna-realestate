@@ -1,0 +1,35 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import LandingPage from './pages/LandingPage';
+import MexicoRealEstate from './pages/MexicoRealEstate';
+import USAMortgage from './pages/USAMortgage';
+import Developments from './pages/Developments';
+import Login from './pages/Login';
+import AgentRegistration from './pages/AgentRegistration';
+import AgentDashboard from './pages/AgentDashboard';
+import AgentPropertyUpload from './pages/AgentPropertyUpload';
+import AdminDashboard from './pages/AdminDashboard';
+import DevelopmentUpload from './pages/DevelopmentUpload';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/mexico-real-estate" element={<MexicoRealEstate />} />
+          <Route path="/usa-mortgage" element={<USAMortgage />} />
+          <Route path="/developments" element={<Developments />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/agent-register" element={<AgentRegistration />} />
+          <Route path="/agent-dashboard" element={<ProtectedRoute><AgentDashboard /></ProtectedRoute>} />
+          <Route path="/agent-upload" element={<ProtectedRoute><AgentPropertyUpload /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/development-upload" element={<ProtectedRoute><DevelopmentUpload /></ProtectedRoute>} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}

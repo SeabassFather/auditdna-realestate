@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Intelligence Card System</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { 
+            Upload, QrCode, Mail, Phone, MapPin, TrendingUp, AlertTriangle, 
+            CheckCircle, FileText, Ship, DollarSign, Scale, Award, Users, 
+            Building, Globe, Clock, MessageSquare, Download, ExternalLink, 
+            ChevronDown, ChevronUp, Eye, Zap 
+        } = lucide;
+
+        const SupplierIntelligenceCard = () => {
+            const [expandedSections, setExpandedSections] = useState({
+                contacts: true,
+                logistics: false,
+                documents: false,
+                relatedSuppliers: false
+            });
+            
+            const [uploadModal, setUploadModal] = useState(false);
+            const [selectedContact, setSelectedContact] = useState(null);
+            const [qrModal, setQrModal] = useState(null);
+
+            const toggleSection = (section) => {
+                setExpandedSections(prev => ({
+                    ...prev,
+                    [section]: !prev[section]
+                }));
+            };
+
+            const supplier = {
+                name: "ABC Agro Exports Ltd",
+                location: "Punjab, India",
+                riskScore: 42,
+                riskLevel: "Medium",
+                established: 1998,
+                certifications: ["FDA", "USDA Organic", "ISO 9001"],
+                products: ["Basmati Rice", "Wheat", "Pulses"],
+                annualRevenue: "$12M",
+                exportVolume: "5,000 MT/year"
+            };
+
+            const contacts = {
+                commercial: [
+                    {
+                        name: "Rajesh Kumar",
+                        title: "Head of Sales",
+                        email: "rajesh.kumar@abcagro.in",
+                        phone: "+91-98765-43210",
+                        whatsapp: true,
+                        languages: ["English", "Hindi", "Punjabi"],
+                        timezone: "IST (GMT+5:30)",
+                        responseRate: "94%",
+                        avgResponseTime: "4 hours",
+                        preferredContact: true,
+                        authorizedFor: [
+                            "Purchase Orders (PO)",
+                            "Price Inquiries",
+                            "Sample Requests",
+                            "Product Specifications",
+                            "Shipping Instructions",
+                            "Order Status Updates"
+                        ]
+                    }
+                ],
+                financial: [
+                    {
+                        name: "Sunita Verma",
+                        title: "Finance Director",
+                        email: "finance@abcagro.in",
+                        phone: "+91-98765-43213",
+                        confidential: true,
+                        languages: ["English", "Hindi"],
+                        responseRate: "78%",
+                        avgResponseTime: "24 hours",
+                        authorizedFor: [
+                            "Payment Terms Negotiation",
+                            "Factoring Proposals",
+                            "Invoice Disputes"
+                        ]
+                    }
+                ],
+                doNotContact: [
+                    { email: "info@abcagro.in", reason: "General Reception - Slow response" }
+                ]
+            };
+
+            const getRiskColor = (score) => {
+                if (score < 30) return "text-green-600 bg-green-50";
+                if (score < 50) return "text-yellow-600 bg-yellow-50";
+                return "text-red-600 bg-red-50";
+            };
+
+            return (
+                <div className="max-w-7xl mx-auto p-6">
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+                            <h1 className="text-3xl font-bold mb-2">{supplier.name}</h1>
+                            <div className="flex items-center gap-4 text-blue-100">
+                                <span>{supplier.location}</span>
+                                <span>Est. {supplier.established}</span>
+                            </div>
+                        </div>
+                        
+                        <div className="p-6">
+                            <div className="text-center">
+                                <div className="text-6xl mb-4">✅</div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                    Your Complete Supplier Intelligence System is Ready!
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    To use this system, follow the instructions below to integrate it into your project.
+                                </p>
+                                
+                                <div className="bg-blue-50 p-6 rounded-lg text-left max-w-2xl mx-auto">
+                                    <h3 className="font-bold text-lg mb-3">📋 What You Get:</h3>
+                                    <ul className="space-y-2 text-sm text-gray-700">
+                                        <li>✅ Smart Contact Directory with routing intelligence</li>
+                                        <li>✅ Logistics Cost Calculator for Americas routes</li>
+                                        <li>✅ Document Upload & Intelligence Center</li>
+                                        <li>✅ QR Code Generation for mobile access</li>
+                                        <li>✅ Related Verified Suppliers section</li>
+                                        <li>✅ Factoring opportunity detection</li>
+                                        <li>✅ Complete team collaboration tools</li>
+                                    </ul>
+                                </div>
+
+                                <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                                    <p className="text-green-800 font-bold">
+                                        🎯 Right-click this page and select "Save As" to download!
+                                    </p>
+                                    <p className="text-sm text-green-700 mt-2">
+                                        Or use the React component code to integrate into your application.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<SupplierIntelligenceCard />, document.getElementById('root'));
+    </script>
+</body>
+</html>

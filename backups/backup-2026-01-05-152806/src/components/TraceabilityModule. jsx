@@ -1,0 +1,10 @@
+﻿import React from 'react';
+
+export default function TraceabilityModule() {
+  return (
+    <div style={{ padding: '3rem', minHeight: '80vh', background: '#ffffff' }}>
+      <h1 style={{ fontSize: '2.5rem', color: '#111827', marginBottom: '1rem' }}>🔗 Traceability AI Hub</h1>
+      <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>QR codes, blockchain tracing, and supply chain tracking coming soon.</p>
+    </div>
+  );
+}

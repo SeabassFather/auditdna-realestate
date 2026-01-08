@@ -1,0 +1,92 @@
+=============================================================================
+ADMIN & AGENT SYSTEM - COMPLETE GUIDE
+=============================================================================
+
+HOW TO UPLOAD PROPERTIES AS ADMIN/EXECUTIVE:
+---------------------------------------------
+1. Login with admin credentials:
+   Email: admin@auditdna.com
+   Password: admin123
+
+2. Navigate to: http://localhost:3000/admin-upload
+
+3. Select property section:
+   - Mexico Real Estate
+   - Developments
+   - FSBO USA
+
+4. Fill in property details
+5. Upload 8 photos minimum
+6. Click "Upload Property"
+
+DONE! Property is now live in the selected section.
+
+
+HOW AGENTS REGISTER:
+---------------------------------------------
+1. Go to: http://localhost:3000/agent-register
+
+2. Fill out contact information:
+   - Full Name
+   - Email
+   - Phone
+   - Real Estate License Number
+
+3. Upload INE (Mexican ID):
+   - Enter 18-character INE number
+   - Upload clear photo of INE
+
+4. Submit registration
+
+5. SAVE THE CREDENTIALS SHOWN!
+   - Password CANNOT be reset
+   - If lost, must re-register with INE
+
+6. Wait for admin approval
+
+
+HOW AGENTS LOGIN:
+---------------------------------------------
+1. Go to: http://localhost:3000/login
+
+2. Use email and password from registration
+
+3. If password is lost:
+   - NO password reset available
+   - Must re-register at /agent-register
+   - Must upload INE again
+
+
+ADMIN FUNCTIONS:
+---------------------------------------------
+- Upload properties to any section
+- View all registered agents (coming soon)
+- Approve/reject agent applications (coming soon)
+
+
+FILE LOCATIONS:
+---------------------------------------------
+Admin Upload Page:     src/pages/AdminPropertyUpload.jsx
+Agent Registration:    src/pages/AgentRegistration.jsx
+Property Uploader:     src/components/upload/PropertyPhotoUploader.jsx
+City Search:           src/components/properties/CitySearchEngine.jsx
+Mexico Map:            src/components/maps/MexicoMap.jsx
+
+
+ROUTES ADDED:
+---------------------------------------------
+/admin-upload          Admin property upload
+/agent-register        Agent registration with INE
+/login                 Login page
+
+
+CREDENTIALS:
+---------------------------------------------
+Admin:
+  Email: admin@auditdna.com
+  Password: admin123
+
+Agent (test - after registration):
+  Email: agent@auditdna.com
+  Password: agent123
+=============================================================================

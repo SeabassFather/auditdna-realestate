@@ -1,0 +1,89 @@
+// C:\AuditDNA_Produce_International\frontend\src\pages\produce\ProduceRegionAnalytics.jsx
+import React, { useEffect, useState } from "react";
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ResponsiveContainer
+} from "recharts";
+
+/*
+  HOW TO USE THE USDA API:
+  1. Get your key from https://quickstats.nass.usda.gov/api
+  2. Replace YOUR_USDA_API_KEY below.
+  3. The fetch() call pulls commodity prices by region and year.
+*/
+
+const USDA_API_KEY = "YOUR_USDA_API_KEY"; //  <<===  paste your key here
+
+export default function ProduceRegionAnalytics({ commodity }) {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchUSDA() {
+      if (!commodity) return;
+      setLoading(true);
+      try {
+        const resp = await fetch(
+          `https://quickstats.nass.usda.gov/api/api_GET/?key=${USDA_API_KEY}&source_desc=MARKET&sector_desc=VEGETABLES&commodity_desc=${commodity.toUpperCase()}&year__GE=2020&agg_level_desc=STATE`
+        );
+        const data = await resp.json();
+        // group simplified averages by region label
+        const byYear = {};
+        if (data.data) {
+          data.data.forEach((r) => {
+            const y = r.year;
+            const price = parseFloat(r.Value?.replace(/,/g, "")) || 0;
+            if (!byYear[y]) byYear[y] = { year: y, West: 0, Midwest: 0, East: 0, countW:0, countM:0, countE:0 };
+            const region = getRegionFromState(r.state_name);
+            if (region === "West") { byYear[y].West += price; byYear[y].countW++; }
+            if (region === "Midwest") { byYear[y].Midwest += price; byYear[y].countM++; }
+            if (region === "East") { byYear[y].East += price; byYear[y].countE++; }
+          });
+          const arr = Object.values(byYear).map((y) => ({
+            year: y.year,
+            West: y.countW ? +(y.West / y.countW).toFixed(2) : null,
+            Midwest: y.countM ? +(y.Midwest / y.countM).toFixed(2) : null,
+            East: y.countE ? +(y.East / y.countE).toFixed(2) : null,
+          }));
+          setChartData(arr.sort((a, b) => a.year - b.year));
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load USDA data");
+      }
+      setLoading(false);
+    }
+    fetchUSDA();
+  }, [commodity]);
+
+  function getRegionFromState(state) {
+    const west = ["CA","WA","OR","AZ","NV","NM","CO","UT","ID"];
+    const midwest = ["IL","IN","IA","KS","MI","MN","MO","NE","ND","OH","SD","WI"];
+    const east = ["NY","PA","NJ","VA","NC","SC","GA","FL","MA","CT","MD","ME"];
+    if (west.includes(state)) return "West";
+    if (midwest.includes(state)) return "Midwest";
+    return "East";
+  }
+
+  if (loading) return <p>Loading USDA data...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
+  if (!chartData.length) return null;
+
+  return (
+    <div className="mt-6 bg-white p-4 rounded shadow">
+      <h2 className="text-xl font-bold mb-2">{commodity} Regional USDA Price Trend</h2>
+      <ResponsiveContainer width="100%" height={320}>
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="year" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="West" stroke="#3b82f6" strokeWidth={2} />
+          <Line type="monotone" dataKey="Midwest" stroke="#10b981" strokeWidth={2} />
+          <Line type="monotone" dataKey="East" stroke="#f59e0b" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

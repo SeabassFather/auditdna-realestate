@@ -1,0 +1,17 @@
+import React, { useState } from "react";
+export default function Accordion({ items = [] }) {
+  const [open, setOpen] = useState(-1);
+  return (
+    <div className="accordion">
+      {items.map((it, idx) => (
+        <div key={idx} className="acc-item">
+          <button className="acc-header" onClick={() => setOpen(open === idx ? -1 : idx)} type="button">
+            <span>{it.title}</span>
+            <span>{open === idx ? "" : "+"}</span>
+          </button>
+          {open === idx && <div className="acc-body">{it.content}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}

@@ -1,0 +1,10 @@
+﻿import React from 'react';
+
+export default function SuppliersModule() {
+  return (
+    <div style={{ padding: '3rem', minHeight:  '80vh', background: '#ffffff' }}>
+      <h1 style={{ fontSize: '2.5rem', color: '#111827', marginBottom: '1rem' }}>🏢 Supplier Intelligence</h1>
+      <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>Supplier vetting, risk assessment, and compliance monitoring coming soon.</p>
+    </div>
+  );
+}

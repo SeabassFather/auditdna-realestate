@@ -1,0 +1,23 @@
+import React from "react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+
+export default function USDACommodityChart({ data=[] }){
+  return (
+    <div className="rounded-2xl border bg-white p-3">
+      <div className="text-sm text-gray-600 mb-2">Weekly price vs 5-year average</div>
+      <div style={{width:"100%", height:360}}>
+        <ResponsiveContainer>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3"/>
+            <XAxis dataKey="label" tick={{fontSize: 11}} interval={Math.max(0, Math.floor(data.length/12))}/>
+            <YAxis tick={{fontSize: 11}}/>
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="price" name="Price" strokeWidth={2} dot={false}/>
+            <Line type="monotone" dataKey="avg5y" name="5y Avg" strokeWidth={2} dot={false}/>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}

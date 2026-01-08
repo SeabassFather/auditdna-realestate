@@ -1,0 +1,153 @@
+ï»¿[
+[
+  {
+    "id": 1,
+    "category": "Mortgage Compliance",
+    "services": [
+      "TRID Compliance Audit",
+      "ECOA/Fair Lending Audit",
+      "HMDA Reporting Audit",
+      "RESPA Section 8 Kickback Checks",
+      "NMLS Licensing Validation",
+      "Reverse Mortgage Compliance Review",
+      "Cross-Border Mortgage Audit (MXâ†’US)",
+      "Mortgage Insurance/PMI Compliance",
+      "Loan Document Audit (1003, LE, CD, Note)",
+      "Mortgage Servicing Rule Audit"
+    ]
+  },
+  {
+    "id": 2,
+    "category": "Escrow & Title",
+    "services": [
+      "Escrow Trust Account Daily Reconciliation",
+      "Wire Fraud Prevention Audit",
+      "Settlement Statement Reconciliation (CD/HUD-1)",
+      "Good Funds Act Compliance",
+      "Escrow Agent Licensing Verification",
+      "IRS 1099-S Filing Audit",
+      "Title Chain of Ownership Verification",
+      "Title Insurance Policy Audit",
+      "ALTA Endorsement Compliance",
+      "Cybersecurity & Escrow Email Security Audit"
+    ]
+  },
+  {
+    "id": 3,
+    "category": "Legal & CPA",
+    "services": [
+      "Attorney Trust (IOLTA) Account Compliance",
+      "CPA GAAP/IFRS Audit",
+      "Tax Compliance Review",
+      "Anti-Money Laundering (AML) Checks",
+      "Know Your Customer (KYC) Compliance",
+      "Privacy Law Audit (CCPA/CPRA, GLBA, GDPR, PIPEDA, PDPA)",
+      "Insurance & Risk Policy Audit",
+      "Global Compliance & Ethics Dashboard",
+      "Contract Audit Engine",
+      "Legislative Proposal Generator (AB/SB)"
+    ]
+  },
+  {
+    "id": 4,
+    "category": "Consumer Protection",
+    "services": [
+      "UDAAP Audit (Unfair, Deceptive, Abusive Practices)",
+      "Consumer Complaint Audit (CFPB database cross-check)",
+      "Disclosure Timing Compliance Audit",
+      "Notary & Recording Law Compliance",
+      "Foreclosure Process Compliance",
+      "Fair Housing & Fair Lending Compliance"
+    ]
+  },
+  {
+    "id": 5,
+    "category": "Fraud & Risk",
+    "services": [
+      "Escrow Fraud Pattern Recognition",
+      "Cross-Border Trust Deed Validation",
+      "Identity Fraud Checks",
+      "Shell Company Risk Audit",
+      "Wire Fraud & Suspicious Activity Reports (SAR)"
+    ]
+  },
+  {
+    "id": 6,
+    "category": "Water & Soil Technology",
+    "services": [
+      "Water Quality Lab Upload (PDF/CSV ingestion)",
+      "Soil Sample Upload & Analysis",
+      "IoT Sensor Integration (pH, oxygen, salinity, nitrates)",
+      "EPA Safe Drinking Water Act Compliance Audit",
+      "USDA Irrigation Water Audit",
+      "FDA FSMA Produce Safety Water Audit",
+      "GlobalGAP Water/Soil Compliance Audit",
+      "California SGMA Groundwater Compliance",
+      "Cross-Border Water/Soil Export Audit",
+      "Soil Nutrient Management & Runoff Compliance",
+      "Water Technology Marketplace",
+      "Eco-Sustainability & Carbon Footprint Reports"
+    ]
+  },
+  {
+    "id": 7,
+    "category": "Agriculture & Produce",
+    "services": [
+      "USDA Pricing Search Engine (W1â€“W26)",
+      "Produce Search Engine (commodity, size, grade)",
+      "Ag Factoring Module",
+      "Grower â†’ Buyer Marketplace (Mexausa Trade Portal)",
+      "Cold Storage Audit (oxygen/temp compliance)",
+      "Transportation & Customs Audit",
+      "GlobalGAP Produce Safety Audit",
+      "Export/Import Produce Compliance Checks"
+    ]
+  },
+  {
+    "id": 8,
+    "category": "Education",
+    "services": [
+      "Student Report Card Uploads",
+      "Progress Analytics Dashboard",
+      "FERPA Compliance Audit",
+      "Cross-Border Transcript Verification"
+    ]
+  },
+  {
+    "id": 9,
+    "category": "Eco & Sustainability",
+    "services": [
+      "Green Building Compliance (LEED, Energy Star)",
+      "Carbon Footprint Analyzer",
+      "IoT Eco Sensor Integration (pressure, oxygen, weight)",
+      "Eco Marketplace (green tech vendors)"
+    ]
+  },
+  {
+    "id": 10,
+    "category": "Financial & Consumer",
+    "services": [
+      "Payroll Audit",
+      "401k/Retirement Module",
+      "Insurance Claims Fraud Detection",
+      "Small Business Factoring (non-ag)",
+      "Utility/Telecom Bill Compliance Review",
+      "Credit Card Statement Audit"
+    ]
+  },
+  {
+    "id": 11,
+    "category": "Core AuditDNA Framework",
+    "services": [
+      "300+ Services Accordion UI",
+      "Global Search Engine (Mortgage, USDA, Factoring, Legal, Eco)",
+      "Admin Dashboard (Live/Demo toggle, Global Ethics Panel)",
+      "Legislative Briefing Kit",
+      "AuditDNA Elite Bundle Packaging",
+      "AuditDNA Ultra UI (Investor-ready build)"
+    ]
+  }
+]
+
+
+
