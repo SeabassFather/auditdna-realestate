@@ -28,30 +28,30 @@ function LandingPage() {
 
   const cards = [
     {
-      id: 'oceanfront',
-      title: 'Oceanfront Estates',
-      subtitle: 'Baja California',
+      id: 'realestate',
+      title: 'Mexico Real Estate',
+      subtitle: 'Baja California Premium Properties',
       image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
       route: '/mexico-real-estate'
     },
     {
-      id: 'wine',
-      title: 'Wine Country',
-      subtitle: 'Valle de Guadalupe',
+      id: 'lifestyle',
+      title: 'Lifestyle Guide',
+      subtitle: 'Wine Country & Luxury Living',
       image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80',
       route: '/lifestyle'
     },
     {
-      id: 'golf',
-      title: 'Golf & Resort',
-      subtitle: 'Championship Living',
+      id: 'developments',
+      title: 'Developments',
+      subtitle: '64 Projects Across 17 Regions',
       image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&q=80',
       route: '/developments'
     },
     {
-      id: 'yacht',
-      title: 'Marina & Yacht',
-      subtitle: 'Waterfront Luxury',
+      id: 'mortgage',
+      title: 'US & Mexico Loans',
+      subtitle: 'Mortgage & Financing Solutions',
       image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&q=80',
       route: '/usa-mortgage'
     }
@@ -61,7 +61,8 @@ function LandingPage() {
     <div style={{ 
       minHeight: '100vh',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
       {/* OCEAN BACKGROUND - FULL SCREEN */}
@@ -78,14 +79,14 @@ function LandingPage() {
         zIndex: 0
       }} />
 
-      {/* SUBTLE DARK OVERLAY */}
+      {/* DARK OVERLAY */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.6) 100%)',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.7) 100%)',
         zIndex: 1
       }} />
 
@@ -100,15 +101,14 @@ function LandingPage() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: 'linear-gradient(to bottom, rgba(15,23,42,0.8), transparent)'
+        background: 'linear-gradient(to bottom, rgba(15,23,42,0.9), transparent)'
       }}>
         {/* LOGO */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            border: '1.5px solid #cbd5e1',
-            borderRadius: '50%',
+            width: '44px',
+            height: '44px',
+            border: '1px solid #cbd5e1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -117,13 +117,21 @@ function LandingPage() {
           </div>
           <div>
             <div style={{ 
-              color: '#f1f5f9', 
-              fontSize: '16px', 
+              color: '#e4e4e7', 
+              fontSize: '18px', 
               fontWeight: '300', 
-              letterSpacing: '3px',
+              letterSpacing: '4px',
               textTransform: 'uppercase'
             }}>
               Enjoy Baja
+            </div>
+            <div style={{
+              color: '#94a3b8',
+              fontSize: '9px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase'
+            }}>
+              Luxury Real Estate
             </div>
           </div>
         </div>
@@ -133,9 +141,9 @@ function LandingPage() {
           <button 
             onClick={() => navigate('/login')}
             style={{
-              padding: '10px 24px',
+              padding: '12px 28px',
               background: 'transparent',
-              border: '1px solid rgba(203, 213, 225, 0.5)',
+              border: '1px solid #94a3b8',
               color: '#cbd5e1',
               fontSize: '10px',
               fontWeight: '500',
@@ -145,12 +153,14 @@ function LandingPage() {
               transition: 'all 0.3s'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = '#cbd5e1';
+              e.currentTarget.style.background = '#e4e4e7';
               e.currentTarget.style.color = '#0f172a';
+              e.currentTarget.style.borderColor = '#e4e4e7';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = 'transparent';
               e.currentTarget.style.color = '#cbd5e1';
+              e.currentTarget.style.borderColor = '#94a3b8';
             }}
           >
             Login
@@ -158,8 +168,8 @@ function LandingPage() {
           <button 
             onClick={() => navigate('/agent-register')}
             style={{
-              padding: '10px 24px',
-              background: '#cbd5e1',
+              padding: '12px 28px',
+              background: '#cba658',
               border: 'none',
               color: '#0f172a',
               fontSize: '10px',
@@ -170,10 +180,10 @@ function LandingPage() {
               transition: 'all 0.3s'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = '#f1f5f9';
+              e.currentTarget.style.background = '#d4b366';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = '#cbd5e1';
+              e.currentTarget.style.background = '#cba658';
             }}
           >
             Join
@@ -190,7 +200,7 @@ function LandingPage() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: isMobile ? '100px 20px 40px' : '120px 48px 60px'
+        padding: isMobile ? '100px 20px 60px' : '120px 48px 80px'
       }}>
         
         {/* HERO TEXT */}
@@ -199,46 +209,43 @@ function LandingPage() {
           marginBottom: isMobile ? '40px' : '60px'
         }}>
           <p style={{
-            fontSize: '11px',
-            color: '#cbd5e1',
+            fontSize: '10px',
+            color: '#cba658',
             letterSpacing: '4px',
             textTransform: 'uppercase',
-            marginBottom: '20px',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+            marginBottom: '20px'
           }}>
             Where the Stars Come to Shine
           </p>
 
           <h1 style={{ 
-            fontSize: isMobile ? '42px' : '80px',
+            fontSize: isMobile ? '38px' : '72px',
             fontWeight: '200',
-            color: '#f1f5f9',
+            color: '#e4e4e7',
             letterSpacing: isMobile ? '6px' : '12px',
             textTransform: 'uppercase',
             marginBottom: '16px',
-            lineHeight: '1.1',
-            textShadow: '0 4px 30px rgba(0,0,0,0.5)'
+            lineHeight: '1.1'
           }}>
             Baja California
           </h1>
 
           <p style={{
-            fontSize: isMobile ? '14px' : '18px',
-            color: '#cbd5e1',
+            fontSize: isMobile ? '13px' : '16px',
+            color: '#94a3b8',
             fontWeight: '300',
-            letterSpacing: '2px',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+            letterSpacing: '3px',
+            textTransform: 'uppercase'
           }}>
-            Luxury Real Estate
+            Premium Properties & Services
           </p>
 
           {/* THIN LINE */}
           <div style={{
             width: '60px',
             height: '1px',
-            background: '#cbd5e1',
-            margin: '30px auto 0',
-            opacity: 0.5
+            background: '#cba658',
+            margin: '30px auto 0'
           }} />
         </div>
 
@@ -258,10 +265,9 @@ function LandingPage() {
               onMouseLeave={() => setHoveredCard(null)}
               style={{
                 position: 'relative',
-                height: isMobile ? '180px' : '280px',
+                height: isMobile ? '200px' : '320px',
                 cursor: 'pointer',
                 overflow: 'hidden',
-                borderRadius: '4px',
                 transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                 transform: hoveredCard === card.id ? 'translateY(-8px)' : 'translateY(0)',
                 boxShadow: hoveredCard === card.id 
@@ -280,7 +286,7 @@ function LandingPage() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 transition: 'transform 0.6s ease',
-                transform: hoveredCard === card.id ? 'scale(1.1)' : 'scale(1)'
+                transform: hoveredCard === card.id ? 'scale(1.08)' : 'scale(1)'
               }} />
 
               {/* CARD OVERLAY */}
@@ -291,8 +297,8 @@ function LandingPage() {
                 right: 0,
                 bottom: 0,
                 background: hoveredCard === card.id
-                  ? 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.4) 100%)'
-                  : 'linear-gradient(to top, rgba(15,23,42,0.8) 0%, rgba(15,23,42,0.2) 100%)',
+                  ? 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.3) 100%)'
+                  : 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 100%)',
                 transition: 'all 0.4s ease'
               }} />
 
@@ -304,9 +310,8 @@ function LandingPage() {
                 right: 0,
                 bottom: 0,
                 border: hoveredCard === card.id 
-                  ? '1px solid rgba(203, 213, 225, 0.5)' 
-                  : '1px solid rgba(203, 213, 225, 0.2)',
-                borderRadius: '4px',
+                  ? '1px solid rgba(203, 166, 88, 0.6)' 
+                  : '1px solid rgba(148, 163, 184, 0.3)',
                 transition: 'all 0.3s ease',
                 pointerEvents: 'none'
               }} />
@@ -324,22 +329,22 @@ function LandingPage() {
                   color: '#94a3b8',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
-                  marginBottom: '6px'
+                  marginBottom: '8px'
                 }}>
                   {card.subtitle}
                 </p>
                 <h3 style={{
-                  fontSize: isMobile ? '14px' : '18px',
+                  fontSize: isMobile ? '16px' : '20px',
                   fontWeight: '400',
-                  color: '#f1f5f9',
-                  letterSpacing: '1px'
+                  color: '#e4e4e7',
+                  letterSpacing: '1px',
+                  marginBottom: '12px'
                 }}>
                   {card.title}
                 </h3>
 
                 {/* ARROW ON HOVER */}
                 <div style={{
-                  marginTop: '12px',
                   opacity: hoveredCard === card.id ? 1 : 0,
                   transform: hoveredCard === card.id ? 'translateY(0)' : 'translateY(10px)',
                   transition: 'all 0.3s ease',
@@ -349,13 +354,13 @@ function LandingPage() {
                 }}>
                   <span style={{
                     fontSize: '10px',
-                    color: '#cbd5e1',
+                    color: '#cba658',
                     letterSpacing: '2px',
                     textTransform: 'uppercase'
                   }}>
-                    Explore
+                    Enter
                   </span>
-                  <span style={{ color: '#cbd5e1', fontSize: '14px' }}>→</span>
+                  <span style={{ color: '#cba658', fontSize: '14px' }}>→</span>
                 </div>
               </div>
             </div>
@@ -363,14 +368,14 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* BOTTOM BAR - MINIMAL */}
+      {/* BOTTOM BAR */}
       <div style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        padding: '16px 48px',
-        background: 'linear-gradient(to top, rgba(15,23,42,0.8), transparent)',
+        padding: '20px 48px',
+        background: 'linear-gradient(to top, rgba(15,23,42,0.95), transparent)',
         zIndex: 10,
         display: 'flex',
         justifyContent: 'center'
@@ -380,7 +385,7 @@ function LandingPage() {
           color: '#64748b',
           letterSpacing: '2px'
         }}>
-          SAUL GARCIA — NMLS #337526 — +52 646 340 2686
+          SAUL GARCIA | NMLS #337526 | +52 646 340 2686
         </p>
       </div>
     </div>

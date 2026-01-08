@@ -88,14 +88,14 @@ export default function Developments() {
     { id: 52, name: "Medano Beach Urban Residences", region: "Cabo San Lucas", location: "Medano Beach", units: 156, value: 68000000, status: "Pre-Construction", type: "Urban Beach Condos", amenities: ["Walk to Marina", "Beach Clubs", "Nightlife Access"] },
     
     // INLAND - MEXICALI & VALLEYS
-    { id: 53, name: "Mexicali Business District Towers", region: "Inland - Mexicali & Valleys", location: "Mexicali", units: 178, value: 45000000, status: "Under Construction", type: "Urban Business Condos", amenities: ["Business Center", "Rooftop Pool", "Near Border"] },
-    { id: 54, name: "Valle de Mexicali Agri-Estates", region: "Inland - Mexicali & Valleys", location: "Valle de Mexicali", units: 45, value: 18000000, status: "Available Now", type: "Agricultural Estates", amenities: ["Farmland", "Water Rights", "Equipment Barns"] },
-    { id: 55, name: "San Luis Rio Colorado Border Gateway", region: "Inland - Mexicali & Valleys", location: "San Luis Rio Colorado", units: 89, value: 28000000, status: "Pre-Construction", type: "Border Town Condos", amenities: ["Near Crossing", "Shopping District", "Medical Tourism"] },
+    { id: 53, name: "Mexicali Business District Towers", region: "Inland Mexicali & Valleys", location: "Mexicali", units: 178, value: 45000000, status: "Under Construction", type: "Urban Business Condos", amenities: ["Business Center", "Rooftop Pool", "Near Border"] },
+    { id: 54, name: "Valle de Mexicali Agri-Estates", region: "Inland Mexicali & Valleys", location: "Valle de Mexicali", units: 45, value: 18000000, status: "Available Now", type: "Agricultural Estates", amenities: ["Farmland", "Water Rights", "Equipment Barns"] },
+    { id: 55, name: "San Luis Rio Colorado Border Gateway", region: "Inland Mexicali & Valleys", location: "San Luis Rio Colorado", units: 89, value: 28000000, status: "Pre-Construction", type: "Border Town Condos", amenities: ["Near Crossing", "Shopping District", "Medical Tourism"] },
     
     // INLAND - SIERRA & DESERT
-    { id: 56, name: "Sierra San Pedro Martir Eco-Lodge", region: "Inland - Sierra & Desert", location: "Sierra San Pedro Martir", units: 24, value: 12000000, status: "Pre-Construction", type: "Mountain Eco-Lodges", amenities: ["Observatory Access", "Hiking", "Wildlife", "Dark Sky Reserve"] },
-    { id: 57, name: "Catavina Boulder Retreat", region: "Inland - Sierra & Desert", location: "Catavina", units: 18, value: 8000000, status: "Available Now", type: "Desert Retreat Cabins", amenities: ["Giant Boulders", "Cave Paintings", "Stargazing", "Off-Road Trails"] },
-    { id: 58, name: "Valle de los Cirios Preserve Estates", region: "Inland - Sierra & Desert", location: "Valle de los Cirios", units: 12, value: 6000000, status: "Phase 2", type: "Desert Conservation Lots", amenities: ["Cirio Cactus Forest", "Eco-Tourism", "Remote Wilderness"] },
+    { id: 56, name: "Sierra San Pedro Martir Eco-Lodge", region: "Inland Sierra & Desert", location: "Sierra San Pedro Martir", units: 24, value: 12000000, status: "Pre-Construction", type: "Mountain Eco-Lodges", amenities: ["Observatory Access", "Hiking", "Wildlife", "Dark Sky Reserve"] },
+    { id: 57, name: "Catavina Boulder Retreat", region: "Inland Sierra & Desert", location: "Catavina", units: 18, value: 8000000, status: "Available Now", type: "Desert Retreat Cabins", amenities: ["Giant Boulders", "Cave Paintings", "Stargazing", "Off-Road Trails"] },
+    { id: 58, name: "Valle de los Cirios Preserve Estates", region: "Inland Sierra & Desert", location: "Valle de los Cirios", units: 12, value: 6000000, status: "Phase 2", type: "Desert Conservation Lots", amenities: ["Cirio Cactus Forest", "Eco-Tourism", "Remote Wilderness"] },
     
     // CARIBBEAN COAST (BONUS)
     { id: 59, name: "Tulum Jungle Villas", region: "Caribbean Coast", location: "Tulum", units: 92, value: 68000000, status: "Available Now", type: "Eco-Luxury Villas", amenities: ["Cenote Access", "Yoga Pavilion", "Organic Farm", "Beach Club"] },
@@ -124,20 +124,21 @@ export default function Developments() {
     return `$${(val / 1000).toFixed(0)}K`;
   };
 
+  // SILVER/GOLD ONLY STATUS STYLES
   const getStatusStyle = (status) => {
     if (status === 'Available Now') {
-      return { bg: 'rgba(34, 197, 94, 0.2)', border: '#22c55e', color: '#22c55e' };
+      return { bg: 'rgba(203, 166, 88, 0.2)', border: '#cba658', color: '#cba658' };
     } else if (status === 'Under Construction') {
-      return { bg: 'rgba(59, 130, 246, 0.2)', border: '#3b82f6', color: '#3b82f6' };
+      return { bg: 'rgba(148, 163, 184, 0.15)', border: '#94a3b8', color: '#94a3b8' };
     } else if (status.includes('Phase')) {
-      return { bg: 'rgba(168, 85, 247, 0.2)', border: '#a855f7', color: '#a855f7' };
+      return { bg: 'rgba(203, 166, 88, 0.15)', border: '#b8944d', color: '#b8944d' };
     } else {
-      return { bg: 'rgba(251, 191, 36, 0.2)', border: '#fbbf24', color: '#fbbf24' };
+      return { bg: 'rgba(228, 228, 231, 0.1)', border: '#e4e4e7', color: '#e4e4e7' };
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       
       {/* OCEANFRONT DEVELOPMENT BACKGROUND */}
       <div style={{
@@ -178,7 +179,7 @@ export default function Developments() {
           marginBottom: '50px'
         }}>
           <p style={{
-            fontSize: '11px',
+            fontSize: '10px',
             color: '#cba658',
             letterSpacing: '4px',
             textTransform: 'uppercase',
@@ -187,26 +188,26 @@ export default function Developments() {
             Baja California Peninsula
           </p>
           <h1 style={{ 
-            fontSize: '42px', 
+            fontSize: '48px', 
             fontWeight: '200', 
-            color: '#f1f5f9', 
+            color: '#e4e4e7', 
             marginBottom: '12px', 
-            letterSpacing: '4px'
+            letterSpacing: '6px'
           }}>
             DEVELOPMENTS
           </h1>
           <p style={{ 
-            fontSize: '14px', 
+            fontSize: '13px', 
             color: '#94a3b8', 
             fontWeight: '300',
-            letterSpacing: '1px'
+            letterSpacing: '2px'
           }}>
             64 Projects | 17 Regions | $2.8B+ Portfolio
           </p>
         </div>
 
         {/* REGIONS ACCORDION */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {regions.map(region => {
             const regionProjects = developments.filter(d => d.region === region);
             const stats = getRegionStats(region);
@@ -215,8 +216,7 @@ export default function Developments() {
             return (
               <div key={region} style={{
                 background: 'rgba(15, 23, 42, 0.8)',
-                border: '1px solid rgba(203, 166, 88, 0.3)',
-                borderRadius: '8px',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
                 overflow: 'hidden',
                 backdropFilter: 'blur(10px)'
               }}>
@@ -224,8 +224,8 @@ export default function Developments() {
                   onClick={() => setExpandedRegion(isExpanded ? null : region)}
                   style={{
                     width: '100%',
-                    padding: '20px 28px',
-                    background: isExpanded ? 'rgba(203, 166, 88, 0.1)' : 'transparent',
+                    padding: '18px 24px',
+                    background: isExpanded ? 'rgba(203, 166, 88, 0.08)' : 'transparent',
                     border: 'none',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -235,48 +235,46 @@ export default function Developments() {
                   }}
                 >
                   <div>
-                    <span style={{ fontSize: '16px', fontWeight: '400', color: '#f1f5f9', letterSpacing: '1px' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '400', color: '#e4e4e7', letterSpacing: '1px' }}>
                       {region}
                     </span>
-                    <span style={{ fontSize: '12px', color: '#64748b', marginLeft: '12px' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '16px' }}>
                       {stats.count} projects | {formatValue(stats.value)} total value
                     </span>
                   </div>
-                  {isExpanded ? <ChevronUp size={20} color="#cba658" /> : <ChevronDown size={20} color="#cba658" />}
+                  {isExpanded ? <ChevronUp size={18} color="#cba658" /> : <ChevronDown size={18} color="#94a3b8" />}
                 </button>
                 
                 {isExpanded && (
-                  <div style={{ padding: '24px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                  <div style={{ padding: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
                       {regionProjects.map(dev => {
                         const statusStyle = getStatusStyle(dev.status);
                         return (
                           <div key={dev.id} style={{
                             background: 'rgba(15, 23, 42, 0.9)',
-                            border: '1px solid rgba(203, 166, 88, 0.25)',
-                            borderRadius: '8px',
+                            border: '1px solid rgba(148, 163, 184, 0.15)',
                             padding: '20px',
                             transition: 'all 0.3s'
                           }}
                           onMouseEnter={e => {
                             e.currentTarget.style.transform = 'translateY(-4px)';
-                            e.currentTarget.style.boxShadow = '0 12px 32px rgba(203, 166, 88, 0.3)';
-                            e.currentTarget.style.borderColor = 'rgba(203, 166, 88, 0.5)';
+                            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.4)';
+                            e.currentTarget.style.borderColor = 'rgba(203, 166, 88, 0.4)';
                           }}
                           onMouseLeave={e => {
                             e.currentTarget.style.transform = 'translateY(0)';
                             e.currentTarget.style.boxShadow = 'none';
-                            e.currentTarget.style.borderColor = 'rgba(203, 166, 88, 0.25)';
+                            e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.15)';
                           }}>
-                            {/* STATUS BADGE */}
+                            {/* STATUS BADGE - SQUARE */}
                             <div style={{
                               display: 'inline-block',
                               padding: '4px 12px',
                               background: statusStyle.bg,
                               border: '1px solid ' + statusStyle.border,
-                              borderRadius: '20px',
                               fontSize: '9px',
-                              fontWeight: '700',
+                              fontWeight: '600',
                               color: statusStyle.color,
                               letterSpacing: '1px',
                               marginBottom: '12px',
@@ -285,7 +283,7 @@ export default function Developments() {
                               {dev.status}
                             </div>
                             
-                            <h3 style={{ fontSize: '17px', fontWeight: '500', color: '#f1f5f9', marginBottom: '6px' }}>
+                            <h3 style={{ fontSize: '17px', fontWeight: '500', color: '#e4e4e7', marginBottom: '6px' }}>
                               {dev.name}
                             </h3>
                             
@@ -298,7 +296,7 @@ export default function Developments() {
                               {dev.type}
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '16px', marginBottom: '14px', paddingTop: '10px', borderTop: '1px solid rgba(203, 166, 88, 0.15)' }}>
+                            <div style={{ display: 'flex', gap: '20px', marginBottom: '14px', paddingTop: '10px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <Home size={13} color="#cba658" />
                                 <span style={{ fontSize: '12px', color: '#cba658', fontWeight: '600' }}>{dev.units} units</span>
@@ -317,11 +315,10 @@ export default function Developments() {
                                 {dev.amenities.map((amenity, i) => (
                                   <span key={i} style={{
                                     padding: '3px 8px',
-                                    background: 'rgba(203, 166, 88, 0.1)',
-                                    border: '1px solid rgba(203, 166, 88, 0.25)',
-                                    borderRadius: '10px',
+                                    background: 'rgba(148, 163, 184, 0.1)',
+                                    border: '1px solid rgba(148, 163, 184, 0.2)',
                                     fontSize: '9px',
-                                    color: '#cbd5e1'
+                                    color: '#94a3b8'
                                   }}>
                                     {amenity}
                                   </span>
@@ -333,23 +330,22 @@ export default function Developments() {
                               onClick={() => window.open(`https://wa.me/526463402686?text=Interested in ${dev.name} - ${dev.location}`, '_blank')}
                               style={{
                                 width: '100%',
-                                padding: '11px',
-                                background: 'linear-gradient(135deg, #cba658, #b8944d)',
+                                padding: '12px',
+                                background: '#cba658',
                                 border: 'none',
-                                borderRadius: '6px',
-                                color: '#0a0a0a',
+                                color: '#0f172a',
                                 fontSize: '10px',
                                 fontWeight: '700',
-                                letterSpacing: '1.5px',
+                                letterSpacing: '2px',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s',
                                 textTransform: 'uppercase'
                               }}
                               onMouseEnter={e => {
-                                e.currentTarget.style.transform = 'scale(1.02)';
+                                e.currentTarget.style.background = '#d4b366';
                               }}
                               onMouseLeave={e => {
-                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.background = '#cba658';
                               }}
                             >
                               Request Info
@@ -368,13 +364,12 @@ export default function Developments() {
         {/* DEVELOPER CTA */}
         <div style={{
           marginTop: '50px',
-          background: 'rgba(203, 166, 88, 0.08)',
-          border: '1px solid rgba(203, 166, 88, 0.3)',
-          borderRadius: '8px',
+          background: 'rgba(15, 23, 42, 0.8)',
+          border: '1px solid rgba(148, 163, 184, 0.2)',
           padding: '40px',
           textAlign: 'center'
         }}>
-          <h2 style={{ fontSize: '22px', fontWeight: '300', color: '#f1f5f9', marginBottom: '12px', letterSpacing: '2px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '300', color: '#e4e4e7', marginBottom: '12px', letterSpacing: '2px' }}>
             Are You a Developer?
           </h2>
           <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '24px', maxWidth: '500px', margin: '0 auto 24px' }}>
@@ -386,7 +381,6 @@ export default function Developments() {
               padding: '14px 40px',
               background: 'transparent',
               border: '1px solid #cba658',
-              borderRadius: '6px',
               color: '#cba658',
               fontSize: '11px',
               fontWeight: '600',
@@ -397,7 +391,7 @@ export default function Developments() {
             }}
             onMouseEnter={e => {
               e.currentTarget.style.background = '#cba658';
-              e.currentTarget.style.color = '#0a0a0a';
+              e.currentTarget.style.color = '#0f172a';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = 'transparent';
@@ -406,6 +400,17 @@ export default function Developments() {
           >
             List Your Project
           </button>
+        </div>
+
+        {/* FOOTER */}
+        <div style={{
+          marginTop: '40px',
+          textAlign: 'center',
+          padding: '20px'
+        }}>
+          <p style={{ fontSize: '10px', color: '#64748b', letterSpacing: '2px' }}>
+            SAUL GARCIA | NMLS #337526 | +52 646 340 2686
+          </p>
         </div>
       </div>
     </div>
