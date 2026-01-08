@@ -359,7 +359,7 @@ export default function BajaLuxuryGuide() {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* GOLFER BACKGROUND - SUBTLE */}
+      {/* GOLFER BACKGROUND - VISIBLE AND CLEAR */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -369,18 +369,18 @@ export default function BajaLuxuryGuide() {
         backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.15,
+        opacity: 0.4,
         zIndex: 0
       }} />
 
-      {/* DARKER OVERLAY - EASY TO READ */}
+      {/* LIGHTER OVERLAY - SEE THE GOLFER */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(51,65,85,0.85) 0%, rgba(51,65,85,0.9) 50%, rgba(51,65,85,0.95) 100%)',
+        background: 'linear-gradient(180deg, rgba(51,65,85,0.5) 0%, rgba(51,65,85,0.6) 50%, rgba(51,65,85,0.7) 100%)',
         pointerEvents: 'none',
         zIndex: 1
       }} />
@@ -523,7 +523,7 @@ export default function BajaLuxuryGuide() {
                       background: '#ffffff'
                     }}
                   >
-                    {/* Image */}
+                    {/* Image - FULL COLOR VIBRANT */}
                     <div style={{
                       position: 'absolute',
                       top: 0,
@@ -533,9 +533,8 @@ export default function BajaLuxuryGuide() {
                       backgroundImage: `url(${item.image})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
-                      transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s',
-                      transform: hoveredCard === item.key ? 'scale(1.05)' : 'scale(1)',
-                      opacity: hoveredCard === item.key ? 0.7 : 0.5
+                      transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: hoveredCard === item.key ? 'scale(1.05)' : 'scale(1)'
                     }} />
 
                     {/* Content */}
