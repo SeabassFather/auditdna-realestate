@@ -19,12 +19,19 @@ function LandingPage() {
   const navigate = useNavigate();
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audio] = useState(new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_2c87ba9f3c.mp3'));
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     audio.loop = true;
     audio.volume = 0.3;
     return () => audio.pause();
   }, [audio]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleAudio = () => {
     if (audioEnabled) {
@@ -37,20 +44,20 @@ function LandingPage() {
   };
 
   const buttonBaseStyle = {
-    padding: '8px 20px',
+    padding: isMobile ? '6px 12px' : '8px 20px',
     background: 'rgba(203, 213, 225, 0.15)',
     backdropFilter: 'blur(8px)',
     color: '#e2e8f0',
     border: '1px solid rgba(203, 213, 225, 0.4)',
     borderRadius: '25px',
-    fontSize: '10px',
+    fontSize: isMobile ? '8px' : '10px',
     fontWeight: '600',
     letterSpacing: '1.2px',
     cursor: 'pointer',
     boxShadow: '0 2px 10px rgba(203, 213, 225, 0.2)',
     transition: 'all 0.25s',
     textTransform: 'uppercase',
-    width: '80px',
+    width: isMobile ? '60px' : '80px',
     textAlign: 'center'
   };
 
@@ -61,7 +68,7 @@ function LandingPage() {
       backgroundImage: 'url(https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&q=80)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
+      backgroundAttachment: isMobile ? 'scroll' : 'fixed',
       filter: 'brightness(1.3) contrast(0.9)'
     }}>
       <div style={{
@@ -76,12 +83,12 @@ function LandingPage() {
       {/* BUTTONS TOP RIGHT - ALPHABETICAL */}
       <div style={{
         position: 'fixed',
-        top: '24px',
-        right: '24px',
+        top: isMobile ? '12px' : '24px',
+        right: isMobile ? '12px' : '24px',
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'row',
-        gap: '12px',
+        gap: isMobile ? '6px' : '12px',
         alignItems: 'center'
       }}>
         {/* ADMIN */}
@@ -139,44 +146,50 @@ function LandingPage() {
             e.currentTarget.style.boxShadow = '0 2px 10px rgba(203, 213, 225, 0.2)';
           }
         }}>
-          <span style={{ fontSize: '12px' }}>{audioEnabled ? 'ðŸ”Š' : 'ðŸ”‡'}</span>
+          <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{audioEnabled ? '🔊' : '🔇'}</span>
         </button>
       </div>
 
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1400px', margin: '0 auto', padding: '100px 32px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '100px' }}>
-          {/* TITLE - BRIGHT SILVER WITH GLOW */}
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1400px', margin: '0 auto', padding: isMobile ? '60px 16px' : '100px 32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '50px' : '100px' }}>
+          {/* TITLE - RESPONSIVE */}
           <h1 style={{ 
-            fontSize: '64px', 
+            fontSize: isMobile ? '28px' : '64px', 
             fontWeight: '200', 
             color: '#cbd5e1', 
             textShadow: '0 0 30px rgba(203, 213, 225, 0.6), 0 0 60px rgba(203, 213, 225, 0.4), 0 4px 30px rgba(0,0,0,0.4)', 
             marginBottom: '20px',
-            letterSpacing: '2px'
+            letterSpacing: isMobile ? '1px' : '2px',
+            lineHeight: isMobile ? '1.3' : '1.2'
           }}>
             AuditDNA Mexico Real Estate
           </h1>
-          {/* SUBTITLE - BRIGHT SILVER WITH GLOW */}
+          {/* SUBTITLE - RESPONSIVE */}
           <p style={{ 
-            fontSize: '20px', 
+            fontSize: isMobile ? '14px' : '20px', 
             color: '#e2e8f0',
             textShadow: '0 0 20px rgba(226, 232, 240, 0.6), 0 0 40px rgba(226, 232, 240, 0.4), 0 2px 15px rgba(0,0,0,0.3)',
             fontWeight: '400',
-            letterSpacing: '1px'
+            letterSpacing: '1px',
+            padding: isMobile ? '0 10px' : '0'
           }}>
             Premium Mexico Real Estate & Cross-Border Financing
           </p>
         </div>
         
-        {/* CARDS WITH BRIGHT SILVER BORDERS */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
+        {/* CARDS - RESPONSIVE GRID */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', 
+          gap: isMobile ? '20px' : '32px' 
+        }}>
           <div onClick={() => navigate('/mexico-real-estate')} style={{ 
             background: 'rgba(30, 41, 59, 0.4)', 
             backdropFilter: 'blur(20px)',
             border: '2px solid #e2e8f0',
             boxShadow: '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)', 
             borderRadius: '12px', 
-            padding: '56px 40px', 
+            padding: isMobile ? '32px 24px' : '56px 40px', 
             cursor: 'pointer',
             transition: 'all 0.4s',
             transform: 'translateY(0)'
@@ -191,8 +204,8 @@ function LandingPage() {
             e.currentTarget.style.boxShadow = '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)';
             e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)';
           }}>
-            <h2 style={{ fontSize: '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>Mexico Real Estate</h2>
-            <p style={{ fontSize: '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Discover extraordinary properties in Valle de Guadalupe, Ensenada, La Paz</p>
+            <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>Mexico Real Estate</h2>
+            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Discover extraordinary properties in Valle de Guadalupe, Ensenada, La Paz</p>
           </div>
 
           <div onClick={() => navigate('/lifestyle')} style={{ 
@@ -201,7 +214,7 @@ function LandingPage() {
             border: '2px solid #e2e8f0',
             boxShadow: '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)', 
             borderRadius: '12px', 
-            padding: '56px 40px', 
+            padding: isMobile ? '32px 24px' : '56px 40px', 
             cursor: 'pointer', 
             transition: 'all 0.4s',
             transform: 'translateY(0)'
@@ -216,8 +229,8 @@ function LandingPage() {
             e.currentTarget.style.boxShadow = '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)';
             e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)';
           }}>
-            <h2 style={{ fontSize: '28px', fontWeight: '300', color: '#cba658', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(203, 166, 88, 0.4)' }}>Baja California Luxury Guide</h2>
-            <p style={{ fontSize: '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>1000+ Establishments â€¢ 19 Regions â€¢ Wineries â€¢ Golf â€¢ Hotels â€¢ Spas â€¢ Adventure</p>
+            <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '300', color: '#cba658', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(203, 166, 88, 0.4)' }}>Baja California Luxury Guide</h2>
+            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>1000+ Establishments • 19 Regions • Wineries • Golf • Hotels • Spas • Adventure</p>
           </div>
 
           <div onClick={() => navigate('/developments')} style={{ 
@@ -226,7 +239,7 @@ function LandingPage() {
             border: '2px solid #e2e8f0',
             boxShadow: '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)', 
             borderRadius: '12px', 
-            padding: '56px 40px', 
+            padding: isMobile ? '32px 24px' : '56px 40px', 
             cursor: 'pointer',
             transition: 'all 0.4s',
             transform: 'translateY(0)'
@@ -241,8 +254,8 @@ function LandingPage() {
             e.currentTarget.style.boxShadow = '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)';
             e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)';
           }}>
-            <h2 style={{ fontSize: '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>Developments</h2>
-            <p style={{ fontSize: '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Explore new development projects across Mexico</p>
+            <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>Developments</h2>
+            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Explore new development projects across Mexico</p>
           </div>
 
           <div onClick={() => navigate('/usa-mortgage')} style={{ 
@@ -251,7 +264,7 @@ function LandingPage() {
             border: '2px solid #e2e8f0',
             boxShadow: '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)', 
             borderRadius: '12px', 
-            padding: '56px 40px', 
+            padding: isMobile ? '32px 24px' : '56px 40px', 
             cursor: 'pointer',
             transition: 'all 0.4s',
             transform: 'translateY(0)'
@@ -266,8 +279,8 @@ function LandingPage() {
             e.currentTarget.style.boxShadow = '0 8px 32px rgba(226, 232, 240, 0.2), 0 0 20px rgba(226, 232, 240, 0.1)';
             e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)';
           }}>
-            <h2 style={{ fontSize: '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>US & Mexico Mortgage</h2>
-            <p style={{ fontSize: '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Mortgage financing for US & Mexico properties</p>
+            <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>US & Mexico Mortgage</h2>
+            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Mortgage financing for US & Mexico properties</p>
           </div>
         </div>
       </div>
