@@ -17,7 +17,7 @@ export default function Login() {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
-      navigate('/admin');
+      navigate('/');
     } else {
       setError(result.error || 'Login failed');
     }
@@ -47,7 +47,7 @@ export default function Login() {
         <p style={s.subtitle}>Sign in to your AuditDNA account</p>
 
         <div style={s.demo}>
-          <div style={s.demoTitle}> Demo Credentials</div>
+          <div style={s.demoTitle}>Demo Credentials</div>
           <div style={s.demoText}>
             <strong>Email:</strong> admin@auditdna.com<br />
             <strong>Password:</strong> admin123
@@ -82,13 +82,13 @@ export default function Login() {
           </div>
 
           <button type="submit" style={s.btn} disabled={loading}>
-            {loading ? ' Signing in...' : ' Sign In'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         <div style={s.link}>
           Don't have an account?{' '}
-          <Link to="/register" style={s.linkBtn}>
+          <Link to="/agent-register" style={s.linkBtn}>
             Sign up
           </Link>
         </div>

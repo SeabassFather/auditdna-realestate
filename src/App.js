@@ -156,8 +156,8 @@ function LandingPage() {
           <h1 style={{ 
             fontSize: isMobile ? '28px' : '64px', 
             fontWeight: '200', 
-            color: '#cbd5e1', 
-            textShadow: '0 0 30px rgba(203, 213, 225, 0.6), 0 0 60px rgba(203, 213, 225, 0.4), 0 4px 30px rgba(0,0,0,0.4)', 
+            color: isMobile ? '#cba658' : '#cbd5e1', 
+            textShadow: isMobile ? '0 0 30px rgba(203, 166, 88, 0.6), 0 0 60px rgba(203, 166, 88, 0.4), 0 4px 30px rgba(0,0,0,0.5)' : '0 0 30px rgba(203, 213, 225, 0.6), 0 0 60px rgba(203, 213, 225, 0.4), 0 4px 30px rgba(0,0,0,0.4)', 
             marginBottom: '20px',
             letterSpacing: isMobile ? '1px' : '2px',
             lineHeight: isMobile ? '1.3' : '1.2'
