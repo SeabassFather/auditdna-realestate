@@ -205,7 +205,7 @@ function LandingPage() {
             e.currentTarget.style.background = 'rgba(30, 41, 59, 0.4)';
           }}>
             <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '300', color: '#f1f5f9', marginBottom: '16px', letterSpacing: '1px', textShadow: '0 0 15px rgba(241, 245, 249, 0.3)' }}>Mexico Real Estate</h2>
-            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Discover extraordinary properties in Valle de Guadalupe, Ensenada, La Paz</p>
+            <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#e2e8f0', lineHeight: '1.7', fontWeight: '300' }}>Valle de Guadalupe • Ensenada • La Paz • Cabo San Lucas • San José del Cabo • Bahía de los Ángeles • Rosarito • Tijuana • Loreto • Todos Santos</p>
           </div>
 
           <div onClick={() => navigate('/lifestyle')} style={{ 
