@@ -354,12 +354,12 @@ export default function BajaLuxuryGuide() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#f8fafc',
+      background: '#e2e8f0',
       position: 'relative',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* REAL GOLFER GROUP BACKGROUND IMAGE - BRIGHT DAYTIME */}
+      {/* REAL GOLFER GROUP BACKGROUND IMAGE - BALANCED */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -369,18 +369,18 @@ export default function BajaLuxuryGuide() {
         backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.35,
+        opacity: 0.2,
         zIndex: 0
       }} />
 
-      {/* VERY LIGHT OVERLAY - BRIGHT AND AIRY */}
+      {/* BALANCED OVERLAY - NOT TOO DARK, NOT TOO BRIGHT */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(248,250,252,0.75) 0%, rgba(248,250,252,0.85) 50%, rgba(248,250,252,0.9) 100%)',
+        background: 'linear-gradient(180deg, rgba(226,232,240,0.7) 0%, rgba(226,232,240,0.8) 50%, rgba(226,232,240,0.85) 100%)',
         pointerEvents: 'none',
         zIndex: 1
       }} />
