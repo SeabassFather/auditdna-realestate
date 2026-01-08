@@ -168,7 +168,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english' 
         ? "Mexico's first boutique winery since 1988. The Gran Ricardo blend defines Baja wine excellence."
         : "La primera bodega boutique de Mexico desde 1988. La mezcla Gran Ricardo define la excelencia del vino de Baja.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/d1/a0/a0/monte-xanic.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80",
       website: "https://montexanic.com.mx"
     },
     {
@@ -178,7 +178,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english'
         ? "Chef David Castro Hussong's acclaimed Baja Med cuisine at Bruma winery estate."
         : "La aclamada cocina Baja Med del Chef David Castro Hussong en la bodega Bruma.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/c1/89/7c/fauna.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
       website: "https://brumawine.com/fauna"
     },
     {
@@ -188,7 +188,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english'
         ? "Chef Javier Plascencia's wood-fired cuisine with Baja's finest local ingredients."
         : "La cocina a lena del Chef Javier Plascencia con los mejores ingredientes locales de Baja.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/f8/46/9a/animalon.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80",
       website: "https://animalon.mx"
     },
     {
@@ -198,7 +198,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english'
         ? "Cliffside luxury where vineyard meets Pacific. Private suites with infinity ocean views."
         : "Lujo en acantilados donde el vinedo se encuentra con el Pacifico. Suites privadas con vistas infinitas.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/5c/7e/a4/cuatro-cuatros.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
       website: "https://cuatrocuatros.com"
     },
     {
@@ -208,7 +208,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english'
         ? "Touch gray whales in their UNESCO World Heritage winter sanctuary. Life-changing encounters."
         : "Toca ballenas grises en su santuario de invierno Patrimonio Mundial UNESCO. Encuentros que cambian la vida.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/3c/f8/83/laguna-san-ignacio.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=800&q=80",
       website: "https://kuyima.com"
     },
     {
@@ -218,7 +218,7 @@ export default function BajaLuxuryGuide() {
       description: language === 'english'
         ? "Chef Javier Plascencia's flagship restaurant. The birthplace of modern Baja Med cuisine."
         : "El restaurante insignia del Chef Javier Plascencia. La cuna de la cocina moderna Baja Med.",
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0d/42/f6/0d/mision-19.jpg?w=1200&h=800&s=1",
+      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80",
       website: "https://mision19.com"
     }
   ];
@@ -354,33 +354,33 @@ export default function BajaLuxuryGuide() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0f172a',
+      background: '#1e293b',
       position: 'relative',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* GOLFER BACKGROUND IMAGE */}
+      {/* REAL GOLFER GROUP BACKGROUND IMAGE */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1920&q=80")',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.15,
+        opacity: 0.25,
         zIndex: 0
       }} />
 
-      {/* SUBTLE GRADIENT OVERLAY - LIGHTER */}
+      {/* LIGHTER GRADIENT OVERLAY */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.85) 50%, rgba(15,23,42,0.95) 100%)',
+        background: 'linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(30,41,59,0.75) 50%, rgba(30,41,59,0.85) 100%)',
         pointerEvents: 'none',
         zIndex: 1
       }} />
