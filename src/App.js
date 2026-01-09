@@ -9,8 +9,10 @@ import Login from './pages/Login';
 import AgentRegistration from './pages/AgentRegistration';
 import Register from './pages/Register';
 import AdminPropertyUpload from './pages/AdminPropertyUpload';
+import AdminDashboard from './pages/AdminDashboard';
 import UniversalPropertyUpload from './components/properties/UniversalPropertyUpload';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 import WhatsAppWidget from './components/contact/WhatsAppWidget';
 import AIChatWidget from './components/chat/AIChatWidget';
 import BajaLuxuryGuide from './components/BajaLuxuryGuide';
@@ -385,7 +387,7 @@ function LandingPage() {
           color: '#64748b',
           letterSpacing: '2px'
         }}>
-          SAUL GARCIA | NMLS #337526 | +52 646 340 2686
+          info@enjoybaja.com | WhatsApp: +52 646 340 2686
         </p>
       </div>
     </div>
@@ -397,14 +399,21 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* PUBLIC ROUTES */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/agent-register" element={<AgentRegistration />} />
-          <Route path="/mexico-real-estate" element={<ProtectedRoute><MexicoRealEstate /></ProtectedRoute>} />
           <Route path="/lifestyle" element={<BajaLuxuryGuide />} />
+          
+          {/* PROTECTED ROUTES - Logged in users */}
+          <Route path="/mexico-real-estate" element={<ProtectedRoute><MexicoRealEstate /></ProtectedRoute>} />
           <Route path="/developments" element={<ProtectedRoute><Developments /></ProtectedRoute>} />
           <Route path="/usa-mortgage" element={<ProtectedRoute><USAMortgage /></ProtectedRoute>} />
           <Route path="/1003-urla" element={<ProtectedRoute><URLA1003 /></ProtectedRoute>} />
+          
+          {/* ADMIN ONLY ROUTES */}
+          <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+          <Route path="/admin/properties" element={<AdminProtectedRoute><AdminPropertyUpload /></AdminProtectedRoute>} />
         </Routes>
         <WhatsAppWidget />
         <AIChatWidget />

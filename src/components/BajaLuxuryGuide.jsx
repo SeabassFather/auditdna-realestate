@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowRight, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
 function Accordion({ children, defaultOpen = -1 }) {
   const [openIndex, setOpenIndex] = useState(defaultOpen);
@@ -62,6 +62,21 @@ export default function BajaLuxuryGuide() {
   const [subscribed, setSubscribed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hoveredCard, setHoveredCard] = useState(null);
+  
+  // Music Player State
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const audioRef = useRef(null);
+  
+  // SLOW MELLOW JAZZ - Ambient background music
+  // These are slower, more subtle tracks
+  const musicUrls = [
+    "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",  // Slow jazz piano
+    "https://cdn.pixabay.com/download/audio/2021/11/25/audio_cb5c4e5442.mp3",  // Mellow acoustic
+    "https://cdn.pixabay.com/download/audio/2022/03/15/audio_8cb749d484.mp3"   // Soft background
+  ];
+  const musicUrl = musicUrls[currentTrackIndex];
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -75,6 +90,26 @@ export default function BajaLuxuryGuide() {
       .then(data => setEstablishments(data))
       .catch(err => console.error('Error:', err));
   }, []);
+
+  // Music Player Controls
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.volume = 0.25; // Keep it subtle - 25% volume
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   const labels = {
     english: {
@@ -359,21 +394,21 @@ export default function BajaLuxuryGuide() {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* GOLFER BACKGROUND - VISIBLE AND CLEAR */}
+      {/* VINEYARD BACKGROUND - Beautiful Valle de Guadalupe Style */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=80")',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.4,
+        opacity: 0.35,
         zIndex: 0
       }} />
 
-      {/* LIGHTER OVERLAY - SEE THE GOLFER */}
+      {/* LIGHTER OVERLAY - SEE THE VINEYARD */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -384,6 +419,229 @@ export default function BajaLuxuryGuide() {
         pointerEvents: 'none',
         zIndex: 1
       }} />
+
+      {/* SCROLLING PARTNER IMAGES - Valle de Guadalupe Hotels & Restaurants */}
+      <div style={{
+        position: 'fixed',
+        bottom: '80px',
+        left: 0,
+        right: 0,
+        height: '120px',
+        overflow: 'hidden',
+        zIndex: 2,
+        background: 'linear-gradient(to right, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 10%, rgba(15,23,42,0.7) 90%, rgba(15,23,42,0.95) 100%)'
+      }}>
+        <p style={{
+          position: 'absolute',
+          top: '8px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '9px',
+          color: '#cba658',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
+          zIndex: 3
+        }}>
+          Featured Partners
+        </p>
+        <div style={{
+          display: 'flex',
+          gap: '20px',
+          animation: 'scrollPartners 90s linear infinite',
+          paddingTop: '32px',
+          width: 'max-content'
+        }}>
+          {/* Partner Images - 24 UNIQUE images for variety */}
+          {[
+            // Hotels
+            { name: 'Hotel Boutique', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
+            { name: 'El Cielo Resort', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&q=80' },
+            { name: 'Contemplación', img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
+            { name: 'Hacienda Guadalupe', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
+            // Wine & Vineyards
+            { name: 'Entre Viñedos', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
+            { name: 'Monte Xanic', img: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&q=80' },
+            { name: 'Adobe Guadalupe', img: 'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80' },
+            { name: 'Vena Cava Winery', img: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&q=80' },
+            // Restaurants  
+            { name: 'Fuego Restaurant', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80' },
+            { name: 'Finca Altozano', img: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80' },
+            { name: 'Corazón de Tierra', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80' },
+            { name: 'Fauna Valle', img: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=400&q=80' },
+            // Luxury Experiences
+            { name: 'Wine Tasting', img: 'https://images.unsplash.com/photo-1566995541428-f2246c17cda1?w=400&q=80' },
+            { name: 'Sunset Terrace', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80' },
+            { name: 'Pool & Spa', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
+            { name: 'Fine Dining', img: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&q=80' },
+            // More Hotels & Resorts
+            { name: 'Bruma Casa 8', img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80' },
+            { name: 'Cuatro Cuatros', img: 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&q=80' },
+            { name: 'Encuentro Guadalupe', img: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80' },
+            { name: 'Villa del Valle', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80' },
+            // More Wine & Dining
+            { name: "Deckman's", img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80' },
+            { name: 'Laja Restaurant', img: 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=400&q=80' },
+            { name: 'Malva Kitchen', img: 'https://images.unsplash.com/photo-1515669097368-22e68427d265?w=400&q=80' },
+            { name: 'Baron Balché', img: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&q=80' },
+            // Duplicate set for seamless loop
+            { name: 'Hotel Boutique', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
+            { name: 'El Cielo Resort', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&q=80' },
+            { name: 'Contemplación', img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
+            { name: 'Hacienda Guadalupe', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
+            { name: 'Entre Viñedos', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
+            { name: 'Monte Xanic', img: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&q=80' },
+            { name: 'Adobe Guadalupe', img: 'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80' },
+            { name: 'Vena Cava Winery', img: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&q=80' },
+            { name: 'Fuego Restaurant', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80' },
+            { name: 'Finca Altozano', img: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80' },
+            { name: 'Corazón de Tierra', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80' },
+            { name: 'Fauna Valle', img: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=400&q=80' },
+            { name: 'Wine Tasting', img: 'https://images.unsplash.com/photo-1566995541428-f2246c17cda1?w=400&q=80' },
+            { name: 'Sunset Terrace', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80' },
+            { name: 'Pool & Spa', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
+            { name: 'Fine Dining', img: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&q=80' },
+            { name: 'Bruma Casa 8', img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80' },
+            { name: 'Cuatro Cuatros', img: 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&q=80' },
+            { name: 'Encuentro Guadalupe', img: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80' },
+            { name: 'Villa del Valle', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80' },
+            { name: "Deckman's", img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80' },
+            { name: 'Laja Restaurant', img: 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=400&q=80' },
+            { name: 'Malva Kitchen', img: 'https://images.unsplash.com/photo-1515669097368-22e68427d265?w=400&q=80' },
+            { name: 'Baron Balché', img: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&q=80' }
+          ].map((partner, i) => (
+            <div key={i} style={{ 
+              width: '140px', 
+              height: '80px', 
+              position: 'relative',
+              flexShrink: 0
+            }}>
+              <img 
+                src={partner.img} 
+                alt={partner.name}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  border: '1px solid rgba(203,166,88,0.3)'
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                padding: '4px 8px'
+              }}>
+                <p style={{
+                  fontSize: '9px',
+                  color: '#e2e8f0',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>{partner.name}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <style>{`
+          @keyframes scrollPartners {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
+      </div>
+
+      {/* AUDIO ELEMENT - Subtle Jazz */}
+      <audio 
+        ref={audioRef} 
+        src={musicUrl} 
+        loop 
+        onError={() => {
+          if (currentTrackIndex < musicUrls.length - 1) {
+            setCurrentTrackIndex(currentTrackIndex + 1);
+          }
+        }}
+      />
+
+      {/* MUSIC PLAYER - FLOATING BOTTOM LEFT */}
+      <div style={{
+        position: 'fixed',
+        bottom: 100,
+        left: 20,
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: 'rgba(51,65,85,0.9)',
+        backdropFilter: 'blur(10px)',
+        padding: '12px 16px',
+        border: '1px solid rgba(203,166,88,0.3)'
+      }}>
+        {/* Play/Pause Button */}
+        <button
+          onClick={togglePlay}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4
+          }}
+        >
+          {isPlaying ? (
+            <Pause size={20} color="#cba658" />
+          ) : (
+            <Play size={20} color="#cba658" />
+          )}
+        </button>
+
+        {/* Track Info */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2
+        }}>
+          <span style={{
+            fontSize: '10px',
+            color: '#cba658',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
+          }}>
+            {isPlaying ? 'NOW PLAYING' : 'LATIN JAZZ'}
+          </span>
+          <span style={{
+            fontSize: '11px',
+            color: '#94a3b8'
+          }}>
+            Baja Vibes
+          </span>
+        </div>
+
+        {/* Mute Button */}
+        <button
+          onClick={toggleMute}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4,
+            marginLeft: 8
+          }}
+        >
+          {isMuted ? (
+            <VolumeX size={18} color="#64748b" />
+          ) : (
+            <Volume2 size={18} color="#94a3b8" />
+          )}
+        </button>
+      </div>
 
       <div style={{ 
         maxWidth: '1100px', 
@@ -1103,7 +1361,7 @@ export default function BajaLuxuryGuide() {
             color: '#94a3b8',
             letterSpacing: '2px'
           }}>
-            +52 646 340 2686
+            info@enjoybaja.com | WhatsApp: +52 646 340 2686
           </p>
         </footer>
       </div>
