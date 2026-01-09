@@ -194,66 +194,141 @@ export default function BajaLuxuryGuide() {
 
   const t = labels[language];
 
-  // REAL IMAGES FROM ACTUAL ESTABLISHMENTS
+  // REAL IMAGES FROM ACTUAL ESTABLISHMENTS - 12 items for 4x3 grid
   const featuredContent = [
+    // Row 1 - Hotels
     {
-      key: 'winery',
-      name: "Monte Xanic",
+      key: 'boutique',
+      name: "Hotel Boutique",
       location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english' 
-        ? "Mexico's first boutique winery since 1988. The Gran Ricardo blend defines Baja wine excellence."
-        : "La primera bodega boutique de Mexico desde 1988. La mezcla Gran Ricardo define la excelencia del vino de Baja.",
-      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80",
-      website: "https://montexanic.com.mx"
+        ? "Contemporary hacienda style retreat with Fuego restaurant and full spa."
+        : "Retiro estilo hacienda contemporanea con restaurante Fuego y spa completo.",
+      image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80",
+      website: "https://hotelboutiquevalledeguadalupe.com"
     },
     {
-      key: 'dish',
-      name: "Fauna Restaurant",
+      key: 'bottega',
+      name: "Hotel Bottega",
       location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english'
-        ? "Chef David Castro Hussong's acclaimed Baja Med cuisine at Bruma winery estate."
-        : "La aclamada cocina Baja Med del Chef David Castro Hussong en la bodega Bruma.",
-      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
+        ? "Small boutique hotel steps from Finca Altozano and Laja restaurant."
+        : "Pequeno hotel boutique a pasos de Finca Altozano y restaurante Laja.",
+      image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80",
+      website: "https://hotelbottegaboutique.com"
+    },
+    {
+      key: 'entrevinedos',
+      name: "Entre Viñedos",
+      location: "Valle de Guadalupe",
+      category: "HOTEL",
+      description: language === 'english'
+        ? "Mediterranean-style family rooms with vineyard and mountain views."
+        : "Habitaciones familiares estilo mediterraneo con vistas a vinedos y montanas.",
+      image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80",
+      website: "https://hotelentrevinedos.com"
+    },
+    {
+      key: 'cuatro',
+      name: "Cuatro Cuatros",
+      location: "Valle de Guadalupe",
+      category: "HOTEL",
+      description: language === 'english'
+        ? "Cliffside luxury where vineyard meets Pacific with infinity ocean views."
+        : "Lujo en acantilados donde el vinedo se encuentra con el Pacifico.",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+      website: "https://cuatrocuatros.com"
+    },
+    // Row 2 - Restaurants
+    {
+      key: 'fuego',
+      name: "Fuego Restaurant",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Rooftop dining with live music, local wines and Baja Med cuisine."
+        : "Comedor en azotea con musica en vivo, vinos locales y cocina Baja Med.",
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80",
+      website: "https://fuegococinadelvalle.com"
+    },
+    {
+      key: 'fauna',
+      name: "Fauna",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Chef David Castro Hussong's acclaimed cuisine at Bruma winery estate."
+        : "La aclamada cocina del Chef David Castro Hussong en la bodega Bruma.",
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
       website: "https://brumawine.com/fauna"
     },
     {
-      key: 'cocktail',
+      key: 'finca',
+      name: "Finca Altozano",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Open-air wood-fired cooking with valley views by Chef Javier Plascencia."
+        : "Cocina a lena al aire libre con vistas al valle del Chef Javier Plascencia.",
+      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80",
+      website: "https://fincaaltozano.com"
+    },
+    {
+      key: 'animalon',
       name: "Animalon",
       location: "Valle de Guadalupe",
+      category: "MIXOLOGY",
       description: language === 'english'
-        ? "Chef Javier Plascencia's wood-fired cuisine with Baja's finest local ingredients."
-        : "La cocina a lena del Chef Javier Plascencia con los mejores ingredientes locales de Baja.",
-      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80",
+        ? "Wood-fired cuisine with Baja's finest local ingredients and craft cocktails."
+        : "Cocina a lena con los mejores ingredientes locales y cocteles artesanales.",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80",
       website: "https://animalon.mx"
     },
+    // Row 3 - Wineries & Experiences
     {
-      key: 'hotel',
-      name: "Cuatro Cuatros",
+      key: 'monte',
+      name: "Monte Xanic",
       location: "Valle de Guadalupe",
-      description: language === 'english'
-        ? "Cliffside luxury where vineyard meets Pacific. Private suites with infinity ocean views."
-        : "Lujo en acantilados donde el vinedo se encuentra con el Pacifico. Suites privadas con vistas infinitas.",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
-      website: "https://cuatrocuatros.com"
+      category: "WINERY",
+      description: language === 'english' 
+        ? "Mexico's first boutique winery since 1988. The Gran Ricardo defines Baja wine."
+        : "La primera bodega boutique de Mexico desde 1988. Gran Ricardo define el vino de Baja.",
+      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80",
+      website: "https://montexanic.com.mx"
     },
     {
-      key: 'experience',
+      key: 'venacava',
+      name: "Vena Cava",
+      location: "Valle de Guadalupe",
+      category: "WINERY",
+      description: language === 'english'
+        ? "Iconic boat-hull architecture winery with exceptional wines and views."
+        : "Bodega con arquitectura iconica de casco de barco, vinos excepcionales y vistas.",
+      image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=600&q=80",
+      website: "https://venacavawine.com"
+    },
+    {
+      key: 'whale',
       name: "Kuyima Whale Watching",
       location: "San Ignacio Lagoon",
+      category: "ADVENTURE",
       description: language === 'english'
-        ? "Touch gray whales in their UNESCO World Heritage winter sanctuary. Life-changing encounters."
-        : "Toca ballenas grises en su santuario de invierno Patrimonio Mundial UNESCO. Encuentros que cambian la vida.",
-      image: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=800&q=80",
+        ? "Touch gray whales in their UNESCO World Heritage winter sanctuary."
+        : "Toca ballenas grises en su santuario UNESCO de invierno.",
+      image: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=600&q=80",
       website: "https://kuyima.com"
     },
     {
-      key: 'chef',
+      key: 'mision',
       name: "Mision 19",
       location: "Tijuana",
+      category: "CULINARY",
       description: language === 'english'
-        ? "Chef Javier Plascencia's flagship restaurant. The birthplace of modern Baja Med cuisine."
-        : "El restaurante insignia del Chef Javier Plascencia. La cuna de la cocina moderna Baja Med.",
-      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80",
+        ? "Chef Javier Plascencia's flagship. The birthplace of Baja Med cuisine."
+        : "El restaurante insignia del Chef Plascencia. La cuna de la cocina Baja Med.",
+      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
       website: "https://mision19.com"
     }
   ];
@@ -530,16 +605,18 @@ export default function BajaLuxuryGuide() {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                padding: '4px 8px'
+                background: 'rgba(0,0,0,0.85)',
+                padding: '6px 10px'
               }}>
                 <p style={{
-                  fontSize: '9px',
-                  color: '#e2e8f0',
+                  fontSize: '10px',
+                  color: '#ffffff',
+                  fontWeight: '500',
                   margin: 0,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)'
                 }}>{partner.name}</p>
               </div>
             </div>
@@ -760,12 +837,12 @@ export default function BajaLuxuryGuide() {
         {/* ==================== GUIDE TAB ==================== */}
         {activeTab === "guide" && (
           <>
-            {/* FEATURED GRID */}
+            {/* FEATURED GRID - 4 COLUMNS, SMALLER CARDS */}
             <section style={{ marginBottom: '80px' }}>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                gap: '24px'
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+                gap: '16px'
               }}>
                 {featuredContent.map((item, index) => (
                   <article
@@ -775,7 +852,7 @@ export default function BajaLuxuryGuide() {
                     onMouseLeave={() => setHoveredCard(null)}
                     style={{
                       position: 'relative',
-                      height: isMobile ? '320px' : '400px',
+                      height: isMobile ? '280px' : '260px',
                       overflow: 'hidden',
                       cursor: 'pointer',
                       background: '#ffffff'
@@ -801,43 +878,33 @@ export default function BajaLuxuryGuide() {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      padding: '32px',
+                      padding: '20px',
                       background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, transparent 100%)'
                     }}>
                       <p style={{
-                        fontSize: '9px',
+                        fontSize: '8px',
                         color: '#cba658',
-                        letterSpacing: '3px',
+                        letterSpacing: '2px',
                         textTransform: 'uppercase',
-                        marginBottom: '12px'
+                        marginBottom: '8px'
                       }}>
-                        {t.featured[item.key]}
+                        {item.category}
                       </p>
                       <h3 style={{
-                        fontSize: '20px',
-                        fontWeight: '300',
+                        fontSize: '16px',
+                        fontWeight: '400',
                         color: '#e2e8f0',
-                        marginBottom: '8px',
-                        letterSpacing: '1px'
+                        marginBottom: '4px',
+                        letterSpacing: '0.5px'
                       }}>
                         {item.name}
                       </h3>
                       <p style={{
-                        fontSize: '11px',
+                        fontSize: '10px',
                         color: '#94a3b8',
-                        marginBottom: '16px'
+                        marginBottom: '0'
                       }}>
                         {item.location}
-                      </p>
-                      <p style={{
-                        fontSize: '12px',
-                        color: '#cbd5e1',
-                        lineHeight: '1.7',
-                        opacity: hoveredCard === item.key ? 1 : 0,
-                        transform: hoveredCard === item.key ? 'translateY(0)' : 'translateY(10px)',
-                        transition: 'all 0.4s ease'
-                      }}>
-                        {item.description}
                       </p>
                     </div>
                   </article>
@@ -1340,16 +1407,17 @@ export default function BajaLuxuryGuide() {
           </section>
         )}
 
-        {/* FOOTER - JUST WHATSAPP */}
+        {/* FOOTER */}
         <footer style={{
           marginTop: '120px',
-          paddingTop: '48px',
-          borderTop: '1px solid rgba(148,163,184,0.2)',
-          textAlign: 'center'
+          padding: '48px 20px',
+          borderTop: '1px solid rgba(203,166,88,0.3)',
+          textAlign: 'center',
+          background: 'rgba(0,0,0,0.5)'
         }}>
           <p style={{
-            fontSize: '10px',
-            color: '#94a3b8',
+            fontSize: '12px',
+            color: '#cba658',
             letterSpacing: '3px',
             marginBottom: '16px',
             fontStyle: 'italic'
@@ -1357,9 +1425,10 @@ export default function BajaLuxuryGuide() {
             "{t.slogan}"
           </p>
           <p style={{
-            fontSize: '11px',
-            color: '#94a3b8',
-            letterSpacing: '2px'
+            fontSize: '13px',
+            color: '#ffffff',
+            letterSpacing: '2px',
+            fontWeight: '500'
           }}>
             info@enjoybaja.com | WhatsApp: +52 646 340 2686
           </p>

@@ -1,212 +1,231 @@
-// ADMIN SETUP - Run this ONCE to create your admin account
-// After running, DELETE this file or remove the route
-// src/pages/AdminSetup.jsx
+// AuthContext.jsx - localStorage based (works immediately)
+// src/contexts/AuthContext.jsx
 
-import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../firebase/firebase';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export default function AdminSetup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [status, setStatus] = useState('');
-  const [done, setDone] = useState(false);
+const AuthContext = createContext();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus('Creating admin account...');
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+};
 
-    try {
-      // Create Firebase Auth account
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Create admin profile in Firestore
-      await setDoc(doc(db, 'users', result.user.uid), {
-        email,
-        name,
-        role: 'admin',  // THIS MAKES YOU ADMIN
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp()
-      });
+// ADMIN ACCOUNTS - Change these before going live!
+const ADMIN_ACCOUNTS = [
+  { email: 'admin@enjoybaja.com', password: 'EnjoyBaja2026!', name: 'Admin' },
+  { email: 'saul@enjoybaja.com', password: 'SaulAdmin2026!', name: 'Saul Garcia' }
+];
 
-      setStatus('✅ ADMIN ACCOUNT CREATED SUCCESSFULLY!');
-      setDone(true);
-    } catch (error) {
-      setStatus('❌ Error: ' + error.message);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem('enjoybaja_user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        localStorage.removeItem('enjoybaja_user');
+      }
     }
+    setLoading(false);
+  }, []);
+
+  // ============================================
+  // LOGIN
+  // ============================================
+  const login = async (email, password) => {
+    // Check admin accounts
+    const admin = ADMIN_ACCOUNTS.find(
+      a => a.email.toLowerCase() === email.toLowerCase() && a.password === password
+    );
+    
+    if (admin) {
+      const userData = {
+        email: admin.email,
+        name: admin.name,
+        role: 'admin',
+        loginAt: new Date().toISOString()
+      };
+      setUser(userData);
+      localStorage.setItem('enjoybaja_user', JSON.stringify(userData));
+      return { success: true, user: userData };
+    }
+
+    // Check approved agents
+    const approvedAgents = JSON.parse(localStorage.getItem('approved_agents') || '[]');
+    const agent = approvedAgents.find(
+      a => a.email.toLowerCase() === email.toLowerCase() && a.password === password
+    );
+
+    if (agent) {
+      const userData = {
+        email: agent.email,
+        name: agent.fullName || agent.name,
+        role: 'agent',
+        company: agent.companyName,
+        loginAt: new Date().toISOString()
+      };
+      setUser(userData);
+      localStorage.setItem('enjoybaja_user', JSON.stringify(userData));
+      return { success: true, user: userData };
+    }
+
+    return { success: false, error: 'Invalid email or password' };
   };
 
-  if (done) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#0f172a',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'sans-serif'
-      }}>
-        <div style={{
-          background: '#1e293b',
-          padding: '40px',
-          textAlign: 'center',
-          maxWidth: '500px'
-        }}>
-          <div style={{ fontSize: '60px', marginBottom: '20px' }}>✅</div>
-          <h2 style={{ color: '#22c55e', marginBottom: '16px' }}>Admin Account Created!</h2>
-          <p style={{ color: '#94a3b8', marginBottom: '24px' }}>
-            You can now login at <strong>/login</strong> with your credentials.
-          </p>
-          <div style={{ background: '#0f172a', padding: '16px', marginBottom: '24px' }}>
-            <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 8px' }}>YOUR CREDENTIALS</p>
-            <p style={{ color: '#e2e8f0', margin: '4px 0' }}>Email: <strong>{email}</strong></p>
-            <p style={{ color: '#e2e8f0', margin: '4px 0' }}>Password: <strong>{password}</strong></p>
-          </div>
-          <p style={{ color: '#ef4444', fontSize: '13px' }}>
-            ⚠️ IMPORTANT: Delete this page (AdminSetup.jsx) and remove its route from App.js!
-          </p>
-          <a href="/login" style={{
-            display: 'inline-block',
-            marginTop: '20px',
-            padding: '12px 32px',
-            background: '#cba658',
-            color: '#0f172a',
-            textDecoration: 'none',
-            fontWeight: '600'
-          }}>
-            Go to Login →
-          </a>
-        </div>
-      </div>
-    );
-  }
+  // ============================================
+  // LOGOUT
+  // ============================================
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('enjoybaja_user');
+  };
+
+  // ============================================
+  // REGISTER AGENT (Pending approval)
+  // ============================================
+  const registerAgent = (agentData) => {
+    const pendingAgents = JSON.parse(localStorage.getItem('pending_agents') || '[]');
+    
+    // Check if email already exists
+    if (pendingAgents.find(a => a.email.toLowerCase() === agentData.email.toLowerCase())) {
+      return { success: false, error: 'Email already registered' };
+    }
+
+    const newAgent = {
+      ...agentData,
+      id: 'AGT-' + Date.now(),
+      status: 'pending',
+      submittedAt: new Date().toISOString()
+    };
+
+    pendingAgents.push(newAgent);
+    localStorage.setItem('pending_agents', JSON.stringify(pendingAgents));
+    
+    return { success: true, agentId: newAgent.id };
+  };
+
+  // ============================================
+  // APPROVE AGENT (Admin only)
+  // ============================================
+  const approveAgent = (agentId, credentials) => {
+    const pendingAgents = JSON.parse(localStorage.getItem('pending_agents') || '[]');
+    const approvedAgents = JSON.parse(localStorage.getItem('approved_agents') || '[]');
+
+    const agentIndex = pendingAgents.findIndex(a => a.id === agentId);
+    if (agentIndex === -1) return { success: false, error: 'Agent not found' };
+
+    const agent = pendingAgents[agentIndex];
+    
+    // Move to approved with credentials
+    const approvedAgent = {
+      ...agent,
+      ...credentials,
+      status: 'approved',
+      approvedAt: new Date().toISOString()
+    };
+
+    approvedAgents.push(approvedAgent);
+    pendingAgents.splice(agentIndex, 1);
+
+    localStorage.setItem('pending_agents', JSON.stringify(pendingAgents));
+    localStorage.setItem('approved_agents', JSON.stringify(approvedAgents));
+
+    return { success: true, agent: approvedAgent };
+  };
+
+  // ============================================
+  // REJECT AGENT (Admin only)
+  // ============================================
+  const rejectAgent = (agentId, reason) => {
+    const pendingAgents = JSON.parse(localStorage.getItem('pending_agents') || '[]');
+    const rejectedAgents = JSON.parse(localStorage.getItem('rejected_agents') || '[]');
+
+    const agentIndex = pendingAgents.findIndex(a => a.id === agentId);
+    if (agentIndex === -1) return { success: false, error: 'Agent not found' };
+
+    const agent = pendingAgents[agentIndex];
+    
+    // Move to rejected
+    const rejectedAgent = {
+      ...agent,
+      status: 'rejected',
+      rejectionReason: reason,
+      rejectedAt: new Date().toISOString()
+    };
+
+    rejectedAgents.push(rejectedAgent);
+    pendingAgents.splice(agentIndex, 1);
+
+    localStorage.setItem('pending_agents', JSON.stringify(pendingAgents));
+    localStorage.setItem('rejected_agents', JSON.stringify(rejectedAgents));
+
+    return { success: true };
+  };
+
+  // ============================================
+  // GET ALL AGENTS (Admin only)
+  // ============================================
+  const getAllAgents = () => {
+    const pending = JSON.parse(localStorage.getItem('pending_agents') || '[]');
+    const approved = JSON.parse(localStorage.getItem('approved_agents') || '[]');
+    const rejected = JSON.parse(localStorage.getItem('rejected_agents') || '[]');
+
+    return {
+      pending,
+      approved,
+      rejected,
+      all: [...pending, ...approved, ...rejected]
+    };
+  };
+
+  // ============================================
+  // CHANGE PASSWORD
+  // ============================================
+  const changePassword = (currentPassword, newPassword) => {
+    if (!user || user.role !== 'agent') {
+      return { success: false, error: 'Not authorized' };
+    }
+
+    const approvedAgents = JSON.parse(localStorage.getItem('approved_agents') || '[]');
+    const agentIndex = approvedAgents.findIndex(a => a.email === user.email);
+
+    if (agentIndex === -1) return { success: false, error: 'Agent not found' };
+    if (approvedAgents[agentIndex].password !== currentPassword) {
+      return { success: false, error: 'Current password is incorrect' };
+    }
+
+    approvedAgents[agentIndex].password = newPassword;
+    localStorage.setItem('approved_agents', JSON.stringify(approvedAgents));
+
+    return { success: true };
+  };
+
+  // ============================================
+  // CONTEXT VALUE
+  // ============================================
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    registerAgent,
+    approveAgent,
+    rejectAgent,
+    getAllAgents,
+    changePassword,
+    isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin',
+    isAgent: user?.role === 'agent'
+  };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#0f172a',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'sans-serif'
-    }}>
-      <div style={{
-        background: '#1e293b',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <h2 style={{ color: '#cba658', marginBottom: '8px', textAlign: 'center' }}>
-          🔐 Admin Setup
-        </h2>
-        <p style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', marginBottom: '32px' }}>
-          Create your admin account (run once only)
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '6px' }}>
-              YOUR NAME
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Saul Garcia"
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0f172a',
-                border: '1px solid #334155',
-                color: '#e2e8f0',
-                fontSize: '14px'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '6px' }}>
-              ADMIN EMAIL
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@enjoybaja.com"
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0f172a',
-                border: '1px solid #334155',
-                color: '#e2e8f0',
-                fontSize: '14px'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '6px' }}>
-              ADMIN PASSWORD
-            </label>
-            <input
-              type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Strong password (min 6 chars)"
-              required
-              minLength={6}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0f172a',
-                border: '1px solid #334155',
-                color: '#e2e8f0',
-                fontSize: '14px'
-              }}
-            />
-            <p style={{ color: '#64748b', fontSize: '11px', marginTop: '6px' }}>
-              Use a strong password - you'll need this to login!
-            </p>
-          </div>
-
-          {status && (
-            <div style={{
-              padding: '12px',
-              marginBottom: '16px',
-              background: status.includes('✅') ? 'rgba(34,197,94,0.2)' : status.includes('❌') ? 'rgba(239,68,68,0.2)' : 'rgba(59,130,246,0.2)',
-              border: `1px solid ${status.includes('✅') ? '#22c55e' : status.includes('❌') ? '#ef4444' : '#3b82f6'}`,
-              color: status.includes('✅') ? '#22c55e' : status.includes('❌') ? '#ef4444' : '#3b82f6',
-              fontSize: '13px'
-            }}>
-              {status}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '14px',
-              background: '#cba658',
-              border: 'none',
-              color: '#0f172a',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            Create Admin Account
-          </button>
-        </form>
-
-        <p style={{ color: '#ef4444', fontSize: '11px', textAlign: 'center', marginTop: '24px' }}>
-          ⚠️ Only run this ONCE! Delete this page after creating your admin account.
-        </p>
-      </div>
-    </div>
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
   );
 }
