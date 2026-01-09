@@ -1,61 +1,127 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
-// Pages
-import Login from './pages/Login';
-import AgentRegistration from './pages/AgentRegistration';
 import MexicoRealEstate from './pages/MexicoRealEstate';
 import Developments from './pages/Developments';
 import USAMortgage from './pages/USAMortgage';
 import URLA1003 from './pages/URLA1003';
+import Login from './pages/Login';
+import AgentRegistration from './pages/AgentRegistration';
 import AdminDashboard from './pages/AdminDashboard';
 
 // =============================================
-// LANDING PAGE WITH NAV TO ALL SECTIONS
+// LANDING PAGE - 4 PICTURE CARDS + OCEAN BG
 // =============================================
 function LandingPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const cards = [
+    {
+      id: 'realestate',
+      title: 'Mexico Real Estate',
+      subtitle: 'Baja California Premium Properties',
+      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
+      route: '/mexico-real-estate'
+    },
+    {
+      id: 'lifestyle',
+      title: 'Lifestyle Guide',
+      subtitle: 'Wine Country & Luxury Living',
+      image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80',
+      route: '/developments'
+    },
+    {
+      id: 'developments',
+      title: 'Developments',
+      subtitle: 'New Construction Projects',
+      image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&q=80',
+      route: '/developments'
+    },
+    {
+      id: 'mortgage',
+      title: 'US & Mexico Loans',
+      subtitle: 'Mortgage & Financing Solutions',
+      image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&q=80',
+      route: '/usa-mortgage'
+    }
+  ];
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
-      background: '#0f172a',
-      position: 'relative'
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
-      {/* TOP NAV BAR */}
+      
+      {/* OCEAN BACKGROUND */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+        zIndex: 0
+      }} />
+
+      {/* DARK OVERLAY */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.7) 100%)',
+        zIndex: 1
+      }} />
+
+      {/* TOP NAV */}
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
         right: 0,
-        padding: '16px 24px',
-        background: 'rgba(15, 23, 42, 0.95)',
-        borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+        zIndex: 100,
+        padding: isMobile ? '12px 16px' : '16px 32px',
+        background: 'rgba(15, 23, 42, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(203, 213, 225, 0.1)',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        zIndex: 100,
-        backdropFilter: 'blur(10px)'
+        alignItems: 'center'
       }}>
-        <div style={{ fontSize: '14px', color: '#f1f5f9', letterSpacing: '2px', fontWeight: '300' }}>
-          AUDITDNA REAL ESTATE
+        <div style={{ 
+          fontSize: isMobile ? '14px' : '16px', 
+          fontWeight: '300', 
+          color: '#f1f5f9', 
+          letterSpacing: '2px' 
+        }}>
+          ENJOY BAJA
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {isAuthenticated ? (
             <>
-              <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                {user?.email} {isAdmin && '(Admin)'}
-              </span>
               {isAdmin && (
                 <button
                   onClick={() => navigate('/admin')}
                   style={{
                     padding: '6px 14px',
-                    background: 'rgba(148, 163, 184, 0.2)',
-                    border: '1px solid rgba(148, 163, 184, 0.3)',
-                    color: '#e2e8f0',
+                    background: 'rgba(203, 166, 88, 0.2)',
+                    border: '1px solid rgba(203, 166, 88, 0.4)',
+                    color: '#cba658',
                     fontSize: '10px',
                     cursor: 'pointer',
                     letterSpacing: '1px'
@@ -96,146 +162,132 @@ function LandingPage() {
             </button>
           )}
         </div>
-      </div>
+      </nav>
 
       {/* MAIN CONTENT */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '100px 24px 80px' }}>
+      <div style={{ 
+        position: 'relative', 
+        zIndex: 2, 
+        maxWidth: '1400px', 
+        margin: '0 auto', 
+        padding: isMobile ? '100px 16px 60px' : '120px 32px 80px' 
+      }}>
+        
         {/* HEADER */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '40px' : '60px' }}>
           <h1 style={{ 
-            fontSize: '42px', 
+            fontSize: isMobile ? '32px' : '48px', 
             fontWeight: '300', 
             color: '#f1f5f9', 
             marginBottom: '12px',
-            letterSpacing: '4px'
+            letterSpacing: '4px',
+            textShadow: '0 2px 20px rgba(0,0,0,0.5)'
           }}>
             MEXICO REAL ESTATE
           </h1>
-          <p style={{ fontSize: '14px', color: '#94a3b8', letterSpacing: '2px' }}>
+          <p style={{ 
+            fontSize: isMobile ? '12px' : '14px', 
+            color: '#cba658', 
+            letterSpacing: '3px',
+            marginBottom: '8px'
+          }}>
             PREMIUM PROPERTIES & CROSS-BORDER FINANCING
           </p>
-          <p style={{ fontSize: '12px', color: '#64748b', marginTop: '8px' }}>
+          <p style={{ 
+            fontSize: '11px', 
+            color: '#94a3b8', 
+            letterSpacing: '1px' 
+          }}>
             Saul Garcia | NMLS #337526 | Everwise Home Loans & Realty
           </p>
         </div>
 
-        {/* 3 MAIN CARDS */}
+        {/* 4 PICTURE CARDS */}
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-          gap: '20px',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', 
+          gap: isMobile ? '16px' : '24px',
           marginBottom: '40px'
         }}>
-          {/* MEXICO REAL ESTATE */}
-          <div 
-            onClick={() => navigate('/mexico-real-estate')}
-            style={{ 
-              background: 'rgba(30, 41, 59, 0.6)', 
-              border: '1px solid rgba(148, 163, 184, 0.2)', 
-              padding: '40px 28px', 
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.5)'}
-            onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.2)'}
-          >
-            <div style={{ 
-              fontSize: '11px', 
-              color: '#64748b', 
-              letterSpacing: '2px', 
-              marginBottom: '12px' 
-            }}>
-              BIENES RAÍCES
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              onClick={() => navigate(card.route)}
+              onMouseEnter={() => setHoveredCard(card.id)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{
+                position: 'relative',
+                height: isMobile ? '200px' : '280px',
+                borderRadius: '0',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                border: hoveredCard === card.id ? '2px solid #cba658' : '2px solid rgba(203, 213, 225, 0.2)',
+                transition: 'all 0.3s ease',
+                transform: hoveredCard === card.id ? 'translateY(-4px)' : 'translateY(0)'
+              }}
+            >
+              {/* Card Image */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundImage: `url("${card.image}")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                transition: 'transform 0.5s ease',
+                transform: hoveredCard === card.id ? 'scale(1.1)' : 'scale(1)'
+              }} />
+              
+              {/* Card Overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.3) 100%)'
+              }} />
+              
+              {/* Card Content */}
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: isMobile ? '20px' : '28px'
+              }}>
+                <h3 style={{
+                  fontSize: isMobile ? '18px' : '22px',
+                  fontWeight: '500',
+                  color: '#f1f5f9',
+                  marginBottom: '6px',
+                  letterSpacing: '1px'
+                }}>
+                  {card.title}
+                </h3>
+                <p style={{
+                  fontSize: isMobile ? '11px' : '13px',
+                  color: '#cbd5e1',
+                  letterSpacing: '0.5px'
+                }}>
+                  {card.subtitle}
+                </p>
+              </div>
             </div>
-            <h2 style={{ fontSize: '20px', fontWeight: '500', color: '#f1f5f9', marginBottom: '10px' }}>
-              Mexico Real Estate
-            </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Baja California, Valle de Guadalupe, Ensenada, La Paz, Cabo
-            </p>
-          </div>
-
-          {/* DEVELOPMENTS */}
-          <div 
-            onClick={() => navigate('/developments')}
-            style={{ 
-              background: 'rgba(30, 41, 59, 0.6)', 
-              border: '1px solid rgba(148, 163, 184, 0.2)', 
-              padding: '40px 28px', 
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.5)'}
-            onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.2)'}
-          >
-            <div style={{ 
-              fontSize: '11px', 
-              color: '#64748b', 
-              letterSpacing: '2px', 
-              marginBottom: '12px' 
-            }}>
-              NEW CONSTRUCTION
-            </div>
-            <h2 style={{ fontSize: '20px', fontWeight: '500', color: '#f1f5f9', marginBottom: '10px' }}>
-              Developments
-            </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Pre-construction projects, master-planned communities
-            </p>
-          </div>
-
-          {/* USA MORTGAGE */}
-          <div 
-            onClick={() => navigate('/usa-mortgage')}
-            style={{ 
-              background: 'rgba(30, 41, 59, 0.6)', 
-              border: '1px solid rgba(148, 163, 184, 0.2)', 
-              padding: '40px 28px', 
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.5)'}
-            onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.2)'}
-          >
-            <div style={{ 
-              fontSize: '11px', 
-              color: '#64748b', 
-              letterSpacing: '2px', 
-              marginBottom: '12px' 
-            }}>
-              FINANCING
-            </div>
-            <h2 style={{ fontSize: '20px', fontWeight: '500', color: '#f1f5f9', marginBottom: '10px' }}>
-              USA Mortgage Loans
-            </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>
-              Purchase, refinance, cross-border financing
-            </p>
-          </div>
+          ))}
         </div>
 
-        {/* QUICK LINKS */}
+        {/* FOOTER */}
         <div style={{ 
-          display: 'flex', 
-          gap: '12px', 
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          marginTop: '20px'
+          textAlign: 'center', 
+          paddingTop: '40px', 
+          borderTop: '1px solid rgba(203, 213, 225, 0.1)' 
         }}>
-          <button
-            onClick={() => navigate('/1003-urla')}
-            style={{
-              padding: '10px 20px',
-              background: 'transparent',
-              border: '1px solid rgba(148, 163, 184, 0.3)',
-              color: '#94a3b8',
-              fontSize: '10px',
-              cursor: 'pointer',
-              letterSpacing: '1px'
-            }}
-          >
-            1003 URLA FORM
-          </button>
+          <p style={{ fontSize: '12px', color: '#64748b', letterSpacing: '1px' }}>
+            Valle de Guadalupe • Ensenada • La Paz • San José del Cabo • Rosarito • Tijuana • Loreto • Todos Santos
+          </p>
         </div>
       </div>
     </div>
@@ -243,7 +295,7 @@ function LandingPage() {
 }
 
 // =============================================
-// ADMIN ROUTE - ONLY ADMIN CAN ACCESS
+// ADMIN ROUTE - ONLY ADMIN
 // =============================================
 function AdminRoute({ children }) {
   const { isAuthenticated, isAdmin, loading } = useAuth();
@@ -261,7 +313,7 @@ function AdminRoute({ children }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* ====== PUBLIC ROUTES - NO LOGIN NEEDED ====== */}
+      {/* PUBLIC - NO LOGIN */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/agent-register" element={<AgentRegistration />} />
@@ -270,17 +322,17 @@ function AppRoutes() {
       <Route path="/usa-mortgage" element={<USAMortgage />} />
       <Route path="/1003-urla" element={<URLA1003 />} />
       
-      {/* ====== ADMIN ONLY ====== */}
+      {/* ADMIN ONLY */}
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       
-      {/* ====== CATCH ALL ====== */}
+      {/* CATCH ALL */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
 
 // =============================================
-// MAIN APP EXPORT
+// MAIN APP
 // =============================================
 export default function App() {
   return (
