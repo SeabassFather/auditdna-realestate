@@ -1,235 +1,504 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-=======
-ï»¿import React, { useState } from "react";
->>>>>>> 993d94e13b445157adc68096d1c13f8cf30f3a75
-import PropertySearch from "../components/PropertySearch.jsx";
-import OwnerBuyerForm from "../components/OwnerBuyerForm.jsx";
-import PropertyUploadForm from "../components/PropertyUploadForm.jsx";
-import MexicoRefiCard from "../components/MexicoRefiCard.jsx";
-import ReferralPartnerCard from "../components/ReferralPartnerCard.jsx";
-import AgentRegistrationCard from "../components/AgentRegistrationCard.jsx";
-import AppraisalServicesCard from "../components/AppraisalServicesCard.jsx";
-import LegalQuestionnaireCard from "../components/LegalQuestionnaireCard.jsx";
-// Removed import for OwnerContactCard
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PropertySearch from '../components/PropertySearch';
 
-function Accordion({ children, defaultOpen = -1 }) {
-  const [openIndex, setOpenIndex] = useState(defaultOpen);
-  return React.Children.map(children, (child, i) =>
-    React.cloneElement(child, {
-      open: openIndex === i,
-      onHeaderClick: () => setOpenIndex(openIndex === i ? -1 : i),
-    })
-  );
-}
+export default function MexicoRealEstate() {
+  const navigate = useNavigate();
+  const [language, setLanguage] = useState('english');
+  const [expandedSection, setExpandedSection] = useState(null);
 
-function AccordionItem({ title, open, onHeaderClick, children, color }) {
-  return (
-    <div className="border rounded-xl shadow-xl mb-6 overflow-hidden bg-white">
-      <button
-        type="button"
-        onClick={onHeaderClick}
-        className={`w-full flex items-center justify-between px-6 py-4 font-bold text-lg transition-colors ${
-          open ? `${color} text-gray-900` : "bg-gray-50 text-gray-800"
-        }`}
-        style={{ cursor: "pointer" }}
-      >
-        <span>{title}</span>
-        <span
-          className={`transition-transform ${open ? "rotate-90" : ""}`}
-          style={{ fontSize: 24, lineHeight: 1 }}
-        >
-<<<<<<< HEAD
-          {"
-          {"
-=======
-          {"
-          {"
->>>>>>> 993d94e13b445157adc68096d1c13f8cf30f3a75
-        </span>
-      </button>
-      <div className={`transition-all duration-300 ${open ? "block" : "hidden"}`}>
-        <div className="p-6">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-export default function MexicoRealEstateAccordion() {
-  const [language, setLanguage] = useState("english");
-
-  const colors = {
-    yellow: "bg-gradient-to-r from-yellow-50 to-green-100",
-    green: "bg-gradient-to-r from-green-100 to-yellow-50",
-    purple: "bg-gradient-to-r from-purple-400 to-pink-300",
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section);
   };
 
-  const labels = {
-    english: {
-      header: "Mexico Real Estate",
-<<<<<<< HEAD
-      sub: "Bienes Ra en M  Full Service Platform",
-      sub: "Bienes Ra en M  Full Service Platform",
-=======
-      sub: "Bienes Ra en M  Full Service Platform",
-      sub: "Bienes Ra  en M   Full Service Platform",
->>>>>>> 993d94e13b445157adc68096d1c13f8cf30f3a75
-      search: "Search for Properties",
-      // contactOwner: "Contact Property Owner", // Removed
-      buyerForm: "Buyer Inquiry / Express Interest",
-      upload: "List Your Property",
-      refi: "Mexico Home Refinance / Buy in Mexico (US Citizens Only)",
-      partner: "Referral Partner Registration",
-      agent: "Agent Registration",
-      appraisal: "Appraisal Services",
-      legal: "Legal/Fideicomiso Questionnaire",
-      contact: "Contact Info",
-<<<<<<< HEAD
-      toggle: "Espa
+  // NEW TEAM - 3 Members
+  const teamMembers = [
+    {
+      name: "Saul Garcia",
+      title: "CEO & Lead Mortgage Specialist",
+      subtitle: "NMLS #337526",
+      specialties: ["Cross-Border Financing", "USDA 502 Rural", "Fideicomiso Expert"],
+      description: "31+ years in finance and lending. Bilingual Spanish-English. Specialized in USA-Mexico cross-border real estate transactions.",
+      photo: "/images/team/SG.png"
     },
-    spanish: {
-      header: "Bienes Ra M
-      sub: "Mexico Real Estate  Plataforma de Servicio Completo",
-      search: "Buscar Propiedades",
-      // contactOwner: "Contactar al Propietario", // Removed
-      buyerForm: "Solicitud de Informaci / Inter de Compra",
-      upload: "Publicar Propiedad",
-      refi: "Refinanciamiento / Compra en M (Solo Ciudadanos USA)",
-      partner: "Registro de Socio de Referencia",
-      agent: "Registro de Agente",
-      appraisal: "Servicios de Aval
-      legal: "Cuestionario Legal/Fideicomiso",
-      contact: "Informaci de Contacto",
-      toggle: "Espa
+    {
+      name: "Osvaldo Gutierrez",
+      title: "Marketing & Business Development (VP)",
+      subtitle: "",
+      specialties: ["Strategic Growth", "Brand Development", "Market Expansion"],
+      description: "Driving business growth and brand presence across USA-Mexico markets. Expert in cross-border marketing strategies.",
+      photo: "/images/team/Ozzy.png"
     },
-    spanish: {
-      header: "Bienes Ra M
-      sub: "Mexico Real Estate  Plataforma de Servicio Completo",
-      search: "Buscar Propiedades",
-      // contactOwner: "Contactar al Propietario", // Removed
-      buyerForm: "Solicitud de Informaci / Inter de Compra",
-      upload: "Publicar Propiedad",
-      refi: "Refinanciamiento / Compra en M (Solo Ciudadanos USA)",
-      partner: "Registro de Socio de Referencia",
-      agent: "Registro de Agente",
-      appraisal: "Servicios de Aval
-      legal: "Cuestionario Legal/Fideicomiso",
-      contact: "Informaci de Contacto",
-=======
-      toggle: "Espa
-    },
-    spanish: {
-      header: "Bienes Ra M
-      sub: "Mexico Real Estate  Plataforma de Servicio Completo",
-      search: "Buscar Propiedades",
-      // contactOwner: "Contactar al Propietario", // Removed
-      buyerForm: "Solicitud de Informaci / Inter de Compra",
-      upload: "Publicar Propiedad",
-      refi: "Refinanciamiento / Compra en M (Solo Ciudadanos USA)",
-      partner: "Registro de Socio de Referencia",
-      agent: "Registro de Agente",
-      appraisal: "Servicios de Aval
-      legal: "Cuestionario Legal/Fideicomiso",
-      contact: "Informaci de Contacto",
-      toggle: "Espa 
-    },
-    spanish: {
-      header: "Bienes Ra  M 
-      sub: "Mexico Real Estate  Plataforma de Servicio Completo",
-      search: "Buscar Propiedades",
-      // contactOwner: "Contactar al Propietario", // Removed
-      buyerForm: "Solicitud de Informaci  / Inter  de Compra",
-      upload: "Publicar Propiedad",
-      refi: "Refinanciamiento / Compra en M  (Solo Ciudadanos USA)",
-      partner: "Registro de Socio de Referencia",
-      agent: "Registro de Agente",
-      appraisal: "Servicios de Aval 
-      legal: "Cuestionario Legal/Fideicomiso",
-      contact: "Informaci  de Contacto",
->>>>>>> 993d94e13b445157adc68096d1c13f8cf30f3a75
-      toggle: "English",
-    },
-  };
+    {
+      name: "Saul Castro",
+      title: "Public Relations Specialist",
+      subtitle: "",
+      specialties: ["Media Relations", "Communications", "Public Outreach"],
+      description: "Managing company communications and media relations. Building strong relationships with partners and clients.",
+      photo: "/images/team/Saul-Tocayo.png"
+    }
+  ];
 
-  const t = labels[language];
+  const sections = [
+    { id: 'search', title: 'Search for Properties', icon: '🔍' },
+    { id: 'buyer', title: 'Buyer Inquiry / Express Interest', icon: '📝' },
+    { id: 'upload', title: 'List Your Property', icon: '📤' },
+    { id: 'refi', title: 'Mexico Home Refinance / Buy in Mexico', icon: '🏦' },
+    { id: 'partner', title: 'Referral Partner Registration', icon: '🤝' },
+    { id: 'agent', title: 'Agent Registration', icon: '💼' },
+    { id: 'appraisal', title: 'Appraisal Services', icon: '📋' },
+    { id: 'legal', title: 'Legal/Fideicomiso Questionnaire', icon: '⚖️' },
+    { id: 'team', title: 'Meet the Team', icon: '👥' },
+  ];
 
   return (
-    <div className="space-y-6">
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-yellow-100 via-green-100 to-white rounded-lg shadow-2xl p-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <svg
-              className="w-12 h-12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="6" width="18" height="13" rx="2" />
-              <path d="M16 3v4M8 3v4" />
-            </svg>
-            <div>
-              <h1 className="text-4xl font-bold text-green-800">{t.header}</h1>
-              <p className="text-xl text-yellow-700">{t.sub}</p>
-            </div>
-          </div>
+      <div style={{ padding: '40px 20px 20px', textAlign: 'center' }}>
+        <h1 style={{ 
+          fontSize: '42px', 
+          fontWeight: '800', 
+          color: '#fff',
+          marginBottom: '8px'
+        }}>
+          🏠 Mexico Real Estate
+        </h1>
+        <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '24px' }}>
+          Bienes Raíces en México • Full Service Platform
+        </p>
+        
+        {/* Language Toggle */}
+        <button
+          onClick={() => setLanguage(language === 'english' ? 'spanish' : 'english')}
+          style={{
+            padding: '10px 24px',
+            background: 'rgba(203, 166, 88, 0.2)',
+            border: '1px solid #cba658',
+            borderRadius: '8px',
+            color: '#cba658',
+            fontWeight: '600',
+            cursor: 'pointer',
+            marginBottom: '32px'
+          }}
+        >
+          🌐 {language === 'english' ? 'Español' : 'English'}
+        </button>
+
+        {/* Navigation Buttons */}
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '40px' }}>
           <button
-            onClick={() => setLanguage(language === "english" ? "spanish" : "english")}
-            className="ml-4 px-4 py-2 rounded-lg border bg-white border-yellow-300 text-yellow-700 font-bold shadow"
-            aria-label="Toggle language"
+            onClick={() => navigate('/usa-mortgage')}
+            style={{
+              padding: '14px 28px',
+              background: 'linear-gradient(135deg, #cba658, #b8944d)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#0f172a',
+              fontWeight: '700',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
           >
-            {t.toggle}
+            🇺🇸 USA Mortgage Loans
+          </button>
+          <button
+            onClick={() => navigate('/developments')}
+            style={{
+              padding: '14px 28px',
+              background: 'rgba(203, 166, 88, 0.2)',
+              border: '1px solid #cba658',
+              borderRadius: '8px',
+              color: '#cba658',
+              fontWeight: '700',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            🏗️ Developments
+          </button>
+          <button
+            onClick={() => navigate('/login')}
+            style={{
+              padding: '14px 28px',
+              background: 'rgba(100, 116, 139, 0.3)',
+              border: '1px solid #64748b',
+              borderRadius: '8px',
+              color: '#cbd5e1',
+              fontWeight: '700',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            🔐 Agent Login
           </button>
         </div>
       </div>
 
       {/* Accordion Sections */}
-      <Accordion defaultOpen={-1}>
-        <AccordionItem title={t.search} color={colors.yellow}>
-          <PropertySearch language={language} />
-        </AccordionItem>
-        {/* REMOVED Contact Property Owner Section */}
-        <AccordionItem title={t.buyerForm} color={colors.yellow}>
-          <OwnerBuyerForm language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.upload} color={colors.green}>
-          <PropertyUploadForm language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.refi} color={colors.yellow}>
-          <MexicoRefiCard language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.partner} color={colors.green}>
-          <ReferralPartnerCard language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.agent} color={colors.yellow}>
-          <AgentRegistrationCard language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.appraisal} color={colors.green}>
-          <AppraisalServicesCard language={language} />
-        </AccordionItem>
-        <AccordionItem title={t.legal} color={colors.yellow}>
-          <LegalQuestionnaireCard language={language} />
-        </AccordionItem>
-      </Accordion>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 40px' }}>
+        {sections.map((section) => (
+          <div 
+            key={section.id}
+            style={{
+              background: 'rgba(30, 41, 59, 0.8)',
+              border: '1px solid rgba(203, 166, 88, 0.2)',
+              borderRadius: '12px',
+              marginBottom: '12px',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Accordion Header */}
+            <button
+              onClick={() => toggleSection(section.id)}
+              style={{
+                width: '100%',
+                padding: '20px 24px',
+                background: expandedSection === section.id ? 'rgba(203, 166, 88, 0.1)' : 'transparent',
+                border: 'none',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                cursor: 'pointer',
+                color: '#cbd5e1'
+              }}
+            >
+              <span style={{ fontSize: '16px', fontWeight: '600' }}>
+                {section.icon} {section.title}
+              </span>
+              <span style={{ 
+                fontSize: '20px',
+                transform: expandedSection === section.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s',
+                color: '#cba658'
+              }}>
+                ▼
+              </span>
+            </button>
+
+            {/* Accordion Content */}
+            {expandedSection === section.id && (
+              <div style={{ padding: '24px', borderTop: '1px solid rgba(203, 166, 88, 0.2)' }}>
+                
+                {/* Search Section */}
+                {section.id === 'search' && (
+                  <PropertySearch language={language} />
+                )}
+
+                {/* Buyer Inquiry */}
+                {section.id === 'buyer' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', marginBottom: '20px' }}>
+                      {language === 'english' 
+                        ? 'Express your interest in Mexico properties. Our team will contact you within 24 hours.'
+                        : 'Exprese su interés en propiedades en México. Nuestro equipo le contactará en 24 horas.'}
+                    </p>
+                    <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                      <input placeholder={language === 'english' ? 'Full Name' : 'Nombre Completo'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder="Email" type="email" style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Phone' : 'Teléfono'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <select style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }}>
+                        <option>{language === 'english' ? 'Budget Range' : 'Rango de Presupuesto'}</option>
+                        <option>$100K - $250K</option>
+                        <option>$250K - $500K</option>
+                        <option>$500K - $1M</option>
+                        <option>$1M+</option>
+                      </select>
+                      <textarea placeholder={language === 'english' ? 'Tell us about your ideal property...' : 'Cuéntenos sobre su propiedad ideal...'} rows={4} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px', resize: 'vertical' }} />
+                      <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                        {language === 'english' ? 'Submit Inquiry' : 'Enviar Solicitud'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* List Your Property */}
+                {section.id === 'upload' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', marginBottom: '20px' }}>
+                      {language === 'english'
+                        ? 'List your Mexico property with us. Reach qualified USA buyers.'
+                        : 'Liste su propiedad en México con nosotros. Llegue a compradores calificados de USA.'}
+                    </p>
+                    <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                      <input placeholder={language === 'english' ? 'Property Address' : 'Dirección de la Propiedad'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Asking Price (USD)' : 'Precio (USD)'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <select style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }}>
+                        <option>{language === 'english' ? 'Property Type' : 'Tipo de Propiedad'}</option>
+                        <option>House / Casa</option>
+                        <option>Condo / Condominio</option>
+                        <option>Land / Terreno</option>
+                        <option>Commercial / Comercial</option>
+                      </select>
+                      <input placeholder={language === 'english' ? 'Your Name' : 'Su Nombre'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Your Email' : 'Su Email'} type="email" style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Your Phone' : 'Su Teléfono'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                        {language === 'english' ? 'Submit Listing' : 'Enviar Listado'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mexico Refinance */}
+                {section.id === 'refi' && (
+                  <div>
+                    <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
+                      <h4 style={{ color: '#cba658', marginBottom: '12px', fontSize: '18px' }}>🇺🇸 US Citizens Only - Mexico Property Financing</h4>
+                      <ul style={{ color: '#94a3b8', lineHeight: '1.8', paddingLeft: '20px' }}>
+                        <li>Minimum Property Value: <strong style={{ color: '#cba658' }}>$385,000 USD</strong></li>
+                        <li>Down Payment: <strong style={{ color: '#cba658' }}>35-45%</strong></li>
+                        <li>Loan Terms: 15-30 years</li>
+                        <li>Competitive rates for qualified buyers</li>
+                        <li>Fideicomiso (Bank Trust) structure</li>
+                      </ul>
+                    </div>
+                    <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                      {language === 'english' ? 'Get Pre-Qualified' : 'Pre-Calificar'}
+                    </button>
+                  </div>
+                )}
+
+                {/* Referral Partner */}
+                {section.id === 'partner' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', marginBottom: '20px' }}>
+                      {language === 'english'
+                        ? 'Join our referral network. Earn commissions on successful transactions.'
+                        : 'Únase a nuestra red de referidos. Gane comisiones en transacciones exitosas.'}
+                    </p>
+                    <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                      <input placeholder={language === 'english' ? 'Full Name' : 'Nombre Completo'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder="Email" type="email" style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Phone' : 'Teléfono'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Company (Optional)' : 'Empresa (Opcional)'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                        {language === 'english' ? 'Register as Partner' : 'Registrarse como Socio'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Agent Registration */}
+                {section.id === 'agent' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', marginBottom: '20px' }}>
+                      {language === 'english'
+                        ? 'Licensed agents - join our network to list properties and earn commissions.'
+                        : 'Agentes con licencia - únase a nuestra red para listar propiedades y ganar comisiones.'}
+                    </p>
+                    <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                      <input placeholder={language === 'english' ? 'Full Name' : 'Nombre Completo'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder="Email" type="email" style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Phone' : 'Teléfono'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'License Number' : 'Número de Licencia'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Brokerage' : 'Corredora'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                        {language === 'english' ? 'Register as Agent' : 'Registrarse como Agente'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Appraisal Services */}
+                {section.id === 'appraisal' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', marginBottom: '20px' }}>
+                      {language === 'english'
+                        ? 'Professional property appraisal services for Mexico real estate.'
+                        : 'Servicios profesionales de avalúo para bienes raíces en México.'}
+                    </p>
+                    <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                      <input placeholder={language === 'english' ? 'Property Address' : 'Dirección de la Propiedad'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Your Name' : 'Su Nombre'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder="Email" type="email" style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <input placeholder={language === 'english' ? 'Phone' : 'Teléfono'} style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#cbd5e1', fontSize: '14px' }} />
+                      <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                        {language === 'english' ? 'Request Appraisal' : 'Solicitar Avalúo'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Legal / Fideicomiso */}
+                {section.id === 'legal' && (
+                  <div>
+                    <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
+                      <h4 style={{ color: '#cba658', marginBottom: '12px', fontSize: '18px' }}>⚖️ Fideicomiso (Bank Trust) Information</h4>
+                      <p style={{ color: '#94a3b8', lineHeight: '1.8' }}>
+                        {language === 'english'
+                          ? 'Foreign nationals can own property in Mexico\'s restricted zone (within 50km of coast or 100km of border) through a Fideicomiso - a bank trust that grants full ownership rights for 50 years, renewable indefinitely.'
+                          : 'Los extranjeros pueden ser propietarios en la zona restringida de México (dentro de 50km de la costa o 100km de la frontera) a través de un Fideicomiso - un fideicomiso bancario que otorga derechos de propiedad completos por 50 años, renovable indefinidamente.'}
+                      </p>
+                    </div>
+                    <button style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #cba658, #b8944d)', border: 'none', borderRadius: '8px', color: '#0f172a', fontWeight: '700', cursor: 'pointer' }}>
+                      {language === 'english' ? 'Start Legal Questionnaire' : 'Iniciar Cuestionario Legal'}
+                    </button>
+                  </div>
+                )}
+
+                {/* TEAM SECTION */}
+                {section.id === 'team' && (
+                  <div>
+                    <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '32px', fontSize: '16px' }}>
+                      {language === 'english'
+                        ? 'Our expert team specializes in USA-Mexico cross-border real estate transactions'
+                        : 'Nuestro equipo experto se especializa en transacciones inmobiliarias transfronterizas USA-México'}
+                    </p>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                      {teamMembers.map((member, index) => (
+                        <div 
+                          key={index}
+                          style={{
+                            background: 'rgba(15, 23, 42, 0.8)',
+                            border: '1px solid rgba(203, 166, 88, 0.3)',
+                            borderRadius: '16px',
+                            padding: '32px 24px',
+                            textAlign: 'center'
+                          }}
+                        >
+                          {/* Photo */}
+                          <div style={{
+                            width: '120px',
+                            height: '120px',
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            margin: '0 auto 20px',
+                            border: '4px solid #cba658',
+                            boxShadow: '0 8px 24px rgba(203, 166, 88, 0.3)'
+                          }}>
+                            <img 
+                              src={member.photo} 
+                              alt={member.name}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                objectPosition: 'top center'
+                              }}
+                            />
+                          </div>
+
+                          {/* Name */}
+                          <h4 style={{ color: '#fff', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
+                            {member.name}
+                          </h4>
+
+                          {/* Title */}
+                          <p style={{ color: '#cba658', fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
+                            {member.title}
+                          </p>
+
+                          {/* Subtitle (NMLS etc) */}
+                          {member.subtitle && (
+                            <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '16px' }}>
+                              {member.subtitle}
+                            </p>
+                          )}
+
+                          {/* Specialties */}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '16px', marginTop: member.subtitle ? '0' : '16px' }}>
+                            {member.specialties.map((spec, i) => (
+                              <span 
+                                key={i}
+                                style={{
+                                  padding: '4px 12px',
+                                  background: 'rgba(203, 166, 88, 0.2)',
+                                  border: '1px solid rgba(203, 166, 88, 0.3)',
+                                  borderRadius: '20px',
+                                  color: '#cba658',
+                                  fontSize: '11px',
+                                  fontWeight: '500'
+                                }}
+                              >
+                                {spec}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Description */}
+                          <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: '1.6', marginBottom: '20px' }}>
+                            {member.description}
+                          </p>
+
+                          {/* Contact Button */}
+                          <a
+                            href="https://wa.me/526463402686"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'inline-block',
+                              padding: '12px 28px',
+                              background: 'linear-gradient(135deg, #cba658, #b8944d)',
+                              borderRadius: '8px',
+                              color: '#0f172a',
+                              fontSize: '13px',
+                              fontWeight: '700',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            Contact {member.name.split(' ')[0]}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
       {/* Footer */}
-      <div className="bg-gradient-to-br from-yellow-50 to-green-100 rounded-lg shadow-lg p-8 border-2 border-green-200">
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-green-900">{t.contact}</h3>
-          <p className="text-lg font-semibold text-green-800">Saul Garcia</p>
-          <p className="text-lg font-bold text-green-700">NMLS #337526</p>
-          <p className="text-md text-yellow-700">Everwise Home Loans & Realty</p>
-          <p className="text-sm text-gray-600">Company NMLS #1739012 | DRE #02067255</p>
-          <p className="text-sm text-gray-600">15615 Alton Pkwy, Suite 450, Irvine, CA 92618</p>
-          <p className="text-sm text-gray-600">Phone: 1-844-853-9300</p>
+      <div style={{
+        background: 'rgba(15, 23, 42, 0.9)',
+        borderTop: '1px solid rgba(203, 166, 88, 0.2)',
+        padding: '40px 20px',
+        textAlign: 'center'
+      }}>
+        <h3 style={{ color: '#cba658', fontSize: '20px', marginBottom: '16px' }}>Contact Info</h3>
+        <p style={{ color: '#fff', fontSize: '18px', fontWeight: '600' }}>Saul Garcia</p>
+        <p style={{ color: '#cba658', fontSize: '16px', fontWeight: '700' }}>NMLS #337526</p>
+        <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>Everwise Home Loans & Realty</p>
+        <p style={{ color: '#64748b', fontSize: '13px' }}>Company NMLS #1739012 | DRE #02067255</p>
+        <p style={{ color: '#64748b', fontSize: '13px' }}>15615 Alton Pkwy, Suite 450, Irvine, CA 92618</p>
+        <p style={{ color: '#64748b', fontSize: '13px' }}>Phone: 1-844-853-9300</p>
+        
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '24px' }}>
+          <a 
+            href="https://wa.me/526463402686"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: '12px 32px',
+              background: '#25D366',
+              borderRadius: '8px',
+              color: '#fff',
+              fontWeight: '700',
+              textDecoration: 'none',
+              fontSize: '14px'
+            }}
+          >
+            📱 WhatsApp
+          </a>
+          <a 
+            href="mailto:info@enjoybaja.com"
+            style={{
+              padding: '12px 32px',
+              background: 'linear-gradient(135deg, #cba658, #b8944d)',
+              borderRadius: '8px',
+              color: '#0f172a',
+              fontWeight: '700',
+              textDecoration: 'none',
+              fontSize: '14px'
+            }}
+          >
+            ✉️ Email
+          </a>
         </div>
       </div>
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 993d94e13b445157adc68096d1c13f8cf30f3a75
-

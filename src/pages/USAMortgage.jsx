@@ -57,19 +57,25 @@ function FAQSection() {
   ];
 
   return (
-    <div style={{ display: 'grid', gap: '16px' }}>
+    <div style={{ display: 'grid', gap: '8px' }}>
       {faqs.map((faq, idx) => {
         const isOpen = openIndex === idx;
         return (
-          <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', overflow: 'hidden' }}>
+          <div key={idx} style={{ 
+            background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.2) 100%)', 
+            borderLeft: isOpen ? '2px solid rgba(203, 166, 88, 0.4)' : '2px solid transparent',
+            borderBottom: '1px solid rgba(226, 232, 240, 0.05)',
+            overflow: 'hidden',
+            backdropFilter: 'blur(20px)'
+          }}>
             <button
               onClick={() => setOpenIndex(isOpen ? null : idx)}
               style={{
                 width: '100%',
-                padding: '20px 24px',
+                padding: '16px 24px',
                 background: 'none',
                 border: 'none',
-                color: '#e2e8f0',
+                color: '#cbd5e1',
                 cursor: 'pointer',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -77,11 +83,27 @@ function FAQSection() {
                 textAlign: 'left'
               }}
             >
-              <span style={{ fontSize: '14px', fontWeight: '500' }}>{faq.q}</span>
-              <span style={{ fontSize: '20px', color: '#94a3b8' }}>{isOpen ? '−' : '+'}</span>
+              <span style={{ 
+                fontSize: '12px', 
+                fontWeight: '300',
+                letterSpacing: '0.5px',
+                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
+              }}>{faq.q}</span>
+              <span style={{ 
+                fontSize: '14px', 
+                color: '#64748b',
+                transition: 'transform 0.3s',
+                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+              }}>⌄</span>
             </button>
             {isOpen && (
-              <div style={{ padding: '0 24px 20px 24px', fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
+              <div style={{ 
+                padding: '0 24px 20px 24px', 
+                fontSize: '12px', 
+                color: '#94a3b8', 
+                lineHeight: '1.7',
+                fontWeight: '300'
+              }}>
                 {faq.a}
               </div>
             )}
@@ -153,26 +175,59 @@ export default function USAMortgage() {
   const [uploadedDocs, setUploadedDocs] = useState([]);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [matchedLenders, setMatchedLenders] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Drag and drop handlers
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    setUploadedDocs([...uploadedDocs, ...files.map(f => ({
+      name: f.name,
+      size: (f.size / 1024 / 1024).toFixed(2) + ' MB',
+      type: f.type,
+      uploaded: new Date().toLocaleString()
+    }))]);
+  };
 
   const sections = [
-    { id: 'full-application', title: 'Full Application', subtitle: 'Complete 1003 URLA Form', icon: '📝' },
-    { id: 'overview', title: 'Overview', subtitle: 'Loan Programs & Services', icon: '📋' },
-    { id: 'usa-purchase', title: 'USA Purchase Search', subtitle: 'Find & Finance US Properties', icon: '🏠' },
-    { id: 'purchase-process', title: 'Purchase Process', subtitle: 'Step-by-Step Guide', icon: '📊' },
-    { id: 'usa-refinance', title: 'USA Refinance Search', subtitle: 'Lower Your Rate', icon: '💰' },
-    { id: 'refinance-options', title: 'Refinance Options', subtitle: 'Rate & Term, Cash-Out, FHA', icon: '🔄' },
-    { id: 'mexico-application', title: 'Mexico Application', subtitle: 'Finance Mexico Properties', icon: '🇲🇽' },
-    { id: 'mexico-properties', title: 'Mexico Properties', subtitle: 'Featured Listings', icon: '🏖️' },
-    { id: 'title-escrow', title: 'Title/Escrow', subtitle: 'Closing Services', icon: '📜' },
-    { id: '1003-urla', title: '1003 URLA', subtitle: 'Uniform Residential Loan Application', icon: '📄' },
-    { id: 'fsbo', title: 'FSBO Services', subtitle: 'For Sale By Owner Support', icon: '🏡' },
-    { id: 'agent-tools', title: 'Agent Tools', subtitle: 'Upload Listings & Manage Clients', icon: '🔧' },
-    { id: 'buyer-inquiry', title: 'Buyer Inquiry', subtitle: 'Property Information Request', icon: '💬' },
-    { id: 'pre-approval', title: 'Pre-Approval Letter', subtitle: 'Get Pre-Approved Fast', icon: '✅' },
-    { id: 'rate-quote', title: 'Rate Quote', subtitle: 'Current Market Rates', icon: '📈' },
-    { id: 'loan-calculator', title: 'Loan Calculator', subtitle: 'Estimate Payments', icon: '🧮' },
-    { id: 'documentation', title: 'Documentation Checklist', subtitle: 'Required Documents', icon: '📋' },
-    { id: 'faq', title: 'FAQ', subtitle: 'Frequently Asked Questions', icon: '❓' }
+    { id: 'full-application', title: 'Full Application', subtitle: 'Complete 1003 URLA Form' },
+    { id: 'overview', title: 'Overview', subtitle: 'Loan Programs & Services' },
+    { id: 'usa-purchase', title: 'USA Purchase Search', subtitle: 'Find & Finance US Properties' },
+    { id: 'purchase-process', title: 'Purchase Process', subtitle: 'Step-by-Step Guide' },
+    { id: 'usa-refinance', title: 'USA Refinance Search', subtitle: 'Lower Your Rate' },
+    { id: 'refinance-options', title: 'Refinance Options', subtitle: 'Rate & Term, Cash-Out, FHA' },
+    { id: 'mexico-application', title: 'Mexico Application', subtitle: 'Finance Mexico Properties' },
+    { id: 'mexico-properties', title: 'Mexico Properties', subtitle: 'Featured Listings' },
+    { id: 'title-escrow', title: 'Title / Escrow', subtitle: 'Closing Services' },
+    { id: '1003-urla', title: '1003 URLA', subtitle: 'Uniform Residential Loan Application' },
+    { id: 'fsbo', title: 'FSBO Services', subtitle: 'For Sale By Owner Support' },
+    { id: 'agent-tools', title: 'Agent Tools', subtitle: 'Upload Listings & Manage Clients' },
+    { id: 'buyer-inquiry', title: 'Buyer Inquiry', subtitle: 'Property Information Request' },
+    { id: 'pre-approval', title: 'Pre-Approval Letter', subtitle: 'Get Pre-Approved Fast' },
+    { id: 'rate-quote', title: 'Rate Quote', subtitle: 'Current Market Rates' },
+    { id: 'loan-calculator', title: 'Loan Calculator', subtitle: 'Estimate Payments' },
+    { id: 'documentation', title: 'Documentation Checklist', subtitle: 'Required Documents' },
+    { id: 'faq', title: 'FAQ', subtitle: 'Frequently Asked Questions' }
   ];
 
   // Lender database
@@ -248,7 +303,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Complete 1003 URLA Application
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '24px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '24px', lineHeight: '1.6' }}>
               The Uniform Residential Loan Application (Form 1003) is required for all conventional, FHA, VA, and USDA loans.
               Complete all sections and upload required documentation.
             </p>
@@ -257,10 +312,10 @@ export default function USAMortgage() {
               onClick={() => navigate('/1003-urla')}
               style={{
                 padding: '16px 32px',
-                background: '#cba658',
+                background: '#e2e8f0',
                 border: 'none',
-                borderRadius: '8px',
-                color: '#0f172a',
+                borderRadius: '0',
+                color: '#334155',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -271,8 +326,8 @@ export default function USAMortgage() {
             </button>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-              <div style={{ background: 'rgba(15, 23, 42, 0.4)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '8px', padding: '24px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Application Sections</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.4)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '0', padding: '24px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Application Sections</h4>
                 <ul style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '2', paddingLeft: '20px' }}>
                   <li>Section 1: Borrower Information</li>
                   <li>Section 2: Financial Information - Assets</li>
@@ -286,8 +341,8 @@ export default function USAMortgage() {
                 </ul>
               </div>
 
-              <div style={{ background: 'rgba(15, 23, 42, 0.4)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '8px', padding: '24px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Required Documents</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.4)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '0', padding: '24px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Required Documents</h4>
                 <ul style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '2', paddingLeft: '20px' }}>
                   <li>2 years federal tax returns</li>
                   <li>2 years W-2 forms</li>
@@ -310,7 +365,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Loan Programs Overview
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               We offer a comprehensive range of mortgage products to meet your financing needs. Compare rates, terms, and requirements below.
             </p>
 
@@ -338,18 +393,18 @@ export default function USAMortgage() {
                   features: ['No down payment', 'No PMI required', 'Military service required', 'Competitive rates']
                 }
               ].map((loan, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
-                  <h4 style={{ fontSize: '18px', fontWeight: '600', color: '#cba658', marginBottom: '16px' }}>{loan.title}</h4>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
+                  <h4 style={{ fontSize: '18px', fontWeight: '600', color: '#cbd5e1', marginBottom: '16px' }}>{loan.title}</h4>
                   <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '8px' }}>
-                    <strong style={{ color: '#94a3b8' }}>Rate:</strong> {loan.rate}
+                    <strong style={{ color: '#cbd5e1' }}>Rate:</strong> {loan.rate}
                   </div>
                   <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '8px' }}>
-                    <strong style={{ color: '#94a3b8' }}>Down Payment:</strong> {loan.down}
+                    <strong style={{ color: '#cbd5e1' }}>Down Payment:</strong> {loan.down}
                   </div>
                   <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '16px' }}>
-                    <strong style={{ color: '#94a3b8' }}>Term:</strong> {loan.term}
+                    <strong style={{ color: '#cbd5e1' }}>Term:</strong> {loan.term}
                   </div>
-                  <ul style={{ fontSize: '12px', color: '#94a3b8', paddingLeft: '18px', lineHeight: '1.8' }}>
+                  <ul style={{ fontSize: '12px', color: '#cbd5e1', paddingLeft: '18px', lineHeight: '1.8' }}>
                     {loan.features.map((f, i) => <li key={i}>{f}</li>)}
                   </ul>
                 </div>
@@ -383,23 +438,23 @@ export default function USAMortgage() {
                   features: ['Investment property loans', 'No income verification', 'Based on rental income', 'Quick closing']
                 }
               ].map((loan, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
-                  <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#cba658', marginBottom: '12px' }}>{loan.title}</h4>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#cbd5e1', marginBottom: '12px' }}>{loan.title}</h4>
                   <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
                     <strong>Rate:</strong> {loan.rate}
                   </div>
                   <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '12px' }}>
                     <strong>Down Payment:</strong> {loan.down}
                   </div>
-                  <ul style={{ fontSize: '12px', color: '#94a3b8', paddingLeft: '18px', lineHeight: '1.6' }}>
+                  <ul style={{ fontSize: '12px', color: '#cbd5e1', paddingLeft: '18px', lineHeight: '1.6' }}>
                     {loan.features.map((f, i) => <li key={i}>{f}</li>)}
                   </ul>
                 </div>
               ))}
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Pre-Qualification Requirements</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Pre-Qualification Requirements</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 {[
                   'Credit score 620+',
@@ -428,17 +483,17 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               USA Purchase Loan Search
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Enter your information below to find lenders that match your criteria. Our system will search 8+ lending partners
               and show you qualified matches with competitive rates.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Loan Criteria</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Loan Criteria</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Loan Amount *
                   </label>
                   <input
@@ -446,12 +501,12 @@ export default function USAMortgage() {
                     value={formData.loanAmount}
                     onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
                     placeholder="500000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Value *
                   </label>
                   <input
@@ -459,18 +514,18 @@ export default function USAMortgage() {
                     value={formData.propertyValue}
                     onChange={(e) => setFormData({ ...formData, propertyValue: e.target.value })}
                     placeholder="625000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Credit Score *
                   </label>
                   <select
                     value={formData.creditScore}
                     onChange={(e) => setFormData({ ...formData, creditScore: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="">Select Credit Score</option>
                     <option value="780">780+ (Excellent)</option>
@@ -483,13 +538,13 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Loan Type *
                   </label>
                   <select
                     value={formData.loanType}
                     onChange={(e) => setFormData({ ...formData, loanType: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="Conventional">Conventional</option>
                     <option value="FHA">FHA</option>
@@ -502,13 +557,13 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Type *
                   </label>
                   <select
                     value={formData.propertyType}
                     onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="Single Family">Single Family</option>
                     <option value="Condo">Condo</option>
@@ -518,13 +573,13 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Occupancy *
                   </label>
                   <select
                     value={formData.occupancy}
                     onChange={(e) => setFormData({ ...formData, occupancy: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="Primary Residence">Primary Residence</option>
                     <option value="Second Home">Second Home</option>
@@ -533,7 +588,7 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     DTI Ratio (%) *
                   </label>
                   <input
@@ -541,18 +596,18 @@ export default function USAMortgage() {
                     value={formData.dti}
                     onChange={(e) => setFormData({ ...formData, dti: e.target.value })}
                     placeholder="36"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Employment Type *
                   </label>
                   <select
                     value={formData.employmentType}
                     onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="W-2 Employee">W-2 Employee</option>
                     <option value="Self-Employed">Self-Employed</option>
@@ -563,13 +618,13 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Documentation Type *
                   </label>
                   <select
                     value={formData.docType}
                     onChange={(e) => setFormData({ ...formData, docType: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="Full Documentation">Full Documentation</option>
                     <option value="Bank Statement">Bank Statement (12-24 months)</option>
@@ -583,10 +638,10 @@ export default function USAMortgage() {
                 onClick={handleLenderSearch}
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -599,38 +654,38 @@ export default function USAMortgage() {
             {/* Matched Lenders Results */}
             {matchedLenders.length > 0 && (
               <div>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '20px', fontWeight: '500' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '20px', fontWeight: '500' }}>
                   Found {matchedLenders.length} Qualifying Lender{matchedLenders.length !== 1 ? 's' : ''}
                 </h4>
                 <div style={{ display: 'grid', gap: '16px' }}>
                   {matchedLenders.map((lender, idx) => (
-                    <div key={lender.id} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '8px', padding: '24px' }}>
+                    <div key={lender.id} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '0', padding: '24px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
                         <div>
                           <h5 style={{ fontSize: '16px', color: '#e2e8f0', marginBottom: '4px', fontWeight: '500' }}>{lender.name}</h5>
-                          <div style={{ fontSize: '12px', color: '#94a3b8' }}>Match Score: {lender.matchScore}%</div>
+                          <div style={{ fontSize: '12px', color: '#cbd5e1' }}>Match Score: {lender.matchScore}%</div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '24px', color: '#cba658', fontWeight: '600' }}>{lender.rate}%</div>
-                          <div style={{ fontSize: '12px', color: '#94a3b8' }}>Interest Rate</div>
+                          <div style={{ fontSize: '24px', color: '#cbd5e1', fontWeight: '600' }}>{lender.rate}%</div>
+                          <div style={{ fontSize: '12px', color: '#cbd5e1' }}>Interest Rate</div>
                         </div>
                       </div>
                       
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px', padding: '16px', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '6px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px', padding: '16px', background: 'rgba(71, 85, 105, 0.4)', borderRadius: '0' }}>
                         <div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Est. Payment</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Est. Payment</div>
                           <div style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: '500' }}>${lender.payment.toLocaleString()}/mo</div>
                         </div>
                         <div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Max LTV</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Max LTV</div>
                           <div style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: '500' }}>{lender.maxLTV}%</div>
                         </div>
                         <div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Min Credit</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Min Credit</div>
                           <div style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: '500' }}>{lender.minCredit}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Loan Range</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Loan Range</div>
                           <div style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: '500' }}>
                             ${(lender.minLoan/1000)}K-${(lender.maxLoan/1000000)}M
                           </div>
@@ -640,10 +695,10 @@ export default function USAMortgage() {
                       <button
                         style={{
                           padding: '10px 24px',
-                          background: '#cba658',
+                          background: '#e2e8f0',
                           border: 'none',
-                          borderRadius: '6px',
-                          color: '#0f172a',
+                          borderRadius: '0',
+                          color: '#334155',
                           fontSize: '13px',
                           fontWeight: '600',
                           cursor: 'pointer'
@@ -666,7 +721,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Home Purchase Process Timeline
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Understanding the home buying process helps you prepare for each step. From pre-approval to closing,
               here's what to expect during your home purchase journey.
             </p>
@@ -723,16 +778,16 @@ export default function USAMortgage() {
                   details: ['Sign closing documents', 'Pay closing costs', 'Lender funding', 'Deed recording']
                 }
               ].map(item => (
-                <div key={item.step} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px', display: 'flex', gap: '20px' }}>
+                <div key={item.step} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px', display: 'flex', gap: '20px' }}>
                   <div style={{ 
                     width: '50px', 
                     height: '50px', 
-                    background: '#cba658', 
+                    background: '#e2e8f0', 
                     borderRadius: '50%', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center', 
-                    color: '#0f172a', 
+                    color: '#334155', 
                     fontWeight: '700', 
                     fontSize: '20px',
                     flexShrink: 0
@@ -743,7 +798,7 @@ export default function USAMortgage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                       <div>
                         <h4 style={{ fontSize: '16px', color: '#e2e8f0', fontWeight: '500', marginBottom: '6px' }}>{item.title}</h4>
-                        <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>{item.desc}</p>
+                        <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.5' }}>{item.desc}</p>
                       </div>
                       <div style={{ fontSize: '12px', color: '#22c55e', textAlign: 'right', whiteSpace: 'nowrap', marginLeft: '16px' }}>
                         ⏱️ {item.time}
@@ -752,7 +807,7 @@ export default function USAMortgage() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '12px' }}>
                       {item.details.map((detail, idx) => (
                         <div key={idx} style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: '#cba658' }}>•</span>
+                          <span style={{ color: '#cbd5e1' }}>•</span>
                           {detail}
                         </div>
                       ))}
@@ -762,8 +817,8 @@ export default function USAMortgage() {
               ))}
             </div>
 
-            <div style={{ marginTop: '32px', background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Total Timeline</h4>
+            <div style={{ marginTop: '32px', background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Total Timeline</h4>
               <div style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.8' }}>
                 <p style={{ marginBottom: '12px' }}>
                   <strong style={{ color: '#e2e8f0' }}>Average Timeline:</strong> 30-45 days from offer acceptance to closing
@@ -786,53 +841,53 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               USA Refinance Search
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Calculate your potential savings with a refinance. Lower your rate, reduce your term, or access cash from your home's equity.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Refinance Calculator</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Refinance Calculator</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '32px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Current Loan Balance
                   </label>
                   <input
                     type="number"
                     placeholder="400000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Current Interest Rate
                   </label>
                   <input
                     type="number"
                     step="0.125"
                     placeholder="7.5"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Value
                   </label>
                   <input
                     type="number"
                     placeholder="500000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Refinance Type
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>Rate & Term</option>
                     <option>Cash-Out</option>
                     <option>FHA Streamline</option>
@@ -841,10 +896,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Credit Score
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option value="780">780+ (Excellent)</option>
                     <option value="740">740-779 (Very Good)</option>
                     <option value="700">700-739 (Good)</option>
@@ -854,10 +909,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     New Loan Term
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>30 Years</option>
                     <option>20 Years</option>
                     <option>15 Years</option>
@@ -869,10 +924,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -891,7 +946,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Refinance Options
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Choose the refinance option that best fits your financial goals. Compare programs below.
             </p>
 
@@ -966,27 +1021,27 @@ export default function USAMortgage() {
                   bestFor: 'Veterans with existing VA loans'
                 }
               ].map((option, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '28px' }}>
-                  <h4 style={{ fontSize: '18px', color: '#cba658', marginBottom: '12px', fontWeight: '500' }}>{option.title}</h4>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '28px' }}>
+                  <h4 style={{ fontSize: '18px', color: '#cbd5e1', marginBottom: '12px', fontWeight: '500' }}>{option.title}</h4>
                   <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '24px', lineHeight: '1.6' }}>{option.description}</p>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '20px' }}>
                     <div>
-                      <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '12px', fontWeight: '600' }}>Key Benefits</div>
+                      <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '12px', fontWeight: '600' }}>Key Benefits</div>
                       <ul style={{ fontSize: '13px', color: '#cbd5e1', paddingLeft: '18px', lineHeight: '1.8' }}>
                         {option.benefits.map((benefit, i) => <li key={i}>{benefit}</li>)}
                       </ul>
                     </div>
                     <div>
-                      <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '12px', fontWeight: '600' }}>Requirements</div>
+                      <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '12px', fontWeight: '600' }}>Requirements</div>
                       <ul style={{ fontSize: '13px', color: '#cbd5e1', paddingLeft: '18px', lineHeight: '1.8' }}>
                         {option.requirements.map((req, i) => <li key={i}>{req}</li>)}
                       </ul>
                     </div>
                   </div>
                   
-                  <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '6px', padding: '12px' }}>
-                    <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>Best For</div>
+                  <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '0', padding: '12px' }}>
+                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '4px' }}>Best For</div>
                     <div style={{ fontSize: '13px', color: '#e2e8f0' }}>{option.bestFor}</div>
                   </div>
                 </div>
@@ -1002,71 +1057,71 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Mexico Property Financing Application
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Finance your Mexico property purchase. We work with specialized cross-border lenders offering competitive programs
               for USA citizens purchasing property in Mexico.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Application Form</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Application Form</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     First Name *
                   </label>
                   <input
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Last Name *
                   </label>
                   <input
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Email *
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Phone *
                   </label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Type *
                   </label>
                   <select
                     value={formData.mexicoPropertyType}
                     onChange={(e) => setFormData({ ...formData, mexicoPropertyType: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="House">House</option>
                     <option value="Condo">Condo</option>
@@ -1076,7 +1131,7 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Location *
                   </label>
                   <input
@@ -1084,18 +1139,18 @@ export default function USAMortgage() {
                     value={formData.mexicoLocation}
                     onChange={(e) => setFormData({ ...formData, mexicoLocation: e.target.value })}
                     placeholder="e.g., Cabo San Lucas, BCS"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Down Payment (%) *
                   </label>
                   <select
                     value={formData.mexicoDownPayment}
                     onChange={(e) => setFormData({ ...formData, mexicoDownPayment: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="35">35% (Minimum)</option>
                     <option value="40">40%</option>
@@ -1105,7 +1160,7 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Loan Amount Needed *
                   </label>
                   <input
@@ -1113,18 +1168,18 @@ export default function USAMortgage() {
                     value={formData.mexicoLoanAmount}
                     onChange={(e) => setFormData({ ...formData, mexicoLoanAmount: e.target.value })}
                     placeholder="Minimum $100,000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Citizenship *
                   </label>
                   <select
                     value={formData.citizenship}
                     onChange={(e) => setFormData({ ...formData, citizenship: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option value="USA">USA Citizen</option>
                     <option value="Canadian">Canadian Citizen</option>
@@ -1133,10 +1188,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Credit Score *
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option value="740+">740+ (Excellent)</option>
                     <option value="700-739">700-739 (Good)</option>
                     <option value="680-699">680-699 (Fair)</option>
@@ -1148,10 +1203,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -1161,8 +1216,8 @@ export default function USAMortgage() {
               </button>
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Program Requirements</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Program Requirements</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {[
                   'USA or Canadian citizenship',
@@ -1191,7 +1246,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Featured Mexico Properties
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Browse our curated selection of Mexico properties available for USA buyers. Financing available with 35-45% down.
             </p>
 
@@ -1252,17 +1307,17 @@ export default function USAMortgage() {
                   features: ['Ocean view', 'New construction', 'HOA amenities', '30min to San Diego']
                 }
               ].map((property, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', overflow: 'hidden' }}>
-                  <div style={{ height: '200px', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: '14px' }}>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', overflow: 'hidden' }}>
+                  <div style={{ height: '200px', background: 'linear-gradient(135deg, #1e293b 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: '14px' }}>
                     Property Image
                   </div>
                   <div style={{ padding: '24px' }}>
                     <div style={{ marginBottom: '16px' }}>
                       <h4 style={{ fontSize: '16px', color: '#e2e8f0', fontWeight: '500', marginBottom: '6px' }}>{property.title}</h4>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>{property.location}</div>
+                      <div style={{ fontSize: '12px', color: '#cbd5e1' }}>{property.location}</div>
                     </div>
                     
-                    <div style={{ fontSize: '24px', color: '#cba658', fontWeight: '600', marginBottom: '16px' }}>{property.price}</div>
+                    <div style={{ fontSize: '24px', color: '#cbd5e1', fontWeight: '600', marginBottom: '16px' }}>{property.price}</div>
                     
                     <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', fontSize: '13px', color: '#cbd5e1' }}>
                       <div><strong>{property.beds}</strong> Beds</div>
@@ -1272,8 +1327,8 @@ export default function USAMortgage() {
                     
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
                       {property.features.map((feature, i) => (
-                        <div key={i} style={{ fontSize: '12px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: '#cba658' }}>•</span>
+                        <div key={i} style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ color: '#cbd5e1' }}>•</span>
                           {feature}
                         </div>
                       ))}
@@ -1283,10 +1338,10 @@ export default function USAMortgage() {
                       style={{
                         width: '100%',
                         padding: '10px',
-                        background: '#cba658',
+                        background: '#e2e8f0',
                         border: 'none',
-                        borderRadius: '6px',
-                        color: '#0f172a',
+                        borderRadius: '0',
+                        color: '#334155',
                         fontSize: '13px',
                         fontWeight: '600',
                         cursor: 'pointer'
@@ -1308,18 +1363,18 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Title & Escrow Services
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               We partner with First American Title Insurance Company to provide comprehensive title and escrow services
               for your real estate transaction.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}>
-              <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '28px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '20px', fontWeight: '500' }}>Owner's Title Insurance</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '28px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '20px', fontWeight: '500' }}>Owner's Title Insurance</h4>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '16px', lineHeight: '1.6' }}>
                   Protects your ownership rights against title defects, liens, and encumbrances that existed before you purchased the property.
                 </p>
-                <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.8' }}>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8' }}>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Coverage:</strong> Property value</div>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Premium:</strong> One-time fee at closing</div>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Duration:</strong> As long as you own the property</div>
@@ -1327,12 +1382,12 @@ export default function USAMortgage() {
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '28px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '20px', fontWeight: '500' }}>Lender's Title Insurance</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '28px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '20px', fontWeight: '500' }}>Lender's Title Insurance</h4>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '16px', lineHeight: '1.6' }}>
                   Protects the lender's interest in the property. Required by most mortgage lenders as a condition of the loan.
                 </p>
-                <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.8' }}>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8' }}>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Coverage:</strong> Loan amount</div>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Premium:</strong> One-time fee at closing</div>
                   <div style={{ marginBottom: '8px' }}><strong style={{ color: '#cbd5e1' }}>Duration:</strong> Until loan is paid off</div>
@@ -1341,8 +1396,8 @@ export default function USAMortgage() {
               </div>
             </div>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '28px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '20px', fontWeight: '500' }}>Typical Closing Costs Breakdown</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '28px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '20px', fontWeight: '500' }}>Typical Closing Costs Breakdown</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {[
                   { item: "Lender's Title Insurance", cost: '$800 - $2,000' },
@@ -1354,16 +1409,16 @@ export default function USAMortgage() {
                   { item: 'Courier Fees', cost: '$50 - $150' },
                   { item: 'Wire Transfer Fee', cost: '$25 - $50' }
                 ].map((fee, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#cbd5e1', padding: '10px', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '6px' }}>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#cbd5e1', padding: '10px', background: 'rgba(71, 85, 105, 0.4)', borderRadius: '0' }}>
                     <span>{fee.item}</span>
-                    <span style={{ color: '#cba658', fontWeight: '500' }}>{fee.cost}</span>
+                    <span style={{ color: '#cbd5e1', fontWeight: '500' }}>{fee.cost}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Escrow Process Timeline</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Escrow Process Timeline</h4>
               <div style={{ display: 'grid', gap: '12px' }}>
                 {[
                   { day: 'Day 0', event: 'Purchase agreement signed, earnest money deposited' },
@@ -1374,7 +1429,7 @@ export default function USAMortgage() {
                   { day: 'Day 30-45', event: 'Closing: Sign documents, transfer funds, receive keys' }
                 ].map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center', fontSize: '13px', color: '#cbd5e1' }}>
-                    <div style={{ minWidth: '80px', color: '#cba658', fontWeight: '500' }}>{item.day}</div>
+                    <div style={{ minWidth: '80px', color: '#cbd5e1', fontWeight: '500' }}>{item.day}</div>
                     <div>{item.event}</div>
                   </div>
                 ))}
@@ -1390,7 +1445,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               1003 URLA - Uniform Residential Loan Application
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Complete the official Freddie Mac Form 65 / Fannie Mae Form 1003. This application is required for all
               conventional, FHA, VA, and USDA mortgage loans.
             </p>
@@ -1399,10 +1454,10 @@ export default function USAMortgage() {
               onClick={() => navigate('/1003-urla')}
               style={{
                 padding: '16px 48px',
-                background: '#cba658',
+                background: '#e2e8f0',
                 border: 'none',
-                borderRadius: '8px',
-                color: '#0f172a',
+                borderRadius: '0',
+                color: '#334155',
                 fontSize: '15px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -1413,8 +1468,8 @@ export default function USAMortgage() {
             </button>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}>
-              <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Application Sections</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Application Sections</h4>
                 <ul style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '2', paddingLeft: '20px' }}>
                   <li>Section 1a: Personal Information</li>
                   <li>Section 1b: Current Employment & Income</li>
@@ -1432,8 +1487,8 @@ export default function USAMortgage() {
                 </ul>
               </div>
 
-              <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Required Documents</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Required Documents</h4>
                 <ul style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '2', paddingLeft: '20px' }}>
                   <li>2 years federal tax returns (1040)</li>
                   <li>2 years W-2 forms (all pages)</li>
@@ -1449,18 +1504,18 @@ export default function USAMortgage() {
               </div>
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Before You Start</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Before You Start</h4>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '16px' }}>
-                <strong style={{ color: '#cba658' }}>Gather Your Information:</strong> Have your employment history (2 years),
+                <strong style={{ color: '#cbd5e1' }}>Gather Your Information:</strong> Have your employment history (2 years),
                 income details, current debts, asset information, and property details ready.
               </p>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '16px' }}>
-                <strong style={{ color: '#cba658' }}>Time Required:</strong> Plan for 15-30 minutes to complete the full application.
+                <strong style={{ color: '#cbd5e1' }}>Time Required:</strong> Plan for 15-30 minutes to complete the full application.
                 You can save your progress and return later.
               </p>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.8' }}>
-                <strong style={{ color: '#cba658' }}>Accuracy Matters:</strong> Provide accurate information. False statements
+                <strong style={{ color: '#cbd5e1' }}>Accuracy Matters:</strong> Provide accurate information. False statements
                 on a loan application are a federal crime (18 U.S.C. § 1001).
               </p>
             </div>
@@ -1474,16 +1529,16 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               For Sale By Owner (FSBO) Services
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               List your property for sale or browse FSBO listings. We provide financing support for qualified buyers.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>List Your Property</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>List Your Property</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Address *
                   </label>
                   <input
@@ -1491,12 +1546,12 @@ export default function USAMortgage() {
                     value={formData.fsboAddress}
                     onChange={(e) => setFormData({ ...formData, fsboAddress: e.target.value })}
                     placeholder="123 Main St, City, State ZIP"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Asking Price *
                   </label>
                   <input
@@ -1504,12 +1559,12 @@ export default function USAMortgage() {
                     value={formData.fsboPrice}
                     onChange={(e) => setFormData({ ...formData, fsboPrice: e.target.value })}
                     placeholder="500000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Square Feet
                   </label>
                   <input
@@ -1517,12 +1572,12 @@ export default function USAMortgage() {
                     value={formData.fsboSqft}
                     onChange={(e) => setFormData({ ...formData, fsboSqft: e.target.value })}
                     placeholder="2500"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Bedrooms
                   </label>
                   <input
@@ -1530,12 +1585,12 @@ export default function USAMortgage() {
                     value={formData.fsboBedrooms}
                     onChange={(e) => setFormData({ ...formData, fsboBedrooms: e.target.value })}
                     placeholder="3"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Bathrooms
                   </label>
                   <input
@@ -1544,33 +1599,33 @@ export default function USAMortgage() {
                     value={formData.fsboBathrooms}
                     onChange={(e) => setFormData({ ...formData, fsboBathrooms: e.target.value })}
                     placeholder="2.5"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Description *
                   </label>
                   <textarea
                     value={formData.fsboDescription}
                     onChange={(e) => setFormData({ ...formData, fsboDescription: e.target.value })}
                     placeholder="Describe your property features, upgrades, location highlights..."
-                    style={{ width: '100%', minHeight: '120px', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px', resize: 'vertical' }}
+                    style={{ width: '100%', minHeight: '120px', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px', resize: 'vertical' }}
                   />
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Photos (Max 10)
                   </label>
                   <div style={{ 
-                    border: '2px dashed rgba(203, 166, 88, 0.3)', 
-                    borderRadius: '8px', 
+                    border: '2px dashed rgba(148, 163, 184, 0.3)', 
+                    borderRadius: '0', 
                     padding: '32px', 
                     textAlign: 'center',
                     cursor: 'pointer',
-                    background: 'rgba(15, 23, 42, 0.4)'
+                    background: 'rgba(71, 85, 105, 0.4)'
                   }}>
                     <input
                       type="file"
@@ -1585,7 +1640,7 @@ export default function USAMortgage() {
                       <div style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '8px' }}>
                         Click to upload photos or drag and drop
                       </div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                      <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
                         PNG, JPG up to 10MB each
                       </div>
                     </label>
@@ -1593,7 +1648,7 @@ export default function USAMortgage() {
                   {uploadedPhotos.length > 0 && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginTop: '16px' }}>
                       {uploadedPhotos.map(photo => (
-                        <div key={photo.id} style={{ position: 'relative', aspectRatio: '1', background: '#1e293b', borderRadius: '6px', overflow: 'hidden' }}>
+                        <div key={photo.id} style={{ position: 'relative', aspectRatio: '1', background: '#1e293b', borderRadius: '0', overflow: 'hidden' }}>
                           <img src={photo.url} alt={photo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           <button
                             onClick={() => setUploadedPhotos(uploadedPhotos.filter(p => p.id !== photo.id))}
@@ -1611,10 +1666,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -1624,8 +1679,8 @@ export default function USAMortgage() {
               </button>
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>FSBO Benefits</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>FSBO Benefits</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                 {[
                   { title: 'Save on Commission', desc: 'No 5-6% realtor commission fees' },
@@ -1635,9 +1690,9 @@ export default function USAMortgage() {
                   { title: 'Document Assistance', desc: 'Help with purchase agreements' },
                   { title: 'Closing Coordination', desc: 'Title and escrow support' }
                 ].map((benefit, idx) => (
-                  <div key={idx} style={{ background: 'rgba(15, 23, 42, 0.4)', padding: '16px', borderRadius: '6px' }}>
-                    <h5 style={{ fontSize: '14px', color: '#cba658', marginBottom: '8px', fontWeight: '500' }}>{benefit.title}</h5>
-                    <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: '1.5', margin: 0 }}>{benefit.desc}</p>
+                  <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.4)', padding: '16px', borderRadius: '0' }}>
+                    <h5 style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '8px', fontWeight: '500' }}>{benefit.title}</h5>
+                    <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5', margin: 0 }}>{benefit.desc}</p>
                   </div>
                 ))}
               </div>
@@ -1652,28 +1707,28 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Agent Tools & Services
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Register as a real estate agent to upload listings, manage clients, and access our lender network.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Agent Registration</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Agent Registration</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Agent Name *
                   </label>
                   <input
                     type="text"
                     value={formData.agentName}
                     onChange={(e) => setFormData({ ...formData, agentName: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     License Number *
                   </label>
                   <input
@@ -1681,43 +1736,43 @@ export default function USAMortgage() {
                     value={formData.agentLicense}
                     onChange={(e) => setFormData({ ...formData, agentLicense: e.target.value })}
                     placeholder="DRE#"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Brokerage *
                   </label>
                   <input
                     type="text"
                     value={formData.agentBrokerage}
                     onChange={(e) => setFormData({ ...formData, agentBrokerage: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Email *
                   </label>
                   <input
                     type="email"
                     value={formData.agentEmail}
                     onChange={(e) => setFormData({ ...formData, agentEmail: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Phone *
                   </label>
                   <input
                     type="tel"
                     value={formData.agentPhone}
                     onChange={(e) => setFormData({ ...formData, agentPhone: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
               </div>
@@ -1725,10 +1780,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -1747,10 +1802,10 @@ export default function USAMortgage() {
                 { title: 'Commission Tracking', desc: 'Monitor your pipeline and earnings', icon: '💰' },
                 { title: 'Training Resources', desc: 'Loan product training and updates', icon: '📚' }
               ].map((tool, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px', textAlign: 'center' }}>
                   <div style={{ fontSize: '40px', marginBottom: '12px' }}>{tool.icon}</div>
-                  <h5 style={{ fontSize: '14px', color: '#cba658', marginBottom: '8px', fontWeight: '500' }}>{tool.title}</h5>
-                  <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: '1.5', margin: 0 }}>{tool.desc}</p>
+                  <h5 style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '8px', fontWeight: '500' }}>{tool.title}</h5>
+                  <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5', margin: 0 }}>{tool.desc}</p>
                 </div>
               ))}
             </div>
@@ -1764,48 +1819,48 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Buyer Inquiry Form
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Interested in a property? Submit your inquiry and we'll connect you with the listing agent and provide
               financing information.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px' }}>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Your Name *
                   </label>
                   <input
                     type="text"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Email *
                   </label>
                   <input
                     type="email"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Phone *
                   </label>
                   <input
                     type="tel"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Best Time to Call
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>Morning (9AM-12PM)</option>
                     <option>Afternoon (12PM-5PM)</option>
                     <option>Evening (5PM-8PM)</option>
@@ -1813,7 +1868,7 @@ export default function USAMortgage() {
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Address *
                   </label>
                   <input
@@ -1821,19 +1876,19 @@ export default function USAMortgage() {
                     value={formData.inquiryProperty}
                     onChange={(e) => setFormData({ ...formData, inquiryProperty: e.target.value })}
                     placeholder="Enter the property address you're interested in"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Message
                   </label>
                   <textarea
                     value={formData.inquiryMessage}
                     onChange={(e) => setFormData({ ...formData, inquiryMessage: e.target.value })}
                     placeholder="Questions about the property, preferred showing times, financing needs..."
-                    style={{ width: '100%', minHeight: '120px', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px', resize: 'vertical' }}
+                    style={{ width: '100%', minHeight: '120px', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px', resize: 'vertical' }}
                   />
                 </div>
 
@@ -1856,10 +1911,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -1878,68 +1933,68 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Pre-Approval Letter
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Get pre-approved in as little as 24-48 hours. A pre-approval letter strengthens your offer and shows sellers
               you're a serious, qualified buyer.
             </p>
 
-            <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px', marginBottom: '32px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Quick Pre-Approval Application</h4>
+            <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Quick Pre-Approval Application</h4>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '24px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     First Name *
                   </label>
                   <input
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Last Name *
                   </label>
                   <input
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Email *
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Phone *
                   </label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Property Price Range *
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>$200,000 - $300,000</option>
                     <option>$300,000 - $400,000</option>
                     <option>$400,000 - $500,000</option>
@@ -1950,10 +2005,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Down Payment *
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>3% - 5%</option>
                     <option>5% - 10%</option>
                     <option>10% - 20%</option>
@@ -1962,10 +2017,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Credit Score *
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>780+ (Excellent)</option>
                     <option>740-779 (Very Good)</option>
                     <option>700-739 (Good)</option>
@@ -1976,7 +2031,7 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Annual Income *
                   </label>
                   <input
@@ -1984,18 +2039,18 @@ export default function USAMortgage() {
                     value={formData.income}
                     onChange={(e) => setFormData({ ...formData, income: e.target.value })}
                     placeholder="100000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Employment Status *
                   </label>
                   <select 
                     value={formData.employment}
                     onChange={(e) => setFormData({ ...formData, employment: e.target.value })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                    style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                   >
                     <option>W-2 Employee</option>
                     <option>Self-Employed</option>
@@ -2005,10 +2060,10 @@ export default function USAMortgage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                     Loan Type *
                   </label>
-                  <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                  <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                     <option>Conventional</option>
                     <option>FHA</option>
                     <option>VA</option>
@@ -2021,10 +2076,10 @@ export default function USAMortgage() {
               <button
                 style={{
                   padding: '14px 40px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '8px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -2034,8 +2089,8 @@ export default function USAMortgage() {
               </button>
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Why Get Pre-Approved?</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Why Get Pre-Approved?</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
                 {[
                   { title: 'Stronger Offers', desc: "Shows sellers you're financially qualified" },
@@ -2047,7 +2102,7 @@ export default function USAMortgage() {
                     <div style={{ color: '#22c55e', fontSize: '20px', flexShrink: 0 }}>✓</div>
                     <div>
                       <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: '500', marginBottom: '4px' }}>{reason.title}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8', lineHeight: '1.5' }}>{reason.desc}</div>
+                      <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5' }}>{reason.desc}</div>
                     </div>
                   </div>
                 ))}
@@ -2063,13 +2118,13 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Current Mortgage Rates
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               View today's mortgage rates. Rates are updated daily and vary based on credit score, loan amount, and property type.
             </p>
 
-            <div style={{ marginBottom: '32px', padding: '16px', background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>Last Updated</div>
-              <div style={{ fontSize: '14px', color: '#cba658', fontWeight: '500' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            <div style={{ marginBottom: '32px', padding: '16px', background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', textAlign: 'center' }}>
+              <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '4px' }}>Last Updated</div>
+              <div style={{ fontSize: '14px', color: '#cbd5e1', fontWeight: '500' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
             </div>
 
             <div style={{ display: 'grid', gap: '20px', marginBottom: '32px' }}>
@@ -2083,29 +2138,29 @@ export default function USAMortgage() {
                 { loan: 'Jumbo 30-Year Fixed', rate: '7.125', apr: '7.250', points: '0.750', payment: '2,716' },
                 { loan: '5/1 ARM', rate: '6.125', apr: '7.375', points: '0.375', payment: '2,432' }
               ].map((product, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
                     <div>
                       <h4 style={{ fontSize: '16px', color: '#e2e8f0', marginBottom: '4px', fontWeight: '500' }}>{product.loan}</h4>
-                      <div style={{ fontSize: '11px', color: '#94a3b8' }}>Based on $400K loan, 20% down, 740 credit</div>
+                      <div style={{ fontSize: '11px', color: '#cbd5e1' }}>Based on $400K loan, 20% down, 740 credit</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '28px', color: '#cba658', fontWeight: '600', lineHeight: '1' }}>{product.rate}%</div>
-                      <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>Rate</div>
+                      <div style={{ fontSize: '28px', color: '#cbd5e1', fontWeight: '600', lineHeight: '1' }}>{product.rate}%</div>
+                      <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>Rate</div>
                     </div>
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', padding: '16px', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '6px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', padding: '16px', background: 'rgba(71, 85, 105, 0.4)', borderRadius: '0' }}>
                     <div>
-                      <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>APR</div>
+                      <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>APR</div>
                       <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: '500' }}>{product.apr}%</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Points</div>
+                      <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Points</div>
                       <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: '500' }}>{product.points}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>Est. Payment</div>
+                      <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '4px' }}>Est. Payment</div>
                       <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: '500' }}>${product.payment}/mo</div>
                     </div>
                   </div>
@@ -2113,8 +2168,8 @@ export default function USAMortgage() {
               ))}
             </div>
 
-            <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px' }}>
-              <h4 style={{ fontSize: '14px', color: '#cba658', marginBottom: '12px', fontWeight: '500' }}>Important Notes</h4>
+            <div style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px' }}>
+              <h4 style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '12px', fontWeight: '500' }}>Important Notes</h4>
               <ul style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.8', paddingLeft: '20px' }}>
                 <li>Rates shown are for informational purposes and subject to change without notice</li>
                 <li>Actual rates depend on credit score, loan amount, LTV, occupancy, and property type</li>
@@ -2133,54 +2188,54 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Mortgage Payment Calculator
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Calculate your estimated monthly mortgage payment including principal, interest, taxes, insurance, and PMI.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
-              <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '32px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '24px', fontWeight: '500' }}>Loan Details</h4>
+              <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '32px' }}>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '24px', fontWeight: '500' }}>Loan Details</h4>
                 
                 <div style={{ display: 'grid', gap: '20px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Home Price
                     </label>
                     <input
                       type="number"
                       placeholder="500000"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Down Payment ($)
                     </label>
                     <input
                       type="number"
                       placeholder="100000"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Interest Rate (%)
                     </label>
                     <input
                       type="number"
                       step="0.125"
                       placeholder="6.875"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Loan Term
                     </label>
-                    <select style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}>
+                    <select style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}>
                       <option value="30">30 Years</option>
                       <option value="20">20 Years</option>
                       <option value="15">15 Years</option>
@@ -2189,45 +2244,45 @@ export default function USAMortgage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Property Tax (Annual)
                     </label>
                     <input
                       type="number"
                       placeholder="6000"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       Homeowners Insurance (Annual)
                     </label>
                     <input
                       type="number"
                       placeholder="1200"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
                       HOA Fees (Monthly)
                     </label>
                     <input
                       type="number"
                       placeholder="0"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '6px', color: '#cbd5e1', fontSize: '13px' }}
+                      style={{ width: '100%', padding: '12px', background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.2)', borderRadius: '0', color: '#cbd5e1', fontSize: '13px' }}
                     />
                   </div>
 
                   <button
                     style={{
                       padding: '14px 40px',
-                      background: '#cba658',
+                      background: '#e2e8f0',
                       border: 'none',
-                      borderRadius: '8px',
-                      color: '#0f172a',
+                      borderRadius: '0',
+                      color: '#334155',
                       fontSize: '14px',
                       fontWeight: '600',
                       cursor: 'pointer'
@@ -2239,14 +2294,14 @@ export default function USAMortgage() {
               </div>
 
               <div>
-                <div style={{ background: 'rgba(203, 166, 88, 0.15)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px', marginBottom: '20px' }}>
-                  <h4 style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '8px', fontWeight: '400' }}>Estimated Monthly Payment</h4>
-                  <div style={{ fontSize: '36px', color: '#cba658', fontWeight: '700', marginBottom: '16px' }}>$2,639</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8' }}>Principal & Interest Only</div>
+                <div style={{ background: 'rgba(148, 163, 184, 0.15)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px', marginBottom: '20px' }}>
+                  <h4 style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '8px', fontWeight: '400' }}>Estimated Monthly Payment</h4>
+                  <div style={{ fontSize: '36px', color: '#cbd5e1', fontWeight: '700', marginBottom: '16px' }}>$2,639</div>
+                  <div style={{ fontSize: '12px', color: '#cbd5e1' }}>Principal & Interest Only</div>
                 </div>
 
-                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '20px' }}>
-                  <h5 style={{ fontSize: '13px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Payment Breakdown</h5>
+                <div style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '20px' }}>
+                  <h5 style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Payment Breakdown</h5>
                   <div style={{ display: 'grid', gap: '12px' }}>
                     {[
                       { label: 'Principal & Interest', amount: '$2,639' },
@@ -2256,13 +2311,13 @@ export default function USAMortgage() {
                       { label: 'HOA Fees', amount: '$0' }
                     ].map((item, idx) => (
                       <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '12px', borderBottom: idx < 4 ? '1px solid rgba(203, 213, 225, 0.1)' : 'none' }}>
-                        <span style={{ color: '#94a3b8' }}>{item.label}</span>
+                        <span style={{ color: '#cbd5e1' }}>{item.label}</span>
                         <span style={{ color: '#e2e8f0', fontWeight: '500' }}>{item.amount}</span>
                       </div>
                     ))}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: '600', paddingTop: '12px', borderTop: '2px solid rgba(203, 166, 88, 0.3)' }}>
-                      <span style={{ color: '#cba658' }}>Total Monthly</span>
-                      <span style={{ color: '#cba658' }}>$3,439</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: '600', paddingTop: '12px', borderTop: '2px solid rgba(148, 163, 184, 0.3)' }}>
+                      <span style={{ color: '#cbd5e1' }}>Total Monthly</span>
+                      <span style={{ color: '#cbd5e1' }}>$3,439</span>
                     </div>
                   </div>
                 </div>
@@ -2278,7 +2333,7 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Required Documentation Checklist
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Complete checklist of documents required for mortgage approval. Upload all documents once you have a loan application in progress.
             </p>
 
@@ -2291,20 +2346,50 @@ export default function USAMortgage() {
                 id="doc-upload"
               />
               <label htmlFor="doc-upload">
-                <div style={{ 
-                  border: '2px dashed rgba(203, 166, 88, 0.3)', 
-                  borderRadius: '8px', 
-                  padding: '40px', 
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  background: 'rgba(30, 41, 59, 0.6)'
-                }}>
-                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>📁</div>
-                  <div style={{ fontSize: '16px', color: '#e2e8f0', marginBottom: '8px', fontWeight: '500' }}>
-                    Drag and drop files here or click to upload
+                <div 
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  style={{ 
+                    border: isDragging ? '2px solid rgba(203, 166, 88, 0.6)' : '1px dashed rgba(148, 163, 184, 0.3)', 
+                    padding: '50px 40px', 
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    background: isDragging 
+                      ? 'linear-gradient(135deg, rgba(203, 166, 88, 0.1) 0%, rgba(148, 163, 184, 0.05) 100%)' 
+                      : 'linear-gradient(135deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.2) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                  <div style={{ 
+                    width: '60px', 
+                    height: '60px', 
+                    margin: '0 auto 20px', 
+                    background: 'rgba(148, 163, 184, 0.1)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid rgba(148, 163, 184, 0.2)'
+                  }}>
+                    <span style={{ fontSize: '24px', color: '#94a3b8' }}>↑</span>
                   </div>
-                  <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-                    PDF, DOC, JPG, PNG up to 25MB each
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: '#cbd5e1', 
+                    marginBottom: '8px', 
+                    fontWeight: '300',
+                    letterSpacing: '1px'
+                  }}>
+                    {isDragging ? 'Drop files here...' : 'Drag & drop files here'}
+                  </div>
+                  <div style={{ 
+                    fontSize: '11px', 
+                    color: '#64748b',
+                    letterSpacing: '0.5px'
+                  }}>
+                    or click to browse • PDF, DOC, JPG, PNG up to 25MB
                   </div>
                 </div>
               </label>
@@ -2312,15 +2397,15 @@ export default function USAMortgage() {
 
             {uploadedDocs.length > 0 && (
               <div style={{ marginBottom: '32px' }}>
-                <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>Uploaded Documents</h4>
+                <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>Uploaded Documents</h4>
                 <div style={{ display: 'grid', gap: '8px' }}>
                   {uploadedDocs.map((doc, idx) => (
-                    <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '6px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{ fontSize: '24px' }}>📄</div>
                         <div>
                           <div style={{ fontSize: '13px', color: '#e2e8f0', fontWeight: '500' }}>{doc.name}</div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>{doc.size} • {doc.uploaded}</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1' }}>{doc.size} • {doc.uploaded}</div>
                         </div>
                       </div>
                       <button style={{ background: '#ef4444', border: 'none', borderRadius: '4px', color: 'white', padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}>
@@ -2385,11 +2470,11 @@ export default function USAMortgage() {
                   ]
                 }
               ].map((section, idx) => (
-                <div key={idx} style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '8px', padding: '24px' }}>
-                  <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '16px', fontWeight: '500' }}>{section.category}</h4>
+                <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px' }}>
+                  <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '16px', fontWeight: '500' }}>{section.category}</h4>
                   <div style={{ display: 'grid', gap: '10px' }}>
                     {section.docs.map((doc, docIdx) => (
-                      <label key={docIdx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '6px', cursor: 'pointer' }}>
+                      <label key={docIdx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: 'rgba(71, 85, 105, 0.4)', borderRadius: '0', cursor: 'pointer' }}>
                         <input type="checkbox" style={{ width: '18px', height: '18px' }} />
                         <span style={{ flex: 1, fontSize: '13px', color: '#cbd5e1' }}>{doc.name}</span>
                         {doc.required && (
@@ -2411,24 +2496,24 @@ export default function USAMortgage() {
             <h3 style={{ fontSize: '20px', color: '#e2e8f0', marginBottom: '16px', fontWeight: '500' }}>
               Frequently Asked Questions
             </h3>
-            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '32px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '32px', lineHeight: '1.6' }}>
               Common questions about our mortgage services, application process, and lending requirements.
             </p>
 
             <FAQSection />
 
-            <div style={{ marginTop: '32px', background: 'rgba(203, 166, 88, 0.1)', border: '1px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-              <h4 style={{ fontSize: '16px', color: '#cba658', marginBottom: '12px', fontWeight: '500' }}>Still Have Questions?</h4>
+            <div style={{ marginTop: '32px', background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', borderRadius: '0', padding: '24px', textAlign: 'center' }}>
+              <h4 style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '12px', fontWeight: '500' }}>Still Have Questions?</h4>
               <p style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '20px', lineHeight: '1.6' }}>
                 Our loan officers are here to help. Contact us directly for personalized guidance.
               </p>
               <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
                 <button style={{
                   padding: '12px 32px',
-                  background: '#cba658',
+                  background: '#e2e8f0',
                   border: 'none',
-                  borderRadius: '6px',
-                  color: '#0f172a',
+                  borderRadius: '0',
+                  color: '#334155',
                   fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -2438,9 +2523,9 @@ export default function USAMortgage() {
                 <button style={{
                   padding: '12px 32px',
                   background: 'transparent',
-                  border: '1px solid rgba(203, 166, 88, 0.5)',
-                  borderRadius: '6px',
-                  color: '#cba658',
+                  border: '1px solid rgba(148, 163, 184, 0.5)',
+                  borderRadius: '0',
+                  color: '#cbd5e1',
                   fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -2454,7 +2539,7 @@ export default function USAMortgage() {
 
       default:
         return (
-          <div style={{ padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ padding: '32px', textAlign: 'center', color: '#cbd5e1' }}>
             Select a section to view details
           </div>
         );
@@ -2462,16 +2547,66 @@ export default function USAMortgage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a', color: '#cbd5e1' }}>
-      {/* HEADER */}
-      <div style={{ background: 'rgba(15, 23, 42, 0.95)', borderBottom: '1px solid rgba(203, 213, 225, 0.1)', padding: '24px 32px' }}>
+    <div style={{ minHeight: '100vh', position: 'relative', color: '#f1f5f9' }}>
+      {/* GOLF COURSE BACKGROUND - MULTIPLE GOLFERS */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1920&q=90")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        zIndex: 0
+      }} />
+      
+      {/* OVERLAY - LIGHTER TO SEE GOLFERS */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.6))',
+        zIndex: 1
+      }} />
+
+      {/* CONTENT */}
+      <div style={{ position: 'relative', zIndex: 2 }}>
+      {/* HEADER - ULTRA HIGH END GLASS */}
+      <div style={{ 
+        background: 'rgba(15, 23, 42, 0.3)', 
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
+        padding: '24px 40px', 
+        backdropFilter: 'blur(30px)',
+        WebkitBackdropFilter: 'blur(30px)',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+      }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h1 style={{ fontSize: '24px', fontWeight: '300', color: '#e2e8f0', margin: '0 0 8px 0', letterSpacing: '1px' }}>
+              <h1 style={{ 
+                fontSize: '18px', 
+                fontWeight: '100', 
+                color: 'rgba(255, 255, 255, 0.95)', 
+                margin: '0 0 6px 0', 
+                letterSpacing: '6px', 
+                textTransform: 'uppercase',
+                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+              }}>
                 US & Mexico Mortgage Loans
               </h1>
-              <p style={{ fontSize: '13px', fontWeight: '300', color: '#94a3b8', margin: 0, letterSpacing: '0.5px' }}>
+              <p style={{ 
+                fontSize: '9px', 
+                fontWeight: '300', 
+                color: 'rgba(203, 213, 225, 0.7)', 
+                margin: 0, 
+                letterSpacing: '3px',
+                textTransform: 'uppercase'
+              }}>
                 NMLS #337526 | Everwise Home Loans & Realty
               </p>
             </div>
@@ -2479,16 +2614,27 @@ export default function USAMortgage() {
               onClick={() => navigate('/')}
               style={{
                 padding: '10px 20px',
-                background: 'rgba(203, 166, 88, 0.1)',
-                border: '1px solid rgba(203, 166, 88, 0.3)',
-                borderRadius: '6px',
-                color: '#cba658',
-                fontSize: '12px',
-                fontWeight: '500',
-                cursor: 'pointer'
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '9px',
+                fontWeight: '300',
+                cursor: 'pointer',
+                letterSpacing: '3px',
+                textTransform: 'uppercase',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
               }}
             >
-              ← BACK TO HOME
+              Back to Home
             </button>
           </div>
         </div>
@@ -2503,43 +2649,67 @@ export default function USAMortgage() {
             
             return (
               <div key={section.id}>
-                {/* SECTION HEADER */}
+                {/* SECTION HEADER - GLASS EFFECT */}
                 <button
                   onClick={() => setExpandedSection(isExpanded ? null : section.id)}
                   style={{
                     width: '100%',
-                    padding: '20px 24px',
-                    background: isExpanded ? 'rgba(203, 166, 88, 0.15)' : 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid ' + (isExpanded ? '#cba658' : 'rgba(203, 213, 225, 0.2)'),
-                    borderRadius: '8px',
+                    padding: '16px 28px',
+                    background: isExpanded 
+                      ? 'linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(100, 116, 139, 0.1) 100%)' 
+                      : 'linear-gradient(135deg, rgba(71, 85, 105, 0.3) 0%, rgba(51, 65, 85, 0.2) 100%)',
+                    border: 'none',
+                    borderLeft: isExpanded ? '2px solid rgba(203, 166, 88, 0.5)' : '2px solid transparent',
+                    borderBottom: '1px solid rgba(226, 232, 240, 0.08)',
                     color: '#e2e8f0',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.3s ease',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', textAlign: 'left' }}>
-                    <div style={{ fontSize: '24px' }}>{section.icon}</div>
-                    <div>
-                      <div style={{ fontSize: '15px', fontWeight: '500', marginBottom: '4px' }}>{section.title}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>{section.subtitle}</div>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      fontWeight: '300', 
+                      marginBottom: '3px', 
+                      letterSpacing: '2px', 
+                      textTransform: 'uppercase',
+                      color: isExpanded ? '#f1f5f9' : '#cbd5e1',
+                      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
+                    }}>
+                      {section.title}
+                    </div>
+                    <div style={{ 
+                      fontSize: '10px', 
+                      color: '#64748b', 
+                      letterSpacing: '1px',
+                      fontWeight: '300'
+                    }}>
+                      {section.subtitle}
                     </div>
                   </div>
-                  <div style={{ fontSize: '20px', color: '#94a3b8' }}>
-                    {isExpanded ? '−' : '+'}
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: '#64748b',
+                    transition: 'transform 0.3s ease',
+                    transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                  }}>
+                    ⌄
                   </div>
                 </button>
 
-                {/* SECTION CONTENT */}
+                {/* SECTION CONTENT - GLASS PANEL */}
                 {isExpanded && (
                   <div style={{
-                    background: 'rgba(15, 23, 42, 0.4)',
-                    border: '1px solid rgba(203, 166, 88, 0.2)',
-                    borderTop: 'none',
-                    borderRadius: '0 0 8px 8px',
-                    marginTop: '-8px'
+                    background: 'linear-gradient(180deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.3) 100%)',
+                    borderLeft: '2px solid rgba(203, 166, 88, 0.2)',
+                    borderBottom: '1px solid rgba(226, 232, 240, 0.05)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)'
                   }}>
                     {renderSectionContent(section.id)}
                   </div>
@@ -2548,6 +2718,7 @@ export default function USAMortgage() {
             );
           })}
         </div>
+      </div>
       </div>
     </div>
   );

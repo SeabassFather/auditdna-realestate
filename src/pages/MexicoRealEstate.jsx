@@ -1,104 +1,136 @@
-import React, { useState, useEffect } from "react";
-import PropertySearch from "../components/PropertySearch.jsx";
-import OwnerBuyerForm from "../components/OwnerBuyerForm.jsx";
-import PropertyUploadForm from "../components/PropertyUploadForm.jsx";
-import MexicoRefiCard from "../components/MexicoRefiCard.jsx";
-import ReferralPartnerCard from "../components/ReferralPartnerCard.jsx";
-import AgentRegistrationCard from "../components/AgentRegistrationCard.jsx";
-import AppraisalServicesCard from "../components/AppraisalServicesCard.jsx";
-import LegalQuestionnaireCard from "../components/LegalQuestionnaireCard.jsx";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Accordion({ children, defaultOpen = -1 }) {
-  const [openIndex, setOpenIndex] = useState(defaultOpen);
-  return React.Children.map(children, (child, i) =>
-    React.cloneElement(child, {
-      open: openIndex === i,
-      onHeaderClick: () => setOpenIndex(openIndex === i ? -1 : i),
-    })
-  );
-}
+export default function MexicoRealEstate() {
+  const navigate = useNavigate();
+  const [language, setLanguage] = useState('english');
+  const [expandedSection, setExpandedSection] = useState(null);
 
-function AccordionItem({ title, open, onHeaderClick, children, color }) {
-  return (
-    <div style={{
-      background: 'rgba(15, 23, 42, 0.8)',
-      border: '1px solid rgba(203, 166, 88, 0.3)',
-      borderRadius: '12px',
-      marginBottom: '20px',
-      overflow: 'hidden',
-      backdropFilter: 'blur(10px)'
-    }}>
-      <button
-        type="button"
-        onClick={onHeaderClick}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '20px 28px',
-          background: open ? 'rgba(203, 166, 88, 0.15)' : 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontWeight: '500',
-          fontSize: '16px',
-          color: open ? '#f4e4bc' : '#cbd5e1',
-          letterSpacing: '1px',
-          transition: 'all 0.3s',
-          textShadow: '0 2px 8px rgba(0,0,0,0.8)'
-        }}
-      >
-        <span>{title}</span>
-        <span style={{ fontSize: '20px', transition: 'transform 0.3s', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>
-          {"►"}
-        </span>
-      </button>
-      <div style={{ display: open ? 'block' : 'none', transition: 'all 0.3s' }}>
-        <div style={{ padding: '28px' }}>{children}</div>
-      </div>
-    </div>
-  );
-}
-
-export default function MexicoRealEstateAccordion() {
-  const [language, setLanguage] = useState("english");
-
-  const labels = {
-    english: {
-      header: "Mexico Real Estate",
-      sub: "Premium properties & services for Mexico and USA buyers",
-      search: "Search for Properties",
-      buyerForm: "Buyer Inquiry / Express Interest",
-      upload: "List Your Property",
-      refi: "Mexico Home Refinance / Buy in Mexico (US Citizens Only)",
-      partner: "Referral Partner Registration",
-      agent: "Agent Registration",
-      appraisal: "Appraisal Services",
-      legal: "Legal/Fideicomiso Questionnaire",
-      contact: "Contact Info",
-      toggle: "Español",
-    },
-    spanish: {
-      header: "Bienes Raíces México",
-      sub: "Propiedades premium y servicios para compradores de México y USA",
-      search: "Buscar Propiedades",
-      buyerForm: "Solicitud de Información / Interés de Compra",
-      upload: "Publicar Propiedad",
-      refi: "Refinanciamiento / Compra en México (Solo Ciudadanos USA)",
-      partner: "Registro de Socio de Referencia",
-      agent: "Registro de Agente",
-      appraisal: "Servicios de Avalúo",
-      legal: "Cuestionario Legal/Fideicomiso",
-      contact: "Información de Contacto",
-      toggle: "English",
-    },
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section);
   };
 
-  const t = labels[language];
+  // 6 TEAM MEMBERS
+  const teamMembers = [
+    {
+      name: "Saul Garcia",
+      title: "Finance & Lending Specialist",
+      subtitle: "NMLS #337526",
+      specialties: ["Cross-Border Financing", "USDA 502 Rural", "Fideicomiso Expert"],
+      description: "31+ years in finance and lending. Bilingual Spanish-English. Specialized in USA-Mexico cross-border real estate transactions.",
+      photo: "/images/team/SG.png",
+      phone: "+52 646 340 2686",
+      email: "saul@auditdna.com"
+    },
+    {
+      name: "Ariel Bolio",
+      title: "Company Attorney",
+      subtitle: "Licensed Attorney - Baja California",
+      specialties: ["Real Estate Law", "Contract Negotiation", "Title Verification"],
+      description: "Expert legal counsel for cross-border real estate transactions. Ensures all deals comply with Mexican property law.",
+      photo: "/images/team/ariel-bolio.png",
+      phone: "+52 646 340 2686",
+      email: "ariel@auditdna.com"
+    },
+    {
+      name: "Gibran Lyle",
+      title: "Real Estate & Team Development",
+      subtitle: "Licensed Agent - Ensenada, Baja California",
+      specialties: ["Coastal Properties", "Team Leadership", "Agent Training"],
+      description: "Baja California native. Leads team development and agent training programs across the region.",
+      photo: "/images/team/gibran-lyle.png",
+      phone: "+52 646 340 2686",
+      email: "gibran@auditdna.com"
+    },
+    {
+      name: "Brenda Bonilla",
+      title: "Real Estate Specialist",
+      subtitle: "Baja Mexico & Monterrey Mexico",
+      specialties: ["Coastal Properties", "Metropolitan Markets", "Luxury Residences"],
+      description: "Dual-market expertise spanning Baja California coastal properties and Monterrey metropolitan real estate.",
+      photo: "/images/team/BrendaB.jpg",
+      phone: "+52 646 340 2686",
+      email: "brenda@auditdna.com"
+    },
+    {
+      name: "Osvaldo Gutierrez",
+      title: "Team Development & Real Estate",
+      subtitle: "",
+      specialties: ["Strategic Growth", "Agent Recruitment", "Market Expansion"],
+      description: "Driving team growth and development across USA-Mexico markets. Expert in building high-performance teams.",
+      photo: "/images/team/Ozzy.png",
+      phone: "+52 646 340 2686",
+      email: "osvaldo@auditdna.com"
+    },
+    {
+      name: "Saul Castro",
+      title: "Public Relations Specialist",
+      subtitle: "",
+      specialties: ["Media Relations", "Communications", "Public Outreach"],
+      description: "Managing company communications and media relations. Building strong relationships with partners and clients.",
+      photo: "/images/team/Saul-Tocayo.png",
+      phone: "+52 646 340 2686",
+      email: "scastro@auditdna.com"
+    }
+  ];
+
+  const sections = [
+    { id: 'search', title: 'SEARCH FOR PROPERTIES' },
+    { id: 'buyer', title: 'BUYER INQUIRY' },
+    { id: 'upload', title: 'LIST YOUR PROPERTY' },
+    { id: 'refi', title: 'MEXICO HOME REFINANCE' },
+    { id: 'partner', title: 'REFERRAL PARTNER' },
+    { id: 'agent', title: 'AGENT REGISTRATION' },
+    { id: 'appraisal', title: 'APPRAISAL SERVICES' },
+    { id: 'legal', title: 'LEGAL / FIDEICOMISO' },
+    { id: 'team', title: 'MEET THE TEAM' },
+  ];
+
+  // STYLES - SLEEK, SHARP, NO ROUND EDGES
+  const inputStyle = {
+    padding: '14px 16px',
+    background: 'rgba(30, 41, 59, 0.9)',
+    border: '1px solid rgba(203, 213, 225, 0.2)',
+    borderRadius: '0',
+    color: '#e2e8f0',
+    fontSize: '13px',
+    fontFamily: 'inherit',
+    letterSpacing: '0.5px',
+    width: '100%',
+    boxSizing: 'border-box'
+  };
+
+  const buttonStyle = {
+    padding: '14px 32px',
+    background: 'linear-gradient(135deg, #cba658, #b8944d)',
+    border: 'none',
+    borderRadius: '0',
+    color: '#0f172a',
+    fontSize: '11px',
+    fontWeight: '600',
+    letterSpacing: '2px',
+    cursor: 'pointer',
+    textTransform: 'uppercase',
+    fontFamily: 'inherit'
+  };
+
+  const selectStyle = {
+    ...inputStyle,
+    appearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23cbd5e1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    backgroundSize: '16px',
+    paddingRight: '40px'
+  };
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative' }}>
-      
+    <div style={{ 
+      minHeight: '100vh', 
+      position: 'relative',
+      overflow: 'hidden',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
       {/* YACHT MARINA BACKGROUND */}
       <div style={{
         position: 'fixed',
@@ -106,460 +138,516 @@ export default function MexicoRealEstateAccordion() {
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1920&q=80")',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&q=90")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         zIndex: 0
       }} />
-
-      {/* DARK OVERLAY */}
+      
+      {/* OVERLAY - SEE YACHTS */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.9) 100%)',
-        zIndex: 0
+        background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.7))',
+        zIndex: 1
       }} />
 
-      <div style={{ 
-        position: 'relative', 
-        zIndex: 1,
-        maxWidth: '1400px',
-        margin: '0 auto',
-        padding: '40px 20px'
+      {/* TOP RIGHT NAV - SMALL */}
+      <div style={{
+        position: 'fixed',
+        top: '16px',
+        right: '16px',
+        display: 'flex',
+        gap: '6px',
+        zIndex: 10
       }}>
-        {/* Header */}
-        <div style={{
-          background: 'rgba(15, 23, 42, 0.7)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '12px',
-          padding: '40px',
-          marginBottom: '40px',
-          border: '1px solid rgba(203, 166, 88, 0.3)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
-            <div style={{ flex: 1 }}>
-              <h1 style={{ 
-                fontSize: '42px', 
-                fontWeight: '300', 
-                background: 'linear-gradient(135deg, #cba658, #f4e4bc)', 
-                WebkitBackgroundClip: 'text', 
-                WebkitTextFillColor: 'transparent', 
-                marginBottom: '12px',
-                letterSpacing: '2px',
-                textShadow: '0 2px 20px rgba(0,0,0,0.8)'
-              }}>
-                {t.header}
-              </h1>
-              <p style={{ 
-                fontSize: '16px', 
-                color: '#cbd5e1', 
-                fontWeight: '300',
-                textShadow: '0 2px 8px rgba(0,0,0,0.8)'
-              }}>
-                {t.sub}
-              </p>
-            </div>
-            <button
-              onClick={() => setLanguage(language === "english" ? "spanish" : "english")}
-              style={{
-                padding: '12px 32px',
-                background: 'linear-gradient(135deg, #cba658, #b8944d)',
-                border: 'none',
-                borderRadius: '30px',
-                color: '#0a0a0a',
-                fontSize: '12px',
-                fontWeight: '800',
-                letterSpacing: '1.5px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(203, 166, 88, 0.5)',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(203, 166, 88, 0.7)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(203, 166, 88, 0.5)';
-              }}
-            >
-              {t.toggle}
-            </button>
-          </div>
+        <button
+          onClick={() => navigate('/usa-mortgage')}
+          style={{
+            padding: '5px 10px',
+            background: 'linear-gradient(135deg, #cba658, #b8944d)',
+            border: 'none',
+            borderRadius: '0',
+            color: '#0f172a',
+            fontSize: '8px',
+            fontWeight: '600',
+            letterSpacing: '1px',
+            cursor: 'pointer',
+            textTransform: 'uppercase'
+          }}
+        >
+          USA Mortgage
+        </button>
+        <button
+          onClick={() => navigate('/developments')}
+          style={{
+            padding: '5px 10px',
+            background: 'transparent',
+            border: '1px solid rgba(203, 213, 225, 0.4)',
+            borderRadius: '0',
+            color: '#cbd5e1',
+            fontSize: '8px',
+            fontWeight: '500',
+            letterSpacing: '1px',
+            cursor: 'pointer',
+            textTransform: 'uppercase'
+          }}
+        >
+          Developments
+        </button>
+      </div>
+
+      {/* CONTENT */}
+      <div style={{ position: 'relative', zIndex: 2 }}>
+        {/* HEADER */}
+        <div style={{ padding: '50px 20px 30px', textAlign: 'center' }}>
+          <h1 style={{ 
+            fontSize: '38px', 
+            fontWeight: '300', 
+            color: '#f8fafc',
+            marginBottom: '8px',
+            textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+            letterSpacing: '6px',
+            textTransform: 'uppercase'
+          }}>
+            Mexico Real Estate
+          </h1>
+          <p style={{ 
+            color: '#cba658', 
+            fontSize: '12px', 
+            marginBottom: '30px',
+            textShadow: '0 1px 10px rgba(0,0,0,0.4)',
+            letterSpacing: '3px',
+            textTransform: 'uppercase'
+          }}>
+            Bienes Raíces en México
+          </p>
+          
+          {/* LANGUAGE TOGGLE */}
+          <button
+            onClick={() => setLanguage(language === 'english' ? 'spanish' : 'english')}
+            style={{
+              padding: '10px 28px',
+              background: 'transparent',
+              border: '1px solid #cba658',
+              borderRadius: '0',
+              color: '#cba658',
+              fontSize: '10px',
+              fontWeight: '500',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              marginBottom: '30px',
+              textTransform: 'uppercase'
+            }}
+          >
+            {language === 'english' ? 'Español' : 'English'}
+          </button>
+
         </div>
 
-        {/* Accordion Sections */}
-        <Accordion defaultOpen={-1}>
-          <AccordionItem title={t.search}>
-            <PropertySearch language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.buyerForm}>
-            <OwnerBuyerForm language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.upload}>
-            <PropertyUploadForm language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.refi}>
-            <MexicoRefiCard language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.partner}>
-            <ReferralPartnerCard language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.agent}>
-            <AgentRegistrationCard language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.appraisal}>
-            <AppraisalServicesCard language={language} />
-          </AccordionItem>
-          
-          <AccordionItem title={t.legal}>
-            <LegalQuestionnaireCard language={language} />
-          </AccordionItem>
+        {/* ACCORDION */}
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
+          {sections.map((section) => (
+            <div key={section.id} style={{ marginBottom: '8px' }}>
+              {/* HEADER */}
+              <button
+                onClick={() => toggleSection(section.id)}
+                style={{
+                  width: '100%',
+                  padding: '18px 24px',
+                  background: expandedSection === section.id 
+                    ? 'rgba(203, 166, 88, 0.1)' 
+                    : 'rgba(15, 23, 42, 0.75)',
+                  border: '1px solid rgba(203, 166, 88, 0.25)',
+                  borderRadius: '0',
+                  color: expandedSection === section.id ? '#cba658' : '#cbd5e1',
+                  fontSize: '11px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  letterSpacing: '2px',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.2s',
+                  fontFamily: 'inherit'
+                }}
+              >
+                <span>{section.title}</span>
+                <span style={{ 
+                  fontSize: '10px',
+                  transform: expandedSection === section.id ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s'
+                }}>▶</span>
+              </button>
 
-          {/* ADMIN TEAM SECTION */}
-          <AccordionItem title={language === 'english' ? 'Meet the Team' : 'Conoce al Equipo'}>
-            <div style={{ padding: '20px 0' }}>
-              <p style={{ 
-                fontSize: '14px', 
-                color: '#94a3b8', 
-                textAlign: 'center', 
-                marginBottom: '32px',
-                lineHeight: '1.6'
-              }}>
-                {language === 'english' 
-                  ? 'Our expert team specializes in USA-Mexico cross-border real estate transactions'
-                  : 'Nuestro equipo experto especializado en transacciones inmobiliarias transfronterizas'}
-              </p>
-              
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-                gap: '24px' 
-              }}>
-                {/* SAUL GARCIA */}
+              {/* CONTENT */}
+              {expandedSection === section.id && (
                 <div style={{
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(203, 166, 88, 0.3)',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  textAlign: 'center'
+                  padding: '28px 24px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  border: '1px solid rgba(203, 166, 88, 0.25)',
+                  borderTop: 'none',
+                  borderRadius: '0',
+                  backdropFilter: 'blur(10px)'
                 }}>
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    overflow: 'hidden',
-                    border: '3px solid #cba658'
-                  }}>
-                    <img 
-                      src="/images/team/saul-garcia.png" 
-                      alt="Saul Garcia"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400'; }}
-                    />
-                  </div>
-                  <h4 style={{ color: '#f4e4bc', fontSize: '18px', marginBottom: '4px', fontWeight: '600' }}>
-                    Saul Garcia
-                  </h4>
-                  <p style={{ color: '#cba658', fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>
-                    CEO & Lead Mortgage Specialist
-                  </p>
-                  <p style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '12px' }}>
-                    NMLS #337526
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px' }}>
-                    {['Cross-Border Financing', 'USDA 502 Rural', 'Fideicomiso Expert'].map((spec, i) => (
-                      <span key={i} style={{
-                        background: 'rgba(203, 166, 88, 0.2)',
-                        color: '#cba658',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        fontSize: '10px'
-                      }}>{spec}</span>
-                    ))}
-                  </div>
-                  <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5', marginBottom: '16px' }}>
-                    24+ years in finance and lending. Bilingual Spanish-English. Specialized in USA-Mexico cross-border real estate transactions.
-                  </p>
-                  <a 
-                    href="https://wa.me/526463402686?text=Hello%20Saul,%20I'm%20interested%20in%20Mexico%20real%20estate" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-block',
-                      background: '#cba658',
-                      color: '#0f172a',
-                      padding: '10px 24px',
-                      borderRadius: '6px',
-                      textDecoration: 'none',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}
-                  >
-                    Contact Saul
-                  </a>
-                </div>
+                  {/* SEARCH */}
+                  {section.id === 'search' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Search properties across Mexico - Baja California to Cancun
+                      </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                        <select style={selectStyle}>
+                          <option>All Regions</option>
+                          <option>Baja California Norte</option>
+                          <option>Baja California Sur</option>
+                          <option>Quintana Roo</option>
+                          <option>Jalisco</option>
+                        </select>
+                        <select style={selectStyle}>
+                          <option>Property Type</option>
+                          <option>House</option>
+                          <option>Condo</option>
+                          <option>Villa</option>
+                          <option>Land</option>
+                        </select>
+                        <select style={selectStyle}>
+                          <option>Price Range</option>
+                          <option>Under $200K</option>
+                          <option>$200K - $500K</option>
+                          <option>$500K - $1M</option>
+                          <option>$1M+</option>
+                        </select>
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Search Properties</button>
+                    </div>
+                  )}
 
-                {/* ARIEL BOLIO */}
-                <div style={{
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(203, 166, 88, 0.3)',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  textAlign: 'center'
-                }}>
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    overflow: 'hidden',
-                    border: '3px solid #cba658'
-                  }}>
-                    <img 
-                      src="/images/team/ariel-bolio.png" 
-                      alt="Ariel Bolio"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400'; }}
-                    />
-                  </div>
-                  <h4 style={{ color: '#f4e4bc', fontSize: '18px', marginBottom: '4px', fontWeight: '600' }}>
-                    Ariel Bolio
-                  </h4>
-                  <p style={{ color: '#cba658', fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>
-                    Company Attorney
-                  </p>
-                  <p style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '12px' }}>
-                    Licensed Attorney - Baja California
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px' }}>
-                    {['Real Estate Law', 'Contract Negotiation', 'Title Verification', 'Legal Compliance'].map((spec, i) => (
-                      <span key={i} style={{
-                        background: 'rgba(203, 166, 88, 0.2)',
-                        color: '#cba658',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        fontSize: '10px'
-                      }}>{spec}</span>
-                    ))}
-                  </div>
-                  <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5', marginBottom: '16px' }}>
-                    Expert legal counsel for cross-border real estate transactions. Ensures all deals comply with Mexican property law and protects client interests.
-                  </p>
-                  <a 
-                    href="https://wa.me/526463402686?text=Hello,%20I'd%20like%20to%20speak%20with%20Ariel%20Bolio%20about%20legal%20services" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-block',
-                      background: '#cba658',
-                      color: '#0f172a',
-                      padding: '10px 24px',
-                      borderRadius: '6px',
-                      textDecoration: 'none',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}
-                  >
-                    Contact Ariel
-                  </a>
-                </div>
+                  {/* BUYER */}
+                  {section.id === 'buyer' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Express interest in Mexico properties. Our team contacts you within 24 hours.
+                      </p>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Full Name" style={inputStyle} />
+                        <input placeholder="Email" type="email" style={inputStyle} />
+                        <input placeholder="Phone" type="tel" style={inputStyle} />
+                        <select style={selectStyle}>
+                          <option>Interest Type</option>
+                          <option>Buying</option>
+                          <option>Investing</option>
+                          <option>Relocating</option>
+                        </select>
+                        <textarea placeholder="Describe your ideal property..." rows="3" style={{ ...inputStyle, resize: 'vertical' }} />
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Submit Inquiry</button>
+                    </div>
+                  )}
 
-                {/* GIBRAN LYLE */}
-                <div style={{
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(203, 166, 88, 0.3)',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  textAlign: 'center'
-                }}>
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    overflow: 'hidden',
-                    border: '3px solid #cba658'
-                  }}>
-                    <img 
-                      src="/images/team/gibran-lyle.png" 
-                      alt="Gibran Lyle"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'; }}
-                    />
-                  </div>
-                  <h4 style={{ color: '#f4e4bc', fontSize: '18px', marginBottom: '4px', fontWeight: '600' }}>
-                    Gibran Lyle
-                  </h4>
-                  <p style={{ color: '#cba658', fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>
-                    Real Estate Specialist
-                  </p>
-                  <p style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '12px' }}>
-                    Licensed Agent - Ensenada, Baja California
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px' }}>
-                    {['Coastal Properties', 'Valle de Guadalupe', 'Investment Properties', 'Buyer Rep'].map((spec, i) => (
-                      <span key={i} style={{
-                        background: 'rgba(203, 166, 88, 0.2)',
-                        color: '#cba658',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        fontSize: '10px'
-                      }}>{spec}</span>
-                    ))}
-                  </div>
-                  <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5', marginBottom: '16px' }}>
-                    Baja California native with deep knowledge of Ensenada and Valle de Guadalupe markets. Specializes in connecting international buyers with premium properties.
-                  </p>
-                  <a 
-                    href="https://wa.me/526463402686?text=Hello,%20I'd%20like%20to%20speak%20with%20Gibran%20Lyle%20about%20properties" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-block',
-                      background: '#cba658',
-                      color: '#0f172a',
-                      padding: '10px 24px',
-                      borderRadius: '6px',
-                      textDecoration: 'none',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}
-                  >
-                    Contact Gibran
-                  </a>
-                </div>
+                  {/* UPLOAD */}
+                  {section.id === 'upload' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        List your Mexico property. Reach qualified international buyers.
+                      </p>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Property Title" style={inputStyle} />
+                        <input placeholder="Location (City, State)" style={inputStyle} />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                          <input placeholder="Price (USD)" style={inputStyle} />
+                          <select style={selectStyle}>
+                            <option>Property Type</option>
+                            <option>House</option>
+                            <option>Condo</option>
+                            <option>Villa</option>
+                            <option>Land</option>
+                          </select>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                          <input placeholder="Bedrooms" type="number" style={inputStyle} />
+                          <input placeholder="Bathrooms" type="number" style={inputStyle} />
+                          <input placeholder="Sq Ft" type="number" style={inputStyle} />
+                        </div>
+                        <textarea placeholder="Property Description..." rows="3" style={{ ...inputStyle, resize: 'vertical' }} />
+                        
+                        {/* PHOTO UPLOAD */}
+                        <div style={{ 
+                          border: '1px dashed rgba(203, 166, 88, 0.4)', 
+                          padding: '20px', 
+                          textAlign: 'center',
+                          background: 'rgba(15, 23, 42, 0.5)'
+                        }}>
+                          <p style={{ color: '#cba658', fontSize: '10px', letterSpacing: '1px', marginBottom: '10px', textTransform: 'uppercase' }}>
+                            Property Photos (Max 10)
+                          </p>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            id="propertyPhotos"
+                            style={{ display: 'none' }}
+                          />
+                          <label 
+                            htmlFor="propertyPhotos"
+                            style={{
+                              display: 'inline-block',
+                              padding: '10px 24px',
+                              background: 'transparent',
+                              border: '1px solid #cba658',
+                              color: '#cba658',
+                              fontSize: '9px',
+                              fontWeight: '600',
+                              letterSpacing: '1px',
+                              cursor: 'pointer',
+                              textTransform: 'uppercase'
+                            }}
+                          >
+                            Select Photos
+                          </label>
+                          <p style={{ color: '#94a3b8', fontSize: '10px', marginTop: '10px' }}>
+                            JPG, PNG up to 5MB each
+                          </p>
+                        </div>
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Submit Listing</button>
+                    </div>
+                  )}
 
-                {/* BRENDA BONILLA */}
-                <div style={{
-                  background: 'rgba(30, 41, 59, 0.8)',
-                  border: '1px solid rgba(203, 166, 88, 0.3)',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  textAlign: 'center'
-                }}>
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    overflow: 'hidden',
-                    border: '3px solid #cba658'
-                  }}>
-                    <img 
-                      src="/images/team/BrendaB.jpg" 
-                      alt="Brenda Bonilla"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400'; }}
-                    />
-                  </div>
-                  <h4 style={{ color: '#f4e4bc', fontSize: '18px', marginBottom: '4px', fontWeight: '600' }}>
-                    Brenda Bonilla
-                  </h4>
-                  <p style={{ color: '#cba658', fontSize: '13px', marginBottom: '8px', fontWeight: '500' }}>
-                    Real Estate Specialist
-                  </p>
-                  <p style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '12px' }}>
-                    Licensed Agent - Ensenada & Monterrey
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px' }}>
-                    {['Luxury Properties', 'Relocation Services', 'New Developments', 'Client Relations'].map((spec, i) => (
-                      <span key={i} style={{
-                        background: 'rgba(203, 166, 88, 0.2)',
-                        color: '#cba658',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        fontSize: '10px'
-                      }}>{spec}</span>
-                    ))}
-                  </div>
-                  <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5', marginBottom: '16px' }}>
-                    Experienced real estate professional serving Ensenada and Monterrey markets. Dedicated to providing exceptional service for luxury property buyers.
-                  </p>
-                  <a 
-                    href="https://wa.me/526463402686?text=Hello,%20I'd%20like%20to%20speak%20with%20Brenda%20Bonilla%20about%20properties" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-block',
-                      background: '#cba658',
-                      color: '#0f172a',
-                      padding: '10px 24px',
-                      borderRadius: '6px',
-                      textDecoration: 'none',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}
-                  >
-                    Contact Brenda
-                  </a>
-                </div>
-              </div>
+                  {/* REFI */}
+                  {section.id === 'refi' && (
+                    <div>
+                      <div style={{ background: 'rgba(203, 166, 88, 0.08)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '0', padding: '20px', marginBottom: '20px' }}>
+                        <h4 style={{ color: '#cba658', marginBottom: '12px', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase' }}>US Citizens - Mexico Financing</h4>
+                        <ul style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: '2', paddingLeft: '18px', margin: 0 }}>
+                          <li>Minimum: $385,000 USD</li>
+                          <li>Down payment: 35-45%</li>
+                          <li>Terms: 15-30 years</li>
+                          <li>Fixed and adjustable rates</li>
+                        </ul>
+                      </div>
+                      <button style={buttonStyle}>Get Pre-Qualified</button>
+                    </div>
+                  )}
 
-              {/* MESSAGE CENTER */}
-              <div style={{
-                background: 'rgba(203, 166, 88, 0.1)',
-                border: '1px solid rgba(203, 166, 88, 0.3)',
-                borderRadius: '8px',
-                padding: '20px',
-                textAlign: 'center',
-                marginTop: '32px'
-              }}>
-                <p style={{ color: '#cba658', fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
-                  📞 Message Center: +52 646 340 2686
-                </p>
-                <p style={{ color: '#94a3b8', fontSize: '12px' }}>
-                  {language === 'english' 
-                    ? 'Contact any team member through our central message center'
-                    : 'Contacta a cualquier miembro del equipo a través de nuestro centro de mensajes'}
-                </p>
-              </div>
+                  {/* PARTNER */}
+                  {section.id === 'partner' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Join our referral network. Earn commissions on successful transactions.
+                      </p>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Full Name" style={inputStyle} />
+                        <input placeholder="Company (Optional)" style={inputStyle} />
+                        <input placeholder="Email" type="email" style={inputStyle} />
+                        <input placeholder="Phone" type="tel" style={inputStyle} />
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Apply as Partner</button>
+                    </div>
+                  )}
+
+                  {/* AGENT */}
+                  {section.id === 'agent' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Licensed agents - join our network and list properties on our platform.
+                      </p>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Full Name" style={inputStyle} />
+                        <input placeholder="License Number" style={inputStyle} />
+                        <input placeholder="Brokerage Name" style={inputStyle} />
+                        <input placeholder="Email" type="email" style={inputStyle} />
+                        <input placeholder="Phone" type="tel" style={inputStyle} />
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Register as Agent</button>
+                    </div>
+                  )}
+
+                  {/* APPRAISAL */}
+                  {section.id === 'appraisal' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Request professional property appraisal for Mexico real estate.
+                      </p>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Property Address" style={inputStyle} />
+                        <input placeholder="Your Name" style={inputStyle} />
+                        <input placeholder="Email" type="email" style={inputStyle} />
+                        <input placeholder="Phone" type="tel" style={inputStyle} />
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Request Appraisal</button>
+                    </div>
+                  )}
+
+                  {/* LEGAL */}
+                  {section.id === 'legal' && (
+                    <div>
+                      <div style={{ background: 'rgba(203, 166, 88, 0.08)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '0', padding: '20px', marginBottom: '20px' }}>
+                        <h4 style={{ color: '#cba658', marginBottom: '12px', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase' }}>Fideicomiso</h4>
+                        <p style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: '1.7', margin: 0 }}>
+                          A Mexican bank trust required for foreign buyers purchasing property within the restricted zone (50km from coastline or 100km from borders).
+                        </p>
+                      </div>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                        <input placeholder="Your Name" style={inputStyle} />
+                        <input placeholder="Email" type="email" style={inputStyle} />
+                        <select style={selectStyle}>
+                          <option>Citizenship Status</option>
+                          <option>US Citizen</option>
+                          <option>Canadian Citizen</option>
+                          <option>Other Foreign National</option>
+                          <option>Mexican National</option>
+                        </select>
+                        <textarea placeholder="Your legal questions..." rows="3" style={{ ...inputStyle, resize: 'vertical' }} />
+                      </div>
+                      <button style={{ ...buttonStyle, marginTop: '20px' }}>Submit Questions</button>
+                    </div>
+                  )}
+
+                  {/* TEAM */}
+                  {section.id === 'team' && (
+                    <div>
+                      <p style={{ color: '#94a3b8', marginBottom: '28px', fontSize: '13px', letterSpacing: '0.5px' }}>
+                        Expert team specializing in USA-Mexico cross-border real estate.
+                      </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                        {teamMembers.map((member, index) => (
+                          <div key={index} style={{
+                            background: 'rgba(30, 41, 59, 0.5)',
+                            border: '1px solid rgba(203, 166, 88, 0.15)',
+                            borderRadius: '0',
+                            padding: '20px',
+                            textAlign: 'center'
+                          }}>
+                            {/* Photo */}
+                            <div style={{
+                              width: '90px',
+                              height: '90px',
+                              margin: '0 auto 14px',
+                              overflow: 'hidden',
+                              border: '2px solid #cba658',
+                              borderRadius: '0',
+                              background: 'rgba(15, 23, 42, 0.8)'
+                            }}>
+                              <img 
+                                src={member.photo} 
+                                alt={member.name}
+                                style={{ 
+                                  width: '100%', 
+                                  height: '100%', 
+                                  objectFit: 'cover',
+                                  objectPosition: 'top center'
+                                }}
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
+                            </div>
+                            {/* Name */}
+                            <h4 style={{ color: '#f1f5f9', fontSize: '14px', marginBottom: '2px', fontWeight: '500', letterSpacing: '1px' }}>
+                              {member.name}
+                            </h4>
+                            {/* Title */}
+                            <p style={{ color: '#cba658', fontSize: '10px', marginBottom: '2px', fontWeight: '500', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                              {member.title}
+                            </p>
+                            {/* Subtitle */}
+                            {member.subtitle && (
+                              <p style={{ color: '#94a3b8', fontSize: '10px', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                {member.subtitle}
+                              </p>
+                            )}
+                            {/* Specialties - SMALL, SQUARE */}
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'center', marginBottom: '10px' }}>
+                              {member.specialties.map((spec, i) => (
+                                <span key={i} style={{
+                                  padding: '3px 8px',
+                                  background: 'rgba(203, 166, 88, 0.1)',
+                                  border: '1px solid rgba(203, 166, 88, 0.25)',
+                                  borderRadius: '0',
+                                  fontSize: '9px',
+                                  color: '#cba658',
+                                  letterSpacing: '0.5px',
+                                  textTransform: 'uppercase'
+                                }}>
+                                  {spec}
+                                </span>
+                              ))}
+                            </div>
+                            {/* Description */}
+                            <p style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.5', marginBottom: '14px' }}>
+                              {member.description}
+                            </p>
+                            {/* Contact */}
+                            <a 
+                              href={`https://wa.me/526463402686?text=Hello ${member.name}, I'm interested in Mexico real estate`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: 'inline-block',
+                                padding: '8px 20px',
+                                background: '#cba658',
+                                color: '#0f172a',
+                                borderRadius: '0',
+                                textDecoration: 'none',
+                                fontSize: '9px',
+                                fontWeight: '600',
+                                letterSpacing: '1px',
+                                textTransform: 'uppercase'
+                              }}
+                            >
+                              Contact
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Message Center */}
+                      <div style={{ 
+                        marginTop: '24px', 
+                        padding: '18px', 
+                        background: 'rgba(203, 166, 88, 0.08)', 
+                        border: '1px solid rgba(203, 166, 88, 0.2)', 
+                        borderRadius: '0',
+                        textAlign: 'center'
+                      }}>
+                        <p style={{ color: '#cba658', fontSize: '10px', marginBottom: '6px', fontWeight: '500', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                          Message Center
+                        </p>
+                        <p style={{ color: '#e2e8f0', fontSize: '15px', fontWeight: '400', letterSpacing: '1px' }}>
+                          +52-646-340-2686
+                        </p>
+                        <p style={{ color: '#94a3b8', fontSize: '10px', marginTop: '4px', letterSpacing: '1px' }}>
+                          WHATSAPP AVAILABLE
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          </AccordionItem>
-        </Accordion>
+          ))}
+        </div>
 
-        {/* Footer */}
-        <div style={{
-          background: 'rgba(15, 23, 42, 0.8)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '12px',
-          padding: '40px',
-          border: '1px solid rgba(203, 166, 88, 0.3)',
-          textAlign: 'center',
-          marginTop: '40px'
+        {/* FOOTER */}
+        <div style={{ 
+          padding: '35px 20px', 
+          background: 'rgba(15, 23, 42, 0.9)',
+          borderTop: '1px solid rgba(203, 166, 88, 0.15)',
+          textAlign: 'center'
         }}>
-          <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#f4e4bc', marginBottom: '12px', letterSpacing: '1px' }}>
-            {t.contact}
-          </h3>
-          <p style={{ fontSize: '16px', fontWeight: '600', color: '#cba658', marginBottom: '8px' }}>
-            Saul Garcia
+          <p style={{ color: '#cba658', fontSize: '11px', fontWeight: '500', marginBottom: '4px', letterSpacing: '3px', textTransform: 'uppercase' }}>
+            Enjoy Baja Real Estate
           </p>
-          <p style={{ fontSize: '14px', fontWeight: '700', color: '#cba658', marginBottom: '6px' }}>
-            NMLS #337526
+          <p style={{ color: '#94a3b8', fontSize: '10px', marginBottom: '10px', letterSpacing: '1px' }}>
+            Premium Mexico Real Estate & Cross-Border Financing
           </p>
-          <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '4px' }}>
-            Everwise Home Loans & Realty
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-            Company NMLS #1739012 | DRE #02067255
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-            15615 Alton Pkwy, Suite 450, Irvine, CA 92618
-          </p>
-          <p style={{ fontSize: '11px', color: '#94a3b8' }}>
-            Phone: 1-844-853-9300
+          <p style={{ color: '#e2e8f0', fontSize: '13px', fontWeight: '500', letterSpacing: '1px' }}>Saul Garcia</p>
+          <p style={{ color: '#cba658', fontSize: '11px', letterSpacing: '1px' }}>NMLS #337526</p>
+          <p style={{ color: '#94a3b8', fontSize: '10px', marginTop: '10px', letterSpacing: '1px' }}>
+            +52-646-340-2686 • info@enjoybaja.com
           </p>
         </div>
       </div>

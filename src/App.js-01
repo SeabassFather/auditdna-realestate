@@ -1,0 +1,454 @@
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import MexicoRealEstate from './pages/MexicoRealEstate';
+import Developments from './pages/Developments';
+import USAMortgage from './pages/USAMortgage';
+import URLA1003 from './pages/URLA1003';
+import Login from './pages/Login';
+import AgentRegistration from './pages/AgentRegistration';
+import AdminDashboard from './pages/AdminDashboard';
+import WhatsAppWidget from './components/contact/WhatsAppWidget';
+import AIChatWidget from './components/chat/AIChatWidget';
+import BajaLuxuryGuide from './components/BajaLuxuryGuide';
+
+function LandingPage() {
+  const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const cards = [
+    {
+      id: 'realestate',
+      title: 'Mexico Real Estate',
+      subtitle: 'Baja California Premium Properties',
+      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
+      route: '/mexico-real-estate'
+    },
+    {
+      id: 'lifestyle',
+      title: 'Lifestyle Guide',
+      subtitle: 'Wine Country & Luxury Living',
+      image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80',
+      route: '/lifestyle'
+    },
+    {
+      id: 'developments',
+      title: 'Developments',
+      subtitle: '64 Projects Across 17 Regions',
+      image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&q=80',
+      route: '/developments'
+    },
+    {
+      id: 'mortgage',
+      title: 'US & Mexico Loans',
+      subtitle: 'Mortgage & Financing Solutions',
+      image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&q=80',
+      route: '/usa-mortgage'
+    }
+  ];
+
+  // GLASS TEXT STYLE - SILVER, NOT WHITE
+  const glassText = {
+    fontFamily: '"Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif',
+    fontWeight: '100',
+    color: 'rgba(148, 163, 184, 0.85)',
+    textShadow: '0 1px 15px rgba(0,0,0,0.2)'
+  };
+
+  return (
+    <div style={{ 
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      
+      {/* OCEAN BACKGROUND */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+        zIndex: 0
+      }} />
+
+      {/* LIGHTER OVERLAY - SEE THE OCEAN */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.5) 100%)',
+        zIndex: 1
+      }} />
+
+      {/* TOP NAV - SILVER GLASS */}
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        padding: isMobile ? '16px 20px' : '20px 48px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: 'rgba(15, 23, 42, 0.25)',
+        backdropFilter: 'blur(30px)',
+        WebkitBackdropFilter: 'blur(30px)',
+        borderBottom: '1px solid rgba(148, 163, 184, 0.08)'
+      }}>
+        {/* LOGO - SILVER GLASS */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            border: '1px solid rgba(148, 163, 184, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <span style={{ 
+              ...glassText,
+              fontSize: '13px', 
+              letterSpacing: '2px',
+              color: 'rgba(203, 213, 225, 0.8)'
+            }}>EB</span>
+          </div>
+          <div>
+            <div style={{ 
+              ...glassText,
+              fontSize: '16px', 
+              letterSpacing: '5px',
+              textTransform: 'uppercase',
+              color: 'rgba(203, 213, 225, 0.85)'
+            }}>
+              Enjoy Baja
+            </div>
+            <div style={{
+              ...glassText,
+              fontSize: '8px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              color: 'rgba(148, 163, 184, 0.5)'
+            }}>
+              Luxury Real Estate
+            </div>
+          </div>
+        </div>
+
+        {/* NAV BUTTONS - SILVER GLASS */}
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            onClick={() => navigate('/login')}
+            style={{
+              padding: '10px 24px',
+              background: 'rgba(148, 163, 184, 0.08)',
+              border: '1px solid rgba(148, 163, 184, 0.25)',
+              color: 'rgba(203, 213, 225, 0.8)',
+              fontSize: '9px',
+              fontWeight: '300',
+              letterSpacing: '3px',
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease',
+              fontFamily: '"Helvetica Neue", sans-serif'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(148, 163, 184, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(203, 213, 225, 0.4)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(148, 163, 184, 0.08)';
+              e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.25)';
+            }}
+          >
+            Login
+          </button>
+          <button 
+            onClick={() => navigate('/agent-register')}
+            style={{
+              padding: '10px 24px',
+              background: 'rgba(203, 166, 88, 0.85)',
+              border: 'none',
+              color: '#1e293b',
+              fontSize: '9px',
+              fontWeight: '400',
+              letterSpacing: '3px',
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+              transition: 'all 0.3s ease',
+              fontFamily: '"Helvetica Neue", sans-serif'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(203, 166, 88, 0.95)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(203, 166, 88, 0.85)';
+            }}
+          >
+            Join
+          </button>
+        </div>
+      </nav>
+
+      {/* MAIN CONTENT */}
+      <div style={{ 
+        position: 'relative', 
+        zIndex: 2,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: isMobile ? '100px 20px 80px' : '100px 48px 100px'
+      }}>
+        
+        {/* HERO TEXT - ULTRA GLASS */}
+        <div style={{ 
+          textAlign: 'center', 
+          marginBottom: isMobile ? '40px' : '50px'
+        }}>
+          <p style={{
+            ...glassText,
+            fontSize: '9px',
+            color: 'rgba(203, 166, 88, 0.9)',
+            letterSpacing: '6px',
+            textTransform: 'uppercase',
+            marginBottom: '24px'
+          }}>
+            Where the Stars Come to Shine
+          </p>
+
+          <h1 style={{ 
+            ...glassText,
+            fontSize: isMobile ? '36px' : '68px',
+            letterSpacing: isMobile ? '8px' : '16px',
+            textTransform: 'uppercase',
+            marginBottom: '20px',
+            lineHeight: '1.1',
+            color: 'rgba(203, 213, 225, 0.75)'
+          }}>
+            Baja California
+          </h1>
+
+          <p style={{
+            ...glassText,
+            fontSize: isMobile ? '11px' : '13px',
+            color: 'rgba(203, 213, 225, 0.7)',
+            letterSpacing: '5px',
+            textTransform: 'uppercase'
+          }}>
+            Premium Properties & Services
+          </p>
+
+          {/* THIN GOLD LINE */}
+          <div style={{
+            width: '50px',
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent, rgba(203, 166, 88, 0.8), transparent)',
+            margin: '30px auto 0'
+          }} />
+        </div>
+
+        {/* 4 CARDS GRID - GLASS STYLE */}
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '10px' : '16px',
+          maxWidth: '1200px',
+          width: '100%'
+        }}>
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              onClick={() => navigate(card.route)}
+              onMouseEnter={() => setHoveredCard(card.id)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{
+                position: 'relative',
+                height: isMobile ? '180px' : '300px',
+                cursor: 'pointer',
+                overflow: 'hidden',
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: hoveredCard === card.id ? 'translateY(-6px)' : 'translateY(0)',
+                boxShadow: hoveredCard === card.id 
+                  ? '0 20px 50px rgba(0,0,0,0.4)' 
+                  : '0 8px 30px rgba(0,0,0,0.2)'
+              }}
+            >
+              {/* CARD IMAGE */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: `url(${card.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                transition: 'transform 0.6s ease',
+                transform: hoveredCard === card.id ? 'scale(1.06)' : 'scale(1)'
+              }} />
+
+              {/* CARD GLASS OVERLAY */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: hoveredCard === card.id
+                  ? 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 100%)'
+                  : 'linear-gradient(to top, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.1) 100%)',
+                backdropFilter: 'blur(1px)',
+                transition: 'all 0.4s ease'
+              }} />
+
+              {/* CARD BORDER - SILVER */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                border: hoveredCard === card.id 
+                  ? '1px solid rgba(203, 166, 88, 0.4)' 
+                  : '1px solid rgba(148, 163, 184, 0.15)',
+                transition: 'all 0.3s ease',
+                pointerEvents: 'none'
+              }} />
+
+              {/* CARD CONTENT - GLASS TEXT */}
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: isMobile ? '16px' : '22px'
+              }}>
+                <p style={{
+                  ...glassText,
+                  fontSize: '8px',
+                  color: 'rgba(203, 213, 225, 0.6)',
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px'
+                }}>
+                  {card.subtitle}
+                </p>
+                <h3 style={{
+                  ...glassText,
+                  fontSize: isMobile ? '15px' : '18px',
+                  fontWeight: '200',
+                  letterSpacing: '2px',
+                  color: 'rgba(203, 213, 225, 0.85)'
+                }}>
+                  {card.title}
+                </h3>
+
+                {/* ARROW ON HOVER */}
+                <div style={{
+                  opacity: hoveredCard === card.id ? 1 : 0,
+                  transform: hoveredCard === card.id ? 'translateY(0)' : 'translateY(8px)',
+                  transition: 'all 0.3s ease',
+                  marginTop: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{
+                    ...glassText,
+                    fontSize: '8px',
+                    color: 'rgba(203, 166, 88, 0.9)',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase'
+                  }}>
+                    Explore
+                  </span>
+                  <span style={{ color: 'rgba(203, 166, 88, 0.9)', fontSize: '12px' }}>→</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BOTTOM BAR - SILVER GLASS */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: '16px 48px',
+        background: 'rgba(15, 23, 42, 0.35)',
+        backdropFilter: 'blur(20px)',
+        zIndex: 10,
+        display: 'flex',
+        justifyContent: 'center',
+        borderTop: '1px solid rgba(148, 163, 184, 0.08)'
+      }}>
+        <p style={{
+          ...glassText,
+          fontSize: '9px',
+          color: 'rgba(100, 116, 139, 0.7)',
+          letterSpacing: '3px'
+        }}>
+          info@enjoybaja.com | WhatsApp: +52 646 340 2686
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ADMIN ROUTE
+function AdminRoute({ children }) {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
+  if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
+  if (!isAuthenticated || !isAdmin) return <Navigate to="/login" />;
+  return children;
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* ALL PUBLIC - NO LOGIN BLOCKING */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/agent-register" element={<AgentRegistration />} />
+          <Route path="/lifestyle" element={<BajaLuxuryGuide />} />
+          <Route path="/mexico-real-estate" element={<MexicoRealEstate />} />
+          <Route path="/developments" element={<Developments />} />
+          <Route path="/usa-mortgage" element={<USAMortgage />} />
+          <Route path="/1003-urla" element={<URLA1003 />} />
+          
+          {/* ADMIN ONLY */}
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          
+          {/* CATCH ALL */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <WhatsAppWidget />
+        <AIChatWidget />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;

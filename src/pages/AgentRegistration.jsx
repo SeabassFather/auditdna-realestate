@@ -16,6 +16,14 @@ export default function AgentRegistration() {
   const [success, setSuccess] = useState(false);
   const [credentials, setCredentials] = useState(null);
 
+  // GLASS TEXT STYLE
+  const glassText = {
+    fontFamily: '"Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif',
+    fontWeight: '100',
+    color: 'rgba(203, 213, 225, 0.85)',
+    textShadow: '0 1px 15px rgba(0,0,0,0.2)'
+  };
+
   const handleIneUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -52,10 +60,8 @@ export default function AgentRegistration() {
     setLoading(true);
     setError('');
 
-    // Save agent registration
     const agents = JSON.parse(localStorage.getItem('registered_agents') || '[]');
     
-    // Check if already registered
     if (agents.some(a => a.email === formData.email || a.ineNumber === formData.ineNumber)) {
       setError('Agent already registered with this email or INE number');
       setLoading(false);
@@ -81,43 +87,179 @@ export default function AgentRegistration() {
     setLoading(false);
   };
 
+  // SUCCESS SCREEN
   if (success && credentials) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ maxWidth: '600px', width: '100%', background: 'rgba(15, 23, 42, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '16px', padding: '48px', textAlign: 'center' }}>
-          <div style={{ fontSize: '64px', marginBottom: '24px' }}>CHECK</div>
-          <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#10b981', marginBottom: '16px' }}>Registration Successful!</h2>
-          <p style={{ fontSize: '16px', color: '#94a3b8', marginBottom: '32px' }}>
-            Your agent account is pending approval. Save your credentials below.
+      <div style={{ 
+        minHeight: '100vh',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px'
+      }}>
+        {/* VINEYARD BACKGROUND */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: 'url("https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=85")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 0
+        }} />
+
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(180deg, rgba(15,23,42,0.6) 0%, rgba(15,23,42,0.8) 100%)',
+          zIndex: 1
+        }} />
+
+        <div style={{ 
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '550px', 
+          width: '100%', 
+          background: 'rgba(15, 23, 42, 0.4)',
+          backdropFilter: 'blur(30px)',
+          border: '1px solid rgba(148, 163, 184, 0.15)',
+          padding: '50px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            border: '2px solid rgba(16, 185, 129, 0.5)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 24px',
+            color: 'rgba(16, 185, 129, 0.8)',
+            fontSize: '24px'
+          }}>
+            ✓
+          </div>
+          
+          <h2 style={{ 
+            ...glassText,
+            fontSize: '26px',
+            fontWeight: '200',
+            color: 'rgba(16, 185, 129, 0.9)',
+            marginBottom: '12px',
+            letterSpacing: '3px'
+          }}>
+            Registration Successful
+          </h2>
+          <p style={{ 
+            ...glassText,
+            fontSize: '12px',
+            color: 'rgba(148, 163, 184, 0.7)',
+            marginBottom: '32px',
+            letterSpacing: '1px'
+          }}>
+            Your account is pending approval. Save your credentials below.
           </p>
           
-          <div style={{ background: 'rgba(203, 166, 88, 0.1)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '12px', padding: '32px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#cba658', marginBottom: '20px' }}>Your Login Credentials</h3>
+          <div style={{ 
+            background: 'rgba(203, 166, 88, 0.08)',
+            border: '1px solid rgba(203, 166, 88, 0.2)',
+            padding: '28px',
+            marginBottom: '28px'
+          }}>
+            <h3 style={{ 
+              ...glassText,
+              fontSize: '11px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              color: 'rgba(203, 166, 88, 0.8)',
+              marginBottom: '20px'
+            }}>
+              Your Login Credentials
+            </h3>
             <div style={{ marginBottom: '16px', textAlign: 'left' }}>
-              <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '4px' }}>Email:</div>
-              <div style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', padding: '12px', background: 'rgba(30, 41, 59, 0.6)', borderRadius: '8px' }}>{credentials.email}</div>
+              <div style={{ 
+                ...glassText,
+                fontSize: '10px',
+                color: 'rgba(148, 163, 184, 0.6)',
+                marginBottom: '6px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase'
+              }}>Email</div>
+              <div style={{ 
+                ...glassText,
+                fontSize: '14px',
+                color: 'rgba(203, 213, 225, 0.9)',
+                padding: '12px',
+                background: 'rgba(30, 41, 59, 0.5)'
+              }}>{credentials.email}</div>
             </div>
-            <div style={{ marginBottom: '16px', textAlign: 'left' }}>
-              <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '4px' }}>Password:</div>
-              <div style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', padding: '12px', background: 'rgba(30, 41, 59, 0.6)', borderRadius: '8px' }}>{credentials.password}</div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ 
+                ...glassText,
+                fontSize: '10px',
+                color: 'rgba(148, 163, 184, 0.6)',
+                marginBottom: '6px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase'
+              }}>Password</div>
+              <div style={{ 
+                ...glassText,
+                fontSize: '14px',
+                color: 'rgba(203, 213, 225, 0.9)',
+                padding: '12px',
+                background: 'rgba(30, 41, 59, 0.5)'
+              }}>{credentials.password}</div>
             </div>
           </div>
 
-          <div style={{ padding: '20px', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid #ef4444', borderRadius: '12px', marginBottom: '32px' }}>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: '#ef4444', marginBottom: '8px' }}>
-              IMPORTANT - READ CAREFULLY
+          <div style={{ 
+            padding: '16px',
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            marginBottom: '28px',
+            textAlign: 'left'
+          }}>
+            <div style={{ 
+              ...glassText,
+              fontSize: '10px',
+              letterSpacing: '2px',
+              color: 'rgba(239, 68, 68, 0.8)',
+              marginBottom: '10px',
+              textTransform: 'uppercase'
+            }}>
+              Important
             </div>
-            <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6', textAlign: 'left' }}>
-              - Save these credentials immediately<br/>
-              - Passwords CANNOT be reset<br/>
-              - If you lose your password, you must re-register with your INE<br/>
-              - Your account requires admin approval before you can upload properties
+            <div style={{ 
+              ...glassText,
+              fontSize: '11px',
+              color: 'rgba(203, 213, 225, 0.7)',
+              lineHeight: '1.8'
+            }}>
+              Save these credentials immediately. Passwords cannot be reset. If you lose your password, you must re-register with your INE.
             </div>
           </div>
 
           <button
             onClick={() => navigate('/login')}
-            style={{ padding: '16px 48px', background: 'linear-gradient(135deg, #cba658, #b8944d)', color: '#0f172a', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '700', cursor: 'pointer' }}
+            style={{ 
+              padding: '14px 40px',
+              background: 'rgba(203, 166, 88, 0.85)',
+              color: '#1e293b',
+              border: 'none',
+              fontSize: '10px',
+              fontWeight: '400',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              fontFamily: '"Helvetica Neue", sans-serif'
+            }}
           >
             Go to Login
           </button>
@@ -126,26 +268,110 @@ export default function AgentRegistration() {
     );
   }
 
+  // REGISTRATION FORM
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '40px' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ 
+      minHeight: '100vh',
+      position: 'relative',
+      padding: '40px 20px'
+    }}>
+      {/* VINEYARD BACKGROUND */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=85")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        zIndex: 0
+      }} />
+
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.6) 0%, rgba(15,23,42,0.8) 100%)',
+        zIndex: 1
+      }} />
+
+      <div style={{ 
+        position: 'relative',
+        zIndex: 2,
+        maxWidth: '700px', 
+        margin: '0 auto'
+      }}>
+        {/* HEADER */}
         <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '42px', fontWeight: '300', color: '#cba658', marginBottom: '12px' }}>Agent Registration</h1>
-          <p style={{ fontSize: '16px', color: '#94a3b8' }}>Register to list properties - INE verification required</p>
+          <h1 style={{ 
+            ...glassText,
+            fontSize: '32px',
+            fontWeight: '100',
+            color: 'rgba(203, 166, 88, 0.9)',
+            marginBottom: '12px',
+            letterSpacing: '6px',
+            textTransform: 'uppercase'
+          }}>
+            Agent Registration
+          </h1>
+          <p style={{ 
+            ...glassText,
+            fontSize: '12px',
+            color: 'rgba(148, 163, 184, 0.7)',
+            letterSpacing: '2px'
+          }}>
+            Register to list properties - INE verification required
+          </p>
         </div>
 
+        {/* ERROR */}
         {error && (
-          <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid #ef4444', borderRadius: '12px', color: '#ef4444', marginBottom: '24px', fontSize: '14px', fontWeight: '600' }}>
+          <div style={{ 
+            padding: '14px',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#ef4444',
+            marginBottom: '24px',
+            fontSize: '12px',
+            textAlign: 'center'
+          }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '16px', padding: '40px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#cba658', marginBottom: '24px' }}>Contact Information</h3>
+          {/* CONTACT INFO CARD */}
+          <div style={{ 
+            background: 'rgba(15, 23, 42, 0.4)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(148, 163, 184, 0.15)',
+            padding: '36px',
+            marginBottom: '24px'
+          }}>
+            <h3 style={{ 
+              ...glassText,
+              fontSize: '14px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              color: 'rgba(203, 166, 88, 0.8)',
+              marginBottom: '28px'
+            }}>
+              Contact Information
+            </h3>
 
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+              <label style={{
+                ...glassText,
+                display: 'block',
+                fontSize: '10px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+                color: 'rgba(148, 163, 184, 0.7)'
+              }}>
                 Full Name *
               </label>
               <input
@@ -153,13 +379,29 @@ export default function AgentRegistration() {
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 required
-                style={{ width: '100%', padding: '14px', background: 'rgba(30, 41, 59, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#f1f5f9', fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'rgba(30, 41, 59, 0.5)',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  color: 'rgba(203, 213, 225, 0.9)',
+                  fontSize: '14px',
+                  fontFamily: '"Helvetica Neue", sans-serif'
+                }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+                <label style={{
+                  ...glassText,
+                  display: 'block',
+                  fontSize: '10px',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  marginBottom: '10px',
+                  color: 'rgba(148, 163, 184, 0.7)'
+                }}>
                   Email *
                 </label>
                 <input
@@ -167,12 +409,28 @@ export default function AgentRegistration() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  style={{ width: '100%', padding: '14px', background: 'rgba(30, 41, 59, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#f1f5f9', fontSize: '16px' }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    background: 'rgba(30, 41, 59, 0.5)',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
+                    color: 'rgba(203, 213, 225, 0.9)',
+                    fontSize: '14px',
+                    fontFamily: '"Helvetica Neue", sans-serif'
+                  }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+                <label style={{
+                  ...glassText,
+                  display: 'block',
+                  fontSize: '10px',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  marginBottom: '10px',
+                  color: 'rgba(148, 163, 184, 0.7)'
+                }}>
                   Phone *
                 </label>
                 <input
@@ -180,13 +438,29 @@ export default function AgentRegistration() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
-                  style={{ width: '100%', padding: '14px', background: 'rgba(30, 41, 59, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#f1f5f9', fontSize: '16px' }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    background: 'rgba(30, 41, 59, 0.5)',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
+                    color: 'rgba(203, 213, 225, 0.9)',
+                    fontSize: '14px',
+                    fontFamily: '"Helvetica Neue", sans-serif'
+                  }}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+            <div>
+              <label style={{
+                ...glassText,
+                display: 'block',
+                fontSize: '10px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+                color: 'rgba(148, 163, 184, 0.7)'
+              }}>
                 Real Estate License Number *
               </label>
               <input
@@ -194,16 +468,48 @@ export default function AgentRegistration() {
                 value={formData.licenseNumber}
                 onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
                 required
-                style={{ width: '100%', padding: '14px', background: 'rgba(30, 41, 59, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#f1f5f9', fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'rgba(30, 41, 59, 0.5)',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  color: 'rgba(203, 213, 225, 0.9)',
+                  fontSize: '14px',
+                  fontFamily: '"Helvetica Neue", sans-serif'
+                }}
               />
             </div>
           </div>
 
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '16px', padding: '40px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#cba658', marginBottom: '24px' }}>INE Verification (Mexican ID)</h3>
+          {/* INE VERIFICATION CARD */}
+          <div style={{ 
+            background: 'rgba(15, 23, 42, 0.4)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(148, 163, 184, 0.15)',
+            padding: '36px',
+            marginBottom: '24px'
+          }}>
+            <h3 style={{ 
+              ...glassText,
+              fontSize: '14px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              color: 'rgba(203, 166, 88, 0.8)',
+              marginBottom: '28px'
+            }}>
+              INE Verification (Mexican ID)
+            </h3>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                ...glassText,
+                display: 'block',
+                fontSize: '10px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+                color: 'rgba(148, 163, 184, 0.7)'
+              }}>
                 INE Number (18 characters) *
               </label>
               <input
@@ -212,23 +518,44 @@ export default function AgentRegistration() {
                 onChange={(e) => setFormData({ ...formData, ineNumber: e.target.value.toUpperCase() })}
                 required
                 maxLength="18"
-                style={{ width: '100%', padding: '14px', background: 'rgba(30, 41, 59, 0.8)', border: '2px solid rgba(203, 166, 88, 0.3)', borderRadius: '8px', color: '#f1f5f9', fontSize: '16px', letterSpacing: '2px', fontFamily: 'monospace' }}
                 placeholder="ABCD123456EFGH7890"
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'rgba(30, 41, 59, 0.5)',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  color: 'rgba(203, 213, 225, 0.9)',
+                  fontSize: '14px',
+                  fontFamily: 'monospace',
+                  letterSpacing: '3px'
+                }}
               />
-              <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px' }}>
+              <div style={{ 
+                ...glassText,
+                fontSize: '10px',
+                color: 'rgba(100, 116, 139, 0.6)',
+                marginTop: '8px'
+              }}>
                 {formData.ineNumber.length}/18 characters
               </div>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#cbd5e1', marginBottom: '8px' }}>
+              <label style={{
+                ...glassText,
+                display: 'block',
+                fontSize: '10px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+                color: 'rgba(148, 163, 184, 0.7)'
+              }}>
                 Upload INE Photo *
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleIneUpload}
-                required
                 style={{ display: 'none' }}
                 id="ine-upload"
               />
@@ -237,55 +564,119 @@ export default function AgentRegistration() {
                 style={{
                   display: 'block',
                   padding: '40px',
-                  background: inePhoto ? 'rgba(203, 166, 88, 0.1)' : 'rgba(30, 41, 59, 0.4)',
-                  border: '3px dashed rgba(203, 166, 88, 0.3)',
-                  borderRadius: '12px',
+                  background: inePhoto ? 'rgba(203, 166, 88, 0.08)' : 'rgba(30, 41, 59, 0.3)',
+                  border: '1px dashed rgba(148, 163, 184, 0.3)',
                   textAlign: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
                 }}
               >
                 {inePhoto ? (
                   <div>
-                    <img src={inePhoto.url} alt="INE" style={{ maxWidth: '400px', maxHeight: '250px', borderRadius: '8px', marginBottom: '16px' }} />
-                    <div style={{ fontSize: '14px', color: '#10b981', fontWeight: '600' }}>INE Uploaded</div>
+                    <img src={inePhoto.url} alt="INE" style={{ maxWidth: '350px', maxHeight: '220px', marginBottom: '16px' }} />
+                    <div style={{ 
+                      ...glassText,
+                      fontSize: '11px',
+                      color: 'rgba(16, 185, 129, 0.8)',
+                      letterSpacing: '2px'
+                    }}>
+                      INE Uploaded Successfully
+                    </div>
                   </div>
                 ) : (
                   <div>
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>ID</div>
-                    <div style={{ fontSize: '16px', color: '#f1f5f9', marginBottom: '8px' }}>Click to upload INE photo</div>
-                    <div style={{ fontSize: '13px', color: '#94a3b8' }}>Max file size: 5MB</div>
+                    <div style={{
+                      width: '50px',
+                      height: '50px',
+                      border: '1px solid rgba(148, 163, 184, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px',
+                      color: 'rgba(148, 163, 184, 0.5)',
+                      fontSize: '20px'
+                    }}>
+                      ID
+                    </div>
+                    <div style={{ 
+                      ...glassText,
+                      fontSize: '13px',
+                      color: 'rgba(203, 213, 225, 0.8)',
+                      marginBottom: '8px'
+                    }}>
+                      Click to upload INE photo
+                    </div>
+                    <div style={{ 
+                      ...glassText,
+                      fontSize: '10px',
+                      color: 'rgba(100, 116, 139, 0.6)'
+                    }}>
+                      Max file size: 5MB
+                    </div>
                   </div>
                 )}
               </label>
             </div>
           </div>
 
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
             disabled={loading}
             style={{
               width: '100%',
-              padding: '20px',
-              background: loading ? '#64748b' : 'linear-gradient(135deg, #cba658, #b8944d)',
-              color: '#0f172a',
+              padding: '16px',
+              background: loading ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 166, 88, 0.85)',
+              color: loading ? 'rgba(148, 163, 184, 0.6)' : '#1e293b',
               border: 'none',
-              borderRadius: '12px',
-              fontSize: '20px',
-              fontWeight: '700',
+              fontSize: '11px',
+              fontWeight: '400',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
               cursor: loading ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 12px rgba(203, 166, 88, 0.4)'
+              fontFamily: '"Helvetica Neue", sans-serif',
+              transition: 'all 0.3s'
             }}
           >
             {loading ? 'Registering...' : 'Register as Agent'}
           </button>
         </form>
 
+        {/* LOGIN LINK */}
         <div style={{ marginTop: '24px', textAlign: 'center' }}>
           <button
             onClick={() => navigate('/login')}
-            style={{ padding: '12px 24px', background: 'transparent', color: '#cba658', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}
+            style={{ 
+              padding: '12px 24px',
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(203, 166, 88, 0.8)',
+              fontSize: '11px',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              fontFamily: '"Helvetica Neue", sans-serif'
+            }}
           >
             Already registered? Login
+          </button>
+        </div>
+
+        {/* BACK TO HOME */}
+        <div style={{ marginTop: '12px', textAlign: 'center' }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{ 
+              padding: '12px 24px',
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(100, 116, 139, 0.6)',
+              fontSize: '10px',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              fontFamily: '"Helvetica Neue", sans-serif'
+            }}
+          >
+            ← Back to Home
           </button>
         </div>
       </div>

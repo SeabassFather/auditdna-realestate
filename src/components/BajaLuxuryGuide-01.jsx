@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowRight, Volume2, VolumeX, Play, Pause } from 'lucide-react';
-import LuxuryGoods from './LuxuryGoods';
 
 function Accordion({ children, defaultOpen = -1 }) {
   const [openIndex, setOpenIndex] = useState(defaultOpen);
@@ -119,7 +118,7 @@ export default function BajaLuxuryGuide() {
       sub: "THE LUXURY GUIDE",
       establishments: "Curated Establishments",
       toggle: "ES",
-      tabs: { guide: "Guide", magazine: "Magazine", journal: "Journal", partners: "Partners", collection: "Collection" },
+      tabs: { guide: "Guide", magazine: "Magazine", journal: "Journal", partners: "Partners" },
       featured: {
         winery: "Winery",
         dish: "Cuisine",
@@ -158,7 +157,7 @@ export default function BajaLuxuryGuide() {
       sub: "LA GUIA DE LUJO",
       establishments: "Establecimientos Selectos",
       toggle: "EN",
-      tabs: { guide: "Guia", magazine: "Revista", journal: "Diario", partners: "Socios", collection: "Coleccion" },
+      tabs: { guide: "Guia", magazine: "Revista", journal: "Diario", partners: "Socios" },
       featured: {
         winery: "Vinedo",
         dish: "Gastronomia",
@@ -1378,42 +1377,49 @@ export default function BajaLuxuryGuide() {
 
                 {/* U4RIK SPIRITS - HERO SPOTLIGHT */}
                 <div style={{
-                  background: 'linear-gradient(135deg, rgba(30,41,59,0.95) 0%, rgba(51,65,85,0.9) 100%)',
-                  border: '1px solid rgba(203,166,88,0.4)',
+                  background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)',
+                  border: '1px solid rgba(203,166,88,0.3)',
                   overflow: 'hidden',
                   position: 'relative'
                 }}>
                   {/* Subtle gold glow effect */}
                   <div style={{
                     position: 'absolute',
-                    top: '-30%',
-                    right: '-10%',
-                    width: '300px',
-                    height: '300px',
-                    background: 'radial-gradient(circle, rgba(203,166,88,0.12) 0%, transparent 70%)',
+                    top: '-50%',
+                    right: '-20%',
+                    width: '400px',
+                    height: '400px',
+                    background: 'radial-gradient(circle, rgba(203,166,88,0.08) 0%, transparent 70%)',
                     pointerEvents: 'none'
                   }} />
                   
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr',
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                     gap: '0'
                   }}>
                     {/* IMAGE SIDE */}
                     <div style={{
-                      height: isMobile ? '220px' : '320px',
-                      backgroundImage: 'url("/images/partners/u4rik-spirits-lineup.png")',
+                      height: isMobile ? '300px' : '450px',
+                      backgroundImage: 'url("/images/partners/u4rik-spirits.webp")',
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundColor: 'rgba(15,15,15,1)',
                       position: 'relative'
                     }}>
+                      {/* Gradient overlay for text readability */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: '50%',
+                        background: isMobile ? 'linear-gradient(to top, rgba(15,23,42,0.9), transparent)' : 'none'
+                      }} />
                     </div>
 
-                    {/* CONTENT SIDE - COMPACT */}
+                    {/* CONTENT SIDE */}
                     <div style={{
-                      padding: isMobile ? '24px 20px' : '28px 36px',
+                      padding: isMobile ? '32px 24px' : '48px 56px',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
@@ -1423,8 +1429,8 @@ export default function BajaLuxuryGuide() {
                       <p style={{
                         fontSize: '9px',
                         color: '#cba658',
-                        letterSpacing: '3px',
-                        marginBottom: '8px',
+                        letterSpacing: '4px',
+                        marginBottom: '16px',
                         textTransform: 'uppercase'
                       }}>
                         {language === 'english' ? 'PREMIUM SPIRITS' : 'LICORES PREMIUM'}
@@ -1432,75 +1438,91 @@ export default function BajaLuxuryGuide() {
 
                       {/* Brand Name */}
                       <h3 style={{
-                        fontSize: isMobile ? '24px' : '28px',
-                        fontWeight: '200',
+                        fontSize: isMobile ? '28px' : '36px',
+                        fontWeight: '100',
                         color: '#f1f5f9',
-                        letterSpacing: '4px',
-                        marginBottom: '4px'
+                        letterSpacing: '6px',
+                        marginBottom: '8px'
                       }}>
                         U4RIK
                       </h3>
                       <p style={{
-                        fontSize: '12px',
+                        fontSize: '14px',
                         color: 'rgba(203, 166, 88, 0.9)',
-                        letterSpacing: '3px',
-                        marginBottom: '12px',
+                        letterSpacing: '4px',
+                        marginBottom: '24px',
                         fontWeight: '300'
                       }}>
                         SPIRITS
                       </p>
 
-                      {/* Brand Description - Compact */}
+                      {/* Tagline */}
                       <p style={{
-                        fontSize: '11px',
+                        fontSize: '15px',
                         color: '#cbd5e1',
-                        lineHeight: '1.7',
-                        marginBottom: '16px'
+                        lineHeight: '1.8',
+                        marginBottom: '28px',
+                        fontStyle: 'italic',
+                        fontWeight: '300'
                       }}>
                         {language === 'english' 
-                          ? 'Award-winning, family-owned distillery from San Marcos, CA. Grape-based gluten-free vodka. 100% Blue Agave tequilas—Double Gold at World Spirits Competition—aged in American oak.'
-                          : 'Destilería familiar galardonada de San Marcos, CA. Vodka libre de gluten a base de uva. Tequilas 100% Agave Azul—Doble Oro en World Spirits Competition—añejados en roble americano.'}
+                          ? '"Premium spirits crafted for those who demand excellence"'
+                          : '"Licores premium elaborados para quienes exigen excelencia"'}
                       </p>
 
-                      {/* Product Line - Inline */}
+                      {/* Product Line */}
                       <div style={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '8px',
-                        marginBottom: '16px'
+                        gap: '12px',
+                        marginBottom: '32px'
                       }}>
                         {[
-                          { name: 'Vodka', desc: 'USA' },
-                          { name: 'Silver', desc: 'MX' },
-                          { name: 'Reposado', desc: 'MX' },
-                          { name: 'Añejo', desc: 'MX' }
+                          { name: 'Vodka', desc: 'Made in USA' },
+                          { name: 'Silver', desc: '100% Agave · Mexico' },
+                          { name: 'Reposado', desc: '100% Agave · Mexico' },
+                          { name: 'Añejo', desc: '100% Agave · Mexico' }
                         ].map((product, i) => (
                           <div key={i} style={{
-                            padding: '6px 12px',
-                            background: 'rgba(203,166,88,0.1)',
-                            border: '1px solid rgba(203,166,88,0.25)'
+                            padding: '10px 16px',
+                            background: 'rgba(203,166,88,0.08)',
+                            border: '1px solid rgba(203,166,88,0.2)'
                           }}>
-                            <span style={{
-                              fontSize: '10px',
+                            <p style={{
+                              fontSize: '11px',
                               color: '#e2e8f0',
-                              letterSpacing: '1px',
-                              fontWeight: '500'
+                              letterSpacing: '2px',
+                              fontWeight: '500',
+                              marginBottom: '2px'
                             }}>
                               {product.name}
-                            </span>
-                            <span style={{
+                            </p>
+                            <p style={{
                               fontSize: '9px',
                               color: '#94a3b8',
-                              marginLeft: '6px'
+                              letterSpacing: '1px'
                             }}>
                               {product.desc}
-                            </span>
+                            </p>
                           </div>
                         ))}
                       </div>
 
-                      {/* CTA Buttons - Compact */}
-                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      {/* Availability */}
+                      <p style={{
+                        fontSize: '10px',
+                        color: '#64748b',
+                        letterSpacing: '2px',
+                        marginBottom: '28px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {language === 'english' 
+                          ? 'Available at select Baja California venues'
+                          : 'Disponible en establecimientos selectos de Baja California'}
+                      </p>
+
+                      {/* CTA Buttons */}
+                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => {
                             const msg = language === 'english' 
@@ -1509,13 +1531,13 @@ export default function BajaLuxuryGuide() {
                             window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
                           }}
                           style={{
-                            padding: '10px 24px',
+                            padding: '14px 32px',
                             background: 'linear-gradient(135deg, #cba658, #b8944d)',
                             border: 'none',
                             color: '#0f172a',
-                            fontSize: '9px',
+                            fontSize: '10px',
                             fontWeight: '600',
-                            letterSpacing: '2px',
+                            letterSpacing: '3px',
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                             transition: 'all 0.3s'
@@ -1533,22 +1555,24 @@ export default function BajaLuxuryGuide() {
                             window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
                           }}
                           style={{
-                            padding: '10px 24px',
+                            padding: '14px 32px',
                             background: 'transparent',
-                            border: '1px solid rgba(203,166,88,0.5)',
+                            border: '1px solid rgba(203,166,88,0.4)',
                             color: '#cba658',
-                            fontSize: '9px',
+                            fontSize: '10px',
                             fontWeight: '500',
-                            letterSpacing: '2px',
+                            letterSpacing: '3px',
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                             transition: 'all 0.3s'
                           }}
                           onMouseEnter={e => {
-                            e.currentTarget.style.background = 'rgba(203,166,88,0.15)';
+                            e.currentTarget.style.background = 'rgba(203,166,88,0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(203,166,88,0.6)';
                           }}
                           onMouseLeave={e => {
                             e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'rgba(203,166,88,0.4)';
                           }}
                         >
                           {language === 'english' ? 'WHOLESALE' : 'MAYORISTA'}
@@ -1647,16 +1671,6 @@ export default function BajaLuxuryGuide() {
                 </button>
               </div>
             </div>
-          </section>
-        )}
-
-        {/* ==================== COLLECTION TAB - LUXURY GOODS ==================== */}
-        {activeTab === "collection" && (
-          <section style={{ 
-            margin: '-60px -40px -120px -40px',
-            position: 'relative'
-          }}>
-            <LuxuryGoods />
           </section>
         )}
 

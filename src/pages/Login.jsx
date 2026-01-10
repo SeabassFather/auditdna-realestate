@@ -1,289 +1,342 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Lock, Mail, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, loading } = useAuth();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setIsSubmitting(true);
 
-    try {
-      const result = await login(email, password);
-      
-      if (result.success) {
-        // Redirect based on role
-        if (result.user.role === 'admin') {
-          navigate('/admin');
-        } else if (result.user.role === 'agent') {
-          navigate('/mexico-real-estate');
-        } else {
-          navigate('/');
-        }
-      } else {
-        setError(result.error || 'Invalid email or password');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const result = await login(email, password);
+
+    if (result.success) {
+      navigate(from, { replace: true });
+    } else {
+      setError(result.error || 'Login failed');
+      setIsSubmitting(false);
     }
   };
 
+  // GLASS TEXT STYLE
+  const glassText = {
+    fontFamily: '"Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif',
+    fontWeight: '100',
+    color: 'rgba(203, 213, 225, 0.85)',
+    textShadow: '0 1px 15px rgba(0,0,0,0.2)'
+  };
+
   return (
-    <div style={{
+    <div style={{ 
       minHeight: '100vh',
-      background: '#0f172a',
+      position: 'relative',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       padding: '20px'
     }}>
-      {/* Background Image */}
+      {/* MOUNTAIN BACKGROUND */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: 'url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80")',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=85")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.15
+        zIndex: 0
       }} />
 
-      {/* Login Card */}
+      {/* OVERLAY */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.7) 100%)',
+        zIndex: 1
+      }} />
+
+      {/* GLASS CARD */}
       <div style={{
         position: 'relative',
+        zIndex: 2,
+        background: 'rgba(15, 23, 42, 0.4)',
+        backdropFilter: 'blur(30px)',
+        WebkitBackdropFilter: 'blur(30px)',
+        border: '1px solid rgba(148, 163, 184, 0.15)',
+        padding: '50px 45px',
         width: '100%',
-        maxWidth: '420px',
-        background: '#1e293b',
-        border: '1px solid #334155',
-        padding: '48px 40px'
+        maxWidth: '420px'
       }}>
-        {/* Logo */}
+        {/* LOGO */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{
-            width: '60px',
-            height: '60px',
-            border: '1px solid #cba658',
+            width: '50px',
+            height: '50px',
+            border: '1px solid rgba(148, 163, 184, 0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 20px'
+            margin: '0 auto 16px'
           }}>
-            <span style={{ color: '#cba658', fontSize: '18px', fontWeight: '300', letterSpacing: '2px' }}>EB</span>
+            <span style={{ 
+              ...glassText,
+              fontSize: '16px', 
+              letterSpacing: '2px',
+              color: 'rgba(203, 213, 225, 0.8)'
+            }}>EB</span>
           </div>
-          <h1 style={{ 
-            color: '#e2e8f0', 
-            fontSize: '24px', 
-            fontWeight: '300', 
-            letterSpacing: '4px',
+          <div style={{ 
+            ...glassText,
+            fontSize: '22px', 
+            letterSpacing: '6px',
             textTransform: 'uppercase',
-            margin: '0 0 8px'
+            marginBottom: '8px'
           }}>
             Enjoy Baja
-          </h1>
-          <p style={{ 
-            color: '#64748b', 
-            fontSize: '12px', 
-            letterSpacing: '2px',
-            textTransform: 'uppercase'
+          </div>
+          <div style={{
+            ...glassText,
+            fontSize: '9px',
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            color: 'rgba(148, 163, 184, 0.6)'
           }}>
-            Agent Portal
-          </p>
+            Real Estate Portal
+          </div>
         </div>
 
-        {/* Error Message */}
+        {/* TITLE */}
+        <h1 style={{ 
+          ...glassText,
+          fontSize: '24px',
+          fontWeight: '200',
+          textAlign: 'center',
+          marginBottom: '8px',
+          letterSpacing: '3px'
+        }}>
+          Welcome Back
+        </h1>
+        <p style={{
+          ...glassText,
+          fontSize: '11px',
+          textAlign: 'center',
+          marginBottom: '32px',
+          color: 'rgba(148, 163, 184, 0.6)',
+          letterSpacing: '2px'
+        }}>
+          Sign in to access your dashboard
+        </p>
+
+        {/* ERROR */}
         {error && (
           <div style={{
-            background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.3)',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
             padding: '12px 16px',
             marginBottom: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px'
+            color: '#ef4444',
+            fontSize: '12px',
+            textAlign: 'center',
+            letterSpacing: '0.5px'
           }}>
-            <AlertCircle size={18} color="#ef4444" />
-            <span style={{ color: '#fca5a5', fontSize: '13px' }}>{error}</span>
+            {error}
           </div>
         )}
 
-        {/* Login Form */}
+        {/* FORM */}
         <form onSubmit={handleSubmit}>
-          {/* Email */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{
+              ...glassText,
               display: 'block',
-              fontSize: '11px',
-              color: '#94a3b8',
-              letterSpacing: '1px',
-              marginBottom: '8px',
-              textTransform: 'uppercase'
+              fontSize: '10px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              marginBottom: '10px',
+              color: 'rgba(148, 163, 184, 0.7)'
             }}>
               Email Address
             </label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={18} color="#64748b" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                required
-                style={{
-                  width: '100%',
-                  padding: '14px 14px 14px 44px',
-                  background: '#0f172a',
-                  border: '1px solid #334155',
-                  color: '#e2e8f0',
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              disabled={isSubmitting}
+              autoComplete="email"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: 'rgba(30, 41, 59, 0.5)',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                color: 'rgba(203, 213, 225, 0.9)',
+                fontSize: '14px',
+                fontFamily: '"Helvetica Neue", sans-serif',
+                outline: 'none',
+                transition: 'border-color 0.3s'
+              }}
+            />
           </div>
 
-          {/* Password */}
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '28px' }}>
             <label style={{
+              ...glassText,
               display: 'block',
-              fontSize: '11px',
-              color: '#94a3b8',
-              letterSpacing: '1px',
-              marginBottom: '8px',
-              textTransform: 'uppercase'
+              fontSize: '10px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              marginBottom: '10px',
+              color: 'rgba(148, 163, 184, 0.7)'
             }}>
               Password
             </label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={18} color="#64748b" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••"
-                required
-                style={{
-                  width: '100%',
-                  padding: '14px 44px 14px 44px',
-                  background: '#0f172a',
-                  border: '1px solid #334155',
-                  color: '#e2e8f0',
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '14px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0
-                }}
-              >
-                {showPassword ? <EyeOff size={18} color="#64748b" /> : <Eye size={18} color="#64748b" />}
-              </button>
-            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              disabled={isSubmitting}
+              autoComplete="current-password"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: 'rgba(30, 41, 59, 0.5)',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                color: 'rgba(203, 213, 225, 0.9)',
+                fontSize: '14px',
+                fontFamily: '"Helvetica Neue", sans-serif',
+                outline: 'none',
+                transition: 'border-color 0.3s'
+              }}
+            />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             style={{
               width: '100%',
-              padding: '16px',
-              background: loading ? '#334155' : '#cba658',
+              padding: '14px 24px',
+              background: isSubmitting ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 166, 88, 0.85)',
               border: 'none',
-              color: loading ? '#64748b' : '#0f172a',
-              fontSize: '13px',
-              fontWeight: '600',
-              letterSpacing: '2px',
+              color: isSubmitting ? 'rgba(148, 163, 184, 0.6)' : '#1e293b',
+              fontSize: '10px',
+              fontWeight: '400',
+              letterSpacing: '3px',
               textTransform: 'uppercase',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: '"Helvetica Neue", sans-serif'
             }}
           >
-            {loading ? 'Signing In...' : (
-              <>
-                Sign In <ArrowRight size={16} />
-              </>
-            )}
+            {isSubmitting ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        {/* Divider */}
+        {/* DIVIDER */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          margin: '32px 0',
-          gap: '16px'
+          gap: '16px',
+          margin: '28px 0',
+          color: 'rgba(100, 116, 139, 0.5)',
+          fontSize: '10px',
+          letterSpacing: '2px'
         }}>
-          <div style={{ flex: 1, height: '1px', background: '#334155' }} />
-          <span style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>or</span>
-          <div style={{ flex: 1, height: '1px', background: '#334155' }} />
+          <div style={{ flex: 1, height: '1px', background: 'rgba(148, 163, 184, 0.15)' }} />
+          <span>OR</span>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(148, 163, 184, 0.15)' }} />
         </div>
 
-        {/* Register Link */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '16px' }}>
-            Want to become an agent?
-          </p>
-          <button
-            onClick={() => navigate('/agent-register')}
+        {/* REGISTER LINK */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <span style={{
+            ...glassText,
+            fontSize: '11px',
+            color: 'rgba(148, 163, 184, 0.6)',
+            letterSpacing: '1px'
+          }}>
+            New agent?
+          </span>
+          <Link 
+            to="/agent-register" 
             style={{
-              width: '100%',
-              padding: '14px',
-              background: 'transparent',
-              border: '1px solid #334155',
-              color: '#94a3b8',
-              fontSize: '12px',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              cursor: 'pointer'
+              ...glassText,
+              fontSize: '11px',
+              color: 'rgba(203, 166, 88, 0.9)',
+              textDecoration: 'none',
+              marginLeft: '6px',
+              letterSpacing: '1px'
             }}
           >
-            Apply to Join
-          </button>
+            Register here
+          </Link>
         </div>
 
-        {/* Back to Home */}
-        <div style={{ textAlign: 'center', marginTop: '32px' }}>
-          <button
-            onClick={() => navigate('/')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#64748b',
-              fontSize: '12px',
-              cursor: 'pointer'
-            }}
-          >
-            ← Back to Home
-          </button>
+        {/* BACK TO HOME */}
+        <Link 
+          to="/" 
+          style={{
+            ...glassText,
+            display: 'block',
+            textAlign: 'center',
+            fontSize: '10px',
+            color: 'rgba(100, 116, 139, 0.6)',
+            textDecoration: 'none',
+            letterSpacing: '2px'
+          }}
+        >
+          ← Back to Home
+        </Link>
+
+        {/* CREDENTIALS - REMOVE IN PRODUCTION */}
+        <div style={{
+          marginTop: '28px',
+          padding: '16px',
+          background: 'rgba(203, 166, 88, 0.08)',
+          border: '1px solid rgba(203, 166, 88, 0.15)'
+        }}>
+          <div style={{
+            ...glassText,
+            fontSize: '9px',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            color: 'rgba(203, 166, 88, 0.7)',
+            marginBottom: '10px'
+          }}>
+            Demo Credentials
+          </div>
+          <div style={{
+            ...glassText,
+            fontSize: '10px',
+            color: 'rgba(148, 163, 184, 0.6)',
+            fontFamily: 'monospace',
+            lineHeight: '1.8'
+          }}>
+            Admin: admin@enjoybaja.com / EnjoyBaja2026!<br/>
+            Agent: saul@enjoybaja.com / SaulAdmin2026!
+          </div>
         </div>
       </div>
     </div>
