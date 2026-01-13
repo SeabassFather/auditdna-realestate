@@ -1,0 +1,60 @@
+import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
+
+const AdManagementPanel = () => {
+  const langContext = typeof useLanguage === 'function' ? useLanguage() : null;
+  const language = langContext?.language || 'en';
+  const [submissions, setSubmissions] = useState([]);
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => { 
+    setSubmissions(JSON.parse(localStorage.getItem('ad_submissions') || '[]')); 
+  }, []);
+
+  const updateStatus = (id, status) => {
+    const updated = submissions.map(ad => ad.id === id ? { ...ad, status: status, reviewedAt: new Date().toISOString() } : ad);
+    setSubmissions(updated);
+    localStorage.setItem('ad_submissions', JSON.stringify(updated));
+  };
+
+  const filtered = submissions.filter(ad => filter === 'all' || ad.status === filter);
+  const getStatusColor = (s) => s === 'approved' ? '#4ade80' : s === 'rejected' ? '#f87171' : '#fbbf24';
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '24px' }}>
+      <h2 style={{ color: '#cba658', fontSize: '20px', letterSpacing: '3px', marginBottom: '24px' }}>{language === 'en' ? 'AD MANAGEMENT' : 'GESTION DE ANUNCIOS'}</h2>
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+        {['all', 'pending_review', 'approved', 'rejected'].map(f => (
+          <button key={f} onClick={() => setFilter(f)} style={{ padding: '10px 20px', background: filter === f ? 'rgba(203, 166, 88, 0.2)' : 'transparent', border: '1px solid rgba(148, 163, 184, 0.3)', color: filter === f ? '#cba658' : 'rgba(148, 163, 184, 0.7)', fontSize: '10px', letterSpacing: '2px', cursor: 'pointer', textTransform: 'uppercase' }}>
+            {f === 'all' ? 'All' : f === 'pending_review' ? 'Pending' : f} ({submissions.filter(ad => f === 'all' || ad.status === f).length})
+          </button>
+        ))}
+      </div>
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(148, 163, 184, 0.6)' }}>{language === 'en' ? 'No submissions' : 'Sin envios'}</div>
+      ) : (
+        filtered.map(ad => (
+          <div key={ad.id} style={{ background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '8px', padding: '20px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <h3 style={{ color: '#e2e8f0', fontSize: '16px', margin: 0 }}>{ad.content?.businessName || 'Untitled'}</h3>
+                  <span style={{ fontSize: '9px', padding: '4px 8px', background: getStatusColor(ad.status) + '20', color: getStatusColor(ad.status), borderRadius: '4px', textTransform: 'uppercase' }}>{ad.status?.replace('_', ' ')}</span>
+                </div>
+                <p style={{ color: 'rgba(148, 163, 184, 0.6)', fontSize: '12px' }}>Package: {ad.package?.toUpperCase()} | ${ad.amount?.toLocaleString()}</p>
+              </div>
+              {ad.status === 'pending_review' && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => updateStatus(ad.id, 'approved')} style={{ padding: '10px 20px', background: 'rgba(74, 222, 128, 0.2)', border: '1px solid rgba(74, 222, 128, 0.5)', color: '#4ade80', fontSize: '10px', cursor: 'pointer' }}>APPROVE</button>
+                  <button onClick={() => updateStatus(ad.id, 'rejected')} style={{ padding: '10px 20px', background: 'rgba(248, 113, 113, 0.2)', border: '1px solid rgba(248, 113, 113, 0.5)', color: '#f87171', fontSize: '10px', cursor: 'pointer' }}>REJECT</button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+export default AdManagementPanel;

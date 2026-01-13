@@ -194,7 +194,8 @@ export default function Login() {
                 fontSize: '14px',
                 fontFamily: '"Helvetica Neue", sans-serif',
                 outline: 'none',
-                transition: 'border-color 0.3s'
+                transition: 'border-color 0.3s',
+                boxSizing: 'border-box'
               }}
             />
           </div>
@@ -227,7 +228,8 @@ export default function Login() {
                 fontSize: '14px',
                 fontFamily: '"Helvetica Neue", sans-serif',
                 outline: 'none',
-                transition: 'border-color 0.3s'
+                transition: 'border-color 0.3s',
+                boxSizing: 'border-box'
               }}
             />
           </div>
@@ -280,7 +282,7 @@ export default function Login() {
             New agent?
           </span>
           <Link 
-            to="/agent-register" 
+            to="/register" 
             style={{
               ...glassText,
               fontSize: '11px',
@@ -307,10 +309,10 @@ export default function Login() {
             letterSpacing: '2px'
           }}
         >
-          ← Back to Home
+          Back to Home
         </Link>
 
-        {/* CREDENTIALS - REMOVE IN PRODUCTION */}
+        {/* DEMO CREDENTIALS */}
         <div style={{
           marginTop: '28px',
           padding: '16px',
@@ -323,19 +325,20 @@ export default function Login() {
             letterSpacing: '2px',
             textTransform: 'uppercase',
             color: 'rgba(203, 166, 88, 0.7)',
-            marginBottom: '10px'
+            marginBottom: '12px'
           }}>
-            Demo Credentials
+            Demo Access
           </div>
           <div style={{
             ...glassText,
-            fontSize: '10px',
-            color: 'rgba(148, 163, 184, 0.6)',
+            fontSize: '11px',
+            color: 'rgba(148, 163, 184, 0.7)',
             fontFamily: 'monospace',
-            lineHeight: '1.8'
+            lineHeight: '2'
           }}>
-            Admin: admin@enjoybaja.com / EnjoyBaja2026!<br/>
-            Agent: saul@enjoybaja.com / SaulAdmin2026!
+            <div>Email: demo@enjoybaja.com</div>
+            <div>Password: Demo2026!</div>
+            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(148, 163, 184, 0.1)', fontSize: '10px', color: 'rgba(148, 163, 184, 0.5)' }}>PIN: 0000</div>
           </div>
         </div>
       </div>

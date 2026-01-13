@@ -14,23 +14,21 @@ export const translations = {
     factoringDesc: "Invoice upload & trade finance",
     home: "Home",
     languageToggle: "ES"
-    // Add other translations below as more key: value pairs
   },
   es: {
     homepageTitle: "Plataforma de Productos AuditDNA",
-    homepageSub: "Impulsado por Tecnolog Avanzada de IA",
-    produceDashboard: "Panel de Producci
-    produceDesc: "Anal precios, datos de mercado",
+    homepageSub: "Impulsado por Tecnologia Avanzada de IA",
+    produceDashboard: "Panel de Produccion",
+    produceDesc: "Analisis de precios, datos de mercado",
     usdaDashboard: "Inteligencia USDA",
     usdaDesc: "Multi-commodity, cumplimiento, exportaciones",
     traceDashboard: "Centro de IA de Trazabilidad",
-    traceDesc: "Cadena de custodia, QR, an IA",
+    traceDesc: "Cadena de custodia, QR, analisis IA",
     waterDashboard: "WaterTech",
     waterDesc: "Laboratorio, cumplimiento, carga de pruebas",
     factoringDashboard: "Factoraje Agro",
     factoringDesc: "Carga de Facturas y Finanzas",
     home: "Inicio",
     languageToggle: "EN"
-    // Add other translations below as more key: value pairs
   }
-}
+};
