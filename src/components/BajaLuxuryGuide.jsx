@@ -120,7 +120,7 @@ export default function BajaLuxuryGuide() {
       sub: "THE LUXURY GUIDE",
       establishments: "Curated Establishments",
       toggle: "ES",
-      tabs: { guide: "Guide", magazine: "Magazine", journal: "Journal", partners: "Partners", collection: "Collection", advertise: "Advertise" },
+      tabs: { guide: "Guide", magazine: "Magazine", journal: "Journal", foodjournal: "Food Journal", winecellar: "Wine Cellar", partners: "Partners", collection: "Collection", advertise: "Advertise" },
       featured: {
         winery: "Winery",
         dish: "Cuisine",
@@ -151,15 +151,47 @@ export default function BajaLuxuryGuide() {
         subtitle: "For distinguished brands seeking elevated exposure in Baja California's premier luxury market",
         cta: "Begin Conversation",
         benefits: ["Editorial Feature", "Magazine Placement", "Newsletter Inclusion", "Private Events"]
+      },
+      foodjournal: {
+        title: "Food Journal",
+        subtitle: "A Culinary Alliance — USA & Mexico",
+        description: "A collaborative space for food writers, chefs, and culinary enthusiasts to share stories about cuisine, restaurants, and food experiences across the border.",
+        contribute: "Share Your Story",
+        guidelines: "Submission Guidelines",
+        categories: ["Restaurant Reviews", "Chef Profiles", "Street Food", "Wine & Spirits", "Recipes", "Food Travel"],
+        cta: "Submit Contribution",
+        featured: "Featured Contributors",
+        recent: "Recent Stories",
+        placeholder: {
+          name: "Your Name",
+          email: "Your Email",
+          title: "Story Title",
+          category: "Select Category",
+          content: "Share your culinary story... (minimum 300 words)",
+          image: "Drag & drop images or click to upload"
+        },
+        success: "Thank you! Your contribution has been submitted for review.",
+        note: "All submissions are reviewed by our editorial team. Selected stories will be featured in our Food Journal and may be included in our quarterly magazine."
+      },
+      winecellar: {
+        title: "The Wine Cellar",
+        subtitle: "Valle de Guadalupe & Beyond",
+        description: "Discover Mexico's finest wines from the prestigious Valle de Guadalupe wine region",
+        explore: "Explore Collection",
+        featured: "Featured Wineries",
+        wines: "Notable Wines",
+        reserve: "Reserve a Tasting",
+        visit: "Plan Your Visit",
+        varieties: ["Tempranillo", "Nebbiolo", "Cabernet Sauvignon", "Grenache", "Chardonnay", "Sauvignon Blanc"],
+        regions: ["Valle de Guadalupe", "Valle de Santo Tomás", "San Antonio de las Minas", "Ojos Negros"]
       }
     },
-    spanish: {
       slogan: "Donde las Estrellas Vienen a Brillar",
       header: "BAJA CALIFORNIA",
       sub: "LA GUIA DE LUJO",
       establishments: "Establecimientos Selectos",
       toggle: "EN",
-      tabs: { guide: "Guia", magazine: "Revista", journal: "Diario", partners: "Socios", collection: "Colección", advertise: "Anunciar" },
+      tabs: { guide: "Guia", magazine: "Revista", journal: "Diario", foodjournal: "Diario Culinario", winecellar: "Cava de Vinos", partners: "Socios", collection: "Colección", advertise: "Anunciar" },
       featured: {
         winery: "Vinedo",
         dish: "Gastronomia",
@@ -190,6 +222,39 @@ export default function BajaLuxuryGuide() {
         subtitle: "Para marcas distinguidas que buscan exposicion elevada en el mercado de lujo de Baja California",
         cta: "Iniciar Conversacion",
         benefits: ["Articulo Editorial", "Ubicacion en Revista", "Inclusion en Newsletter", "Eventos Privados"]
+      },
+      foodjournal: {
+        title: "Diario Culinario",
+        subtitle: "Una Alianza Culinaria — USA y México",
+        description: "Un espacio colaborativo para escritores gastronómicos, chefs y entusiastas culinarios para compartir historias sobre cocina, restaurantes y experiencias gastronómicas a través de la frontera.",
+        contribute: "Comparte Tu Historia",
+        guidelines: "Guías de Envío",
+        categories: ["Reseñas de Restaurantes", "Perfiles de Chefs", "Comida Callejera", "Vino y Licores", "Recetas", "Viajes Gastronómicos"],
+        cta: "Enviar Contribución",
+        featured: "Colaboradores Destacados",
+        recent: "Historias Recientes",
+        placeholder: {
+          name: "Tu Nombre",
+          email: "Tu Correo",
+          title: "Título de la Historia",
+          category: "Selecciona Categoría",
+          content: "Comparte tu historia culinaria... (mínimo 300 palabras)",
+          image: "Arrastra y suelta imágenes o haz clic para subir"
+        },
+        success: "¡Gracias! Tu contribución ha sido enviada para revisión.",
+        note: "Todas las contribuciones son revisadas por nuestro equipo editorial. Las historias seleccionadas aparecerán en nuestro Diario Culinario y podrían incluirse en nuestra revista trimestral."
+      },
+      winecellar: {
+        title: "La Cava de Vinos",
+        subtitle: "Valle de Guadalupe y Más Allá",
+        description: "Descubre los mejores vinos de México de la prestigiosa región vinícola del Valle de Guadalupe",
+        explore: "Explorar Colección",
+        featured: "Bodegas Destacadas",
+        wines: "Vinos Notables",
+        reserve: "Reservar Cata",
+        visit: "Planea Tu Visita",
+        varieties: ["Tempranillo", "Nebbiolo", "Cabernet Sauvignon", "Grenache", "Chardonnay", "Sauvignon Blanc"],
+        regions: ["Valle de Guadalupe", "Valle de Santo Tomás", "San Antonio de las Minas", "Ojos Negros"]
       }
     },
   };
@@ -1325,6 +1390,799 @@ export default function BajaLuxuryGuide() {
                   </div>
                 </article>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* ==================== FOOD JOURNAL TAB - CULINARY ALLIANCE ==================== */}
+        {activeTab === "foodjournal" && (
+          <section style={{ position: 'relative' }}>
+            {/* FOOD BACKGROUND */}
+            <div style={{
+              position: 'absolute',
+              top: '-60px',
+              left: '-40px',
+              right: '-40px',
+              bottom: '-60px',
+              backgroundImage: 'url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.15,
+              zIndex: 0
+            }} />
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* HEADER */}
+              <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+                <p style={{ 
+                  fontSize: '9px', 
+                  color: '#cba658', 
+                  letterSpacing: '6px', 
+                  marginBottom: '12px', 
+                  textTransform: 'uppercase' 
+                }}>
+                  {language === 'english' ? 'CULINARY ALLIANCE' : 'ALIANZA CULINARIA'}
+                </p>
+                <h2 style={{ 
+                  fontSize: isMobile ? '28px' : '36px', 
+                  fontWeight: '200', 
+                  color: '#e2e8f0', 
+                  letterSpacing: '4px',
+                  marginBottom: '16px'
+                }}>
+                  {t.foodjournal.title}
+                </h2>
+                <p style={{ 
+                  fontSize: '14px', 
+                  color: '#cba658', 
+                  fontStyle: 'italic',
+                  marginBottom: '12px'
+                }}>
+                  {t.foodjournal.subtitle}
+                </p>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: '#94a3b8', 
+                  maxWidth: '600px', 
+                  margin: '0 auto', 
+                  lineHeight: '1.8' 
+                }}>
+                  {t.foodjournal.description}
+                </p>
+              </div>
+
+              {/* CATEGORIES */}
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: '12px',
+                marginBottom: '48px'
+              }}>
+                {t.foodjournal.categories.map((cat, i) => (
+                  <span key={i} style={{
+                    padding: '10px 20px',
+                    border: '1px solid rgba(203,166,88,0.3)',
+                    background: 'rgba(15,23,42,0.6)',
+                    color: '#cba658',
+                    fontSize: '10px',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase'
+                  }}>
+                    {cat}
+                  </span>
+                ))}
+              </div>
+
+              {/* CONTRIBUTION FORM */}
+              <div style={{
+                maxWidth: '700px',
+                margin: '0 auto',
+                padding: '40px',
+                border: '1px solid rgba(203,166,88,0.3)',
+                background: 'rgba(15,23,42,0.8)',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h3 style={{
+                  fontSize: '14px',
+                  color: '#cba658',
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px',
+                  textAlign: 'center'
+                }}>
+                  {t.foodjournal.contribute}
+                </h3>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textAlign: 'center',
+                  marginBottom: '32px'
+                }}>
+                  {t.foodjournal.note}
+                </p>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  alert(t.foodjournal.success);
+                }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  
+                  {/* Name & Email Row */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                    gap: '16px'
+                  }}>
+                    <input
+                      type="text"
+                      placeholder={t.foodjournal.placeholder.name}
+                      required
+                      style={{
+                        padding: '14px 18px',
+                        background: 'rgba(30,41,59,0.8)',
+                        border: '1px solid rgba(148,163,184,0.2)',
+                        color: '#e2e8f0',
+                        fontSize: '13px',
+                        outline: 'none'
+                      }}
+                    />
+                    <input
+                      type="email"
+                      placeholder={t.foodjournal.placeholder.email}
+                      required
+                      style={{
+                        padding: '14px 18px',
+                        background: 'rgba(30,41,59,0.8)',
+                        border: '1px solid rgba(148,163,184,0.2)',
+                        color: '#e2e8f0',
+                        fontSize: '13px',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <input
+                    type="text"
+                    placeholder={t.foodjournal.placeholder.title}
+                    required
+                    style={{
+                      padding: '14px 18px',
+                      background: 'rgba(30,41,59,0.8)',
+                      border: '1px solid rgba(148,163,184,0.2)',
+                      color: '#e2e8f0',
+                      fontSize: '13px',
+                      outline: 'none'
+                    }}
+                  />
+
+                  {/* Category Select */}
+                  <select
+                    required
+                    style={{
+                      padding: '14px 18px',
+                      background: 'rgba(30,41,59,0.8)',
+                      border: '1px solid rgba(148,163,184,0.2)',
+                      color: '#94a3b8',
+                      fontSize: '13px',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="">{t.foodjournal.placeholder.category}</option>
+                    {t.foodjournal.categories.map((cat, i) => (
+                      <option key={i} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+
+                  {/* Content Textarea */}
+                  <textarea
+                    placeholder={t.foodjournal.placeholder.content}
+                    required
+                    rows={8}
+                    style={{
+                      padding: '14px 18px',
+                      background: 'rgba(30,41,59,0.8)',
+                      border: '1px solid rgba(148,163,184,0.2)',
+                      color: '#e2e8f0',
+                      fontSize: '13px',
+                      outline: 'none',
+                      resize: 'vertical',
+                      lineHeight: '1.7'
+                    }}
+                  />
+
+                  {/* Image Upload Area */}
+                  <div style={{
+                    padding: '32px',
+                    border: '2px dashed rgba(148,163,184,0.3)',
+                    background: 'rgba(30,41,59,0.5)',
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => document.getElementById('foodjournal-upload').click()}
+                  >
+                    <input
+                      type="file"
+                      id="foodjournal-upload"
+                      accept="image/*"
+                      multiple
+                      style={{ display: 'none' }}
+                    />
+                    <p style={{
+                      fontSize: '12px',
+                      color: '#94a3b8',
+                      letterSpacing: '1px'
+                    }}>
+                      {t.foodjournal.placeholder.image}
+                    </p>
+                    <p style={{
+                      fontSize: '10px',
+                      color: '#64748b',
+                      marginTop: '8px'
+                    }}>
+                      JPG, PNG (max 5MB each)
+                    </p>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '18px 48px',
+                      background: '#cba658',
+                      border: 'none',
+                      color: '#0f172a',
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      letterSpacing: '3px',
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                      transition: 'all 0.3s',
+                      alignSelf: 'center'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#d4b366'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#cba658'}
+                  >
+                    {t.foodjournal.cta}
+                  </button>
+                </form>
+              </div>
+
+              {/* FEATURED FOOD STORIES */}
+              <div style={{ marginTop: '64px' }}>
+                <h3 style={{
+                  fontSize: '12px',
+                  color: '#cba658',
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  marginBottom: '32px',
+                  textAlign: 'center'
+                }}>
+                  {t.foodjournal.recent}
+                </h3>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                  gap: '24px'
+                }}>
+                  {/* Sample Food Stories */}
+                  {[
+                    {
+                      title: language === 'english' ? "The Taco Trail: From Tijuana to Ensenada" : "La Ruta del Taco: De Tijuana a Ensenada",
+                      author: "Maria Santos",
+                      category: language === 'english' ? "Street Food" : "Comida Callejera",
+                      image: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400&q=80"
+                    },
+                    {
+                      title: language === 'english' ? "Wine & Dine: Valle de Guadalupe's New Guard" : "Vino y Cena: La Nueva Guardia del Valle",
+                      author: "Carlos Mendez",
+                      category: language === 'english' ? "Wine & Spirits" : "Vino y Licores",
+                      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80"
+                    },
+                    {
+                      title: language === 'english' ? "Chef Javier Plascencia: A Portrait" : "Chef Javier Plascencia: Un Retrato",
+                      author: "Elena Ramirez",
+                      category: language === 'english' ? "Chef Profiles" : "Perfiles de Chefs",
+                      image: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&q=80"
+                    }
+                  ].map((story, i) => (
+                    <div key={i} style={{
+                      border: '1px solid rgba(148,163,184,0.2)',
+                      background: 'rgba(15,23,42,0.6)',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = 'rgba(203,166,88,0.4)';
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = 'rgba(148,163,184,0.2)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}>
+                      <div style={{
+                        height: '180px',
+                        backgroundImage: `url(${story.image})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }} />
+                      <div style={{ padding: '20px' }}>
+                        <p style={{
+                          fontSize: '9px',
+                          color: '#cba658',
+                          letterSpacing: '2px',
+                          textTransform: 'uppercase',
+                          marginBottom: '8px'
+                        }}>
+                          {story.category}
+                        </p>
+                        <h4 style={{
+                          fontSize: '15px',
+                          fontWeight: '400',
+                          color: '#e2e8f0',
+                          marginBottom: '12px',
+                          lineHeight: '1.4'
+                        }}>
+                          {story.title}
+                        </h4>
+                        <p style={{
+                          fontSize: '11px',
+                          color: '#94a3b8'
+                        }}>
+                          {language === 'english' ? 'By' : 'Por'} {story.author}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ==================== WINE CELLAR TAB - ULTRA SOPHISTICATED ==================== */}
+        {activeTab === "winecellar" && (
+          <section style={{ position: 'relative', overflow: 'hidden' }}>
+            {/* PARALLAX VINEYARD BACKGROUND */}
+            <div style={{
+              position: 'absolute',
+              top: '-100px',
+              left: '-60px',
+              right: '-60px',
+              bottom: '-100px',
+              backgroundImage: 'url("https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+              opacity: 0.25,
+              zIndex: 0
+            }} />
+
+            {/* WINE GRADIENT OVERLAY */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(180deg, rgba(15,23,42,0.7) 0%, rgba(45,15,15,0.4) 50%, rgba(15,23,42,0.8) 100%)',
+              zIndex: 1
+            }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              {/* ELEGANT HEADER */}
+              <div style={{ textAlign: 'center', marginBottom: '64px', paddingTop: '20px' }}>
+                <div style={{
+                  display: 'inline-block',
+                  padding: '8px 24px',
+                  border: '1px solid rgba(139,69,69,0.4)',
+                  marginBottom: '24px'
+                }}>
+                  <p style={{ 
+                    fontSize: '8px', 
+                    color: '#b8860b', 
+                    letterSpacing: '8px', 
+                    textTransform: 'uppercase',
+                    margin: 0
+                  }}>
+                    {language === 'english' ? 'ESTABLISHED MMIII' : 'ESTABLECIDO MMIII'}
+                  </p>
+                </div>
+                
+                <h2 style={{ 
+                  fontSize: isMobile ? '32px' : '48px', 
+                  fontWeight: '100', 
+                  color: '#e2e8f0', 
+                  letterSpacing: '12px',
+                  marginBottom: '16px',
+                  fontFamily: 'Georgia, serif'
+                }}>
+                  {t.winecellar.title.toUpperCase()}
+                </h2>
+                
+                <div style={{
+                  width: '60px',
+                  height: '1px',
+                  background: 'linear-gradient(90deg, transparent, #b8860b, transparent)',
+                  margin: '24px auto'
+                }} />
+                
+                <p style={{ 
+                  fontSize: '14px', 
+                  color: '#cba658', 
+                  fontStyle: 'italic',
+                  letterSpacing: '3px',
+                  marginBottom: '16px'
+                }}>
+                  {t.winecellar.subtitle}
+                </p>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: '#94a3b8', 
+                  maxWidth: '500px', 
+                  margin: '0 auto', 
+                  lineHeight: '1.9',
+                  fontStyle: 'italic'
+                }}>
+                  {t.winecellar.description}
+                </p>
+              </div>
+
+              {/* WINE REGIONS */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '32px',
+                marginBottom: '64px',
+                flexWrap: 'wrap'
+              }}>
+                {t.winecellar.regions.map((region, i) => (
+                  <div key={i} style={{
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}>
+                    <p style={{
+                      fontSize: '10px',
+                      color: '#b8860b',
+                      letterSpacing: '3px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid rgba(184,134,11,0.3)',
+                      paddingBottom: '8px'
+                    }}>
+                      {region}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* FEATURED WINERIES - LUXURY CARDS */}
+              <div style={{ marginBottom: '80px' }}>
+                <h3 style={{
+                  fontSize: '11px',
+                  color: '#b8860b',
+                  letterSpacing: '6px',
+                  textTransform: 'uppercase',
+                  marginBottom: '40px',
+                  textAlign: 'center'
+                }}>
+                  {t.winecellar.featured}
+                </h3>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                  gap: '0'
+                }}>
+                  {[
+                    {
+                      name: "Monte Xanic",
+                      est: "1988",
+                      signature: "Gran Ricardo",
+                      description: language === 'english' 
+                        ? "Mexico's pioneering boutique winery. The Gran Ricardo blend defines Baja wine excellence."
+                        : "La bodega boutique pionera de México. Gran Ricardo define la excelencia del vino de Baja.",
+                      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80",
+                      website: "https://montexanic.com.mx"
+                    },
+                    {
+                      name: "Vena Cava",
+                      est: "2005",
+                      signature: "Big Blend",
+                      description: language === 'english'
+                        ? "Iconic boat-hull architecture housing exceptional wines. A must-visit destination."
+                        : "Arquitectura icónica de casco de barco con vinos excepcionales. Un destino obligado.",
+                      image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=600&q=80",
+                      website: "https://venacavawine.com"
+                    },
+                    {
+                      name: "Adobe Guadalupe",
+                      est: "2000",
+                      signature: "Gabriel",
+                      description: language === 'english'
+                        ? "Rustic elegance meets organic viticulture. Home to the acclaimed Gabriel blend."
+                        : "Elegancia rústica con viticultura orgánica. Hogar del aclamado blend Gabriel.",
+                      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
+                      website: "https://adobeguadalupe.com"
+                    }
+                  ].map((winery, i) => (
+                    <div key={i} style={{
+                      position: 'relative',
+                      height: isMobile ? '400px' : '500px',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      borderRight: i < 2 && !isMobile ? '1px solid rgba(184,134,11,0.2)' : 'none'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.querySelector('.winery-overlay').style.opacity = '1';
+                      e.currentTarget.querySelector('.winery-img').style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.querySelector('.winery-overlay').style.opacity = '0';
+                      e.currentTarget.querySelector('.winery-img').style.transform = 'scale(1)';
+                    }}>
+                      {/* Background Image */}
+                      <div 
+                        className="winery-img"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundImage: `url(${winery.image})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          transition: 'transform 0.8s ease'
+                        }} 
+                      />
+                      
+                      {/* Dark Gradient */}
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.7) 60%, rgba(15,23,42,0.95) 100%)'
+                      }} />
+
+                      {/* Content */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '40px 32px'
+                      }}>
+                        <p style={{
+                          fontSize: '9px',
+                          color: '#b8860b',
+                          letterSpacing: '4px',
+                          marginBottom: '8px'
+                        }}>
+                          EST. {winery.est}
+                        </p>
+                        <h4 style={{
+                          fontSize: '24px',
+                          fontWeight: '300',
+                          color: '#e2e8f0',
+                          letterSpacing: '4px',
+                          marginBottom: '8px',
+                          fontFamily: 'Georgia, serif'
+                        }}>
+                          {winery.name}
+                        </h4>
+                        <p style={{
+                          fontSize: '11px',
+                          color: '#cba658',
+                          letterSpacing: '2px',
+                          marginBottom: '16px',
+                          fontStyle: 'italic'
+                        }}>
+                          {language === 'english' ? 'Signature' : 'Firma'}: {winery.signature}
+                        </p>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#94a3b8',
+                          lineHeight: '1.7',
+                          marginBottom: '20px'
+                        }}>
+                          {winery.description}
+                        </p>
+
+                        {/* Hover Overlay with Buttons */}
+                        <div 
+                          className="winery-overlay"
+                          style={{
+                            opacity: 0,
+                            transition: 'opacity 0.4s ease',
+                            display: 'flex',
+                            gap: '12px'
+                          }}
+                        >
+                          <button
+                            onClick={() => window.open(winery.website, '_blank')}
+                            style={{
+                              padding: '12px 24px',
+                              background: 'transparent',
+                              border: '1px solid #b8860b',
+                              color: '#b8860b',
+                              fontSize: '9px',
+                              letterSpacing: '2px',
+                              cursor: 'pointer',
+                              textTransform: 'uppercase',
+                              transition: 'all 0.3s'
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#b8860b';
+                              e.currentTarget.style.color = '#0f172a';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = '#b8860b';
+                            }}
+                          >
+                            {t.winecellar.visit}
+                          </button>
+                          <button
+                            onClick={() => {
+                              const msg = language === 'english' 
+                                ? `Wine tasting reservation inquiry for ${winery.name}` 
+                                : `Consulta de reservación para cata en ${winery.name}`;
+                              window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
+                            }}
+                            style={{
+                              padding: '12px 24px',
+                              background: '#b8860b',
+                              border: '1px solid #b8860b',
+                              color: '#0f172a',
+                              fontSize: '9px',
+                              letterSpacing: '2px',
+                              cursor: 'pointer',
+                              textTransform: 'uppercase'
+                            }}
+                          >
+                            {t.winecellar.reserve}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* WINE VARIETIES - ELEGANT HORIZONTAL SCROLL */}
+              <div style={{ marginBottom: '64px' }}>
+                <h3 style={{
+                  fontSize: '11px',
+                  color: '#b8860b',
+                  letterSpacing: '6px',
+                  textTransform: 'uppercase',
+                  marginBottom: '32px',
+                  textAlign: 'center'
+                }}>
+                  {language === 'english' ? 'Grape Varieties' : 'Variedades de Uva'}
+                </h3>
+
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '48px',
+                  flexWrap: 'wrap'
+                }}>
+                  {t.winecellar.varieties.map((variety, i) => (
+                    <div key={i} style={{
+                      textAlign: 'center',
+                      cursor: 'pointer'
+                    }}>
+                      <div style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(184,134,11,0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '12px',
+                        background: 'rgba(15,23,42,0.6)',
+                        transition: 'all 0.3s'
+                      }}>
+                        <span style={{
+                          fontSize: '18px',
+                          color: '#b8860b',
+                          fontFamily: 'Georgia, serif',
+                          fontStyle: 'italic'
+                        }}>
+                          {variety.charAt(0)}
+                        </span>
+                      </div>
+                      <p style={{
+                        fontSize: '10px',
+                        color: '#e2e8f0',
+                        letterSpacing: '2px'
+                      }}>
+                        {variety}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RESERVE TASTING CTA */}
+              <div style={{
+                textAlign: 'center',
+                padding: '60px 40px',
+                border: '1px solid rgba(184,134,11,0.3)',
+                background: 'rgba(15,23,42,0.8)',
+                backdropFilter: 'blur(20px)'
+              }}>
+                <p style={{
+                  fontSize: '9px',
+                  color: '#b8860b',
+                  letterSpacing: '6px',
+                  marginBottom: '16px',
+                  textTransform: 'uppercase'
+                }}>
+                  {language === 'english' ? 'PRIVATE TASTINGS AVAILABLE' : 'CATAS PRIVADAS DISPONIBLES'}
+                </p>
+                <h3 style={{
+                  fontSize: isMobile ? '20px' : '28px',
+                  fontWeight: '200',
+                  color: '#e2e8f0',
+                  letterSpacing: '4px',
+                  marginBottom: '24px',
+                  fontFamily: 'Georgia, serif'
+                }}>
+                  {language === 'english' 
+                    ? 'Experience Baja\'s Finest Wines' 
+                    : 'Experimenta los Mejores Vinos de Baja'}
+                </h3>
+                <p style={{
+                  fontSize: '13px',
+                  color: '#94a3b8',
+                  maxWidth: '500px',
+                  margin: '0 auto 32px',
+                  lineHeight: '1.8'
+                }}>
+                  {language === 'english'
+                    ? 'Let us curate a personalized wine journey through Valle de Guadalupe\'s most prestigious estates.'
+                    : 'Permítenos curar un viaje vinícola personalizado por las fincas más prestigiosas del Valle de Guadalupe.'}
+                </p>
+                <button
+                  onClick={() => {
+                    const msg = language === 'english' 
+                      ? 'I would like to arrange a private wine tasting experience in Valle de Guadalupe' 
+                      : 'Me gustaría organizar una experiencia de cata privada en Valle de Guadalupe';
+                    window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
+                  }}
+                  style={{
+                    padding: '18px 48px',
+                    background: 'transparent',
+                    border: '1px solid #b8860b',
+                    color: '#b8860b',
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    letterSpacing: '4px',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#b8860b';
+                    e.currentTarget.style.color = '#0f172a';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#b8860b';
+                  }}
+                >
+                  {t.winecellar.reserve}
+                </button>
+              </div>
             </div>
           </section>
         )}
