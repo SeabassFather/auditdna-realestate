@@ -3,47 +3,51 @@ import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowRight, Volume2,
 import LuxuryGoods from './LuxuryGoods';
 import SelfServiceAdPortal from './SelfServiceAdPortal';
 
-// ============================================================================
-// ACCORDION COMPONENTS
-// ============================================================================
 function Accordion({ children, defaultOpen = -1 }) {
   const [openIndex, setOpenIndex] = useState(defaultOpen);
-  return (
-    <div>
-      {React.Children.map(children, (child, i) =>
-        React.cloneElement(child, {
-          isOpen: openIndex === i,
-          onToggle: () => setOpenIndex(openIndex === i ? -1 : i),
-        })
-      )}
-    </div>
+  return React.Children.map(children, (child, i) =>
+    React.cloneElement(child, {
+      open: openIndex === i,
+      onHeaderClick: () => setOpenIndex(openIndex === i ? -1 : i),
+    })
   );
 }
 
-function AccordionItem({ title, isOpen, onToggle, children }) {
+function AccordionItem({ title, open, onHeaderClick, children }) {
   return (
-    <div style={{ borderBottom: '1px solid rgba(148,163,184,0.1)', marginBottom: '8px' }}>
+    <div style={{
+      background: 'rgba(255, 255, 255, 0.03)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      marginBottom: '12px',
+      overflow: 'hidden',
+      backdropFilter: 'blur(20px)'
+    }}>
       <button
-        onClick={onToggle}
+        type="button"
+        onClick={onHeaderClick}
         style={{
           width: '100%',
-          padding: '20px 0',
-          background: 'transparent',
-          border: 'none',
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '24px 32px',
+          background: open ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+          border: 'none',
           cursor: 'pointer',
-          color: '#e2e8f0'
+          transition: 'all 0.3s ease'
         }}
       >
-        <span style={{ fontSize: '12px', letterSpacing: '3px', textTransform: 'uppercase', color: '#cba658' }}>
-          {title}
-        </span>
-        {isOpen ? <ChevronUp size={16} color="#94a3b8" /> : <ChevronDown size={16} color="#94a3b8" />}
+        <span style={{
+          fontSize: '13px',
+          fontWeight: '400',
+          color: '#e2e8f0',
+          letterSpacing: '3px',
+          textTransform: 'uppercase'
+        }}>{title}</span>
+        {open ? <ChevronUp size={18} color="#a1a1aa" /> : <ChevronDown size={18} color="#a1a1aa" />}
       </button>
-      {isOpen && (
-        <div style={{ paddingBottom: '24px' }}>
+      {open && (
+        <div style={{ padding: '32px' }}>
           {children}
         </div>
       )}
@@ -51,33 +55,51 @@ function AccordionItem({ title, isOpen, onToggle, children }) {
   );
 }
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
 export default function BajaLuxuryGuide() {
-  const [language, setLanguage] = useState('english');
-  const [activeTab, setActiveTab] = useState('guide');
-  const [isMobile, setIsMobile] = useState(false);
+  const [language, setLanguage] = useState("english");
+  const [establishments, setEstablishments] = useState([]);
+  const [activeTab, setActiveTab] = useState("guide");
   const [magazinePage, setMagazinePage] = useState(0);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  
+  // Music Player State
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const audioRef = useRef(null);
+  
+  // SLOW MELLOW JAZZ - Ambient background music
+  // These are slower, more subtle tracks
+  const musicUrls = [
+    "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",  // Slow jazz piano
+    "https://cdn.pixabay.com/download/audio/2021/11/25/audio_cb5c4e5442.mp3",  // Mellow acoustic
+    "https://cdn.pixabay.com/download/audio/2022/03/15/audio_8cb749d484.mp3"   // Soft background
+  ];
+  const musicUrl = musicUrls[currentTrackIndex];
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Audio controls
+  useEffect(() => {
+    fetch('/lifestyle-data/baja-luxury-complete.json')
+      .then(res => res.json())
+      .then(data => setEstablishments(data))
+      .catch(err => console.error('Error:', err));
+  }, []);
+
+  // Music Player Controls
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
+        audioRef.current.volume = 0.25; // Keep it subtle - 25% volume
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
@@ -91,24 +113,14 @@ export default function BajaLuxuryGuide() {
     }
   };
 
-  // ============================================================================
-  // TRANSLATIONS
-  // ============================================================================
   const labels = {
     english: {
       slogan: "Where the Stars Come to Shine",
       header: "BAJA CALIFORNIA",
       sub: "THE LUXURY GUIDE",
-      establishments: "Select Establishments",
+      establishments: "Curated Establishments",
       toggle: "ES",
-      tabs: { 
-        guide: "Guide", 
-        magazine: "Magazine", 
-        journal: "Journal", 
-        partners: "Partners", 
-        collection: "Collection",
-        advertise: "Advertise"
-      },
+      tabs: { guide: "Guide", magazine: "Magazine", journal: "Journal", partners: "Partners", collection: "Collection", advertise: "Advertise" },
       featured: {
         winery: "Winery",
         dish: "Cuisine",
@@ -136,44 +148,32 @@ export default function BajaLuxuryGuide() {
       },
       partners: {
         title: "Partnership Inquiries",
-        subtitle: "For distinguished brands seeking elevated exposure",
+        subtitle: "For distinguished brands seeking elevated exposure in Baja California's premier luxury market",
         cta: "Begin Conversation",
         benefits: ["Editorial Feature", "Magazine Placement", "Newsletter Inclusion", "Private Events"]
-      },
-      advertise: {
-        title: "Advertise With Us",
-        subtitle: "Reach high-net-worth individuals seeking Baja's finest experiences",
-        cta: "View Packages"
       }
     },
     spanish: {
       slogan: "Donde las Estrellas Vienen a Brillar",
       header: "BAJA CALIFORNIA",
-      sub: "LA GUÍA DE LUJO",
+      sub: "LA GUIA DE LUJO",
       establishments: "Establecimientos Selectos",
       toggle: "EN",
-      tabs: { 
-        guide: "Guía", 
-        magazine: "Revista", 
-        journal: "Diario", 
-        partners: "Socios", 
-        collection: "Colección",
-        advertise: "Anunciar"
-      },
+      tabs: { guide: "Guia", magazine: "Revista", journal: "Diario", partners: "Socios", collection: "Colección", advertise: "Anunciar" },
       featured: {
-        winery: "Viñedo",
-        dish: "Gastronomía",
-        cocktail: "Mixología",
+        winery: "Vinedo",
+        dish: "Gastronomia",
+        cocktail: "Mixologia",
         hotel: "Residencia",
         experience: "Aventura",
         chef: "Culinario"
       },
       newsletter: {
-        title: "El Círculo Interno",
-        subtitle: "Recibe acceso exclusivo a las experiencias más codiciadas de Baja",
-        placeholder: "Tu correo electrónico",
+        title: "El Circulo Interno",
+        subtitle: "Recibe acceso exclusivo a las experiencias mas codiciadas de Baja",
+        placeholder: "Tu correo electronico",
         button: "Suscribirse",
-        success: "Bienvenido al círculo"
+        success: "Bienvenido al circulo"
       },
       journal: {
         title: "El Diario",
@@ -181,423 +181,911 @@ export default function BajaLuxuryGuide() {
         readMore: "Continuar Leyendo"
       },
       magazine: {
-        title: "Edición Digital",
+        title: "Edicion Digital",
         subtitle: "Invierno 2026",
-        page: "Página"
+        page: "Pagina"
       },
       partners: {
-        title: "Consultas de Asociación",
-        subtitle: "Para marcas distinguidas que buscan exposición elevada",
-        cta: "Iniciar Conversación",
-        benefits: ["Artículo Editorial", "Ubicación en Revista", "Inclusión en Newsletter", "Eventos Privados"]
-      },
-      advertise: {
-        title: "Anúnciate Con Nosotros",
-        subtitle: "Alcanza a individuos de alto patrimonio que buscan las mejores experiencias de Baja",
-        cta: "Ver Paquetes"
+        title: "Consultas de Asociacion",
+        subtitle: "Para marcas distinguidas que buscan exposicion elevada en el mercado de lujo de Baja California",
+        cta: "Iniciar Conversacion",
+        benefits: ["Articulo Editorial", "Ubicacion en Revista", "Inclusion en Newsletter", "Eventos Privados"]
       }
     },
   };
 
   const t = labels[language];
 
-  // ============================================================================
-  // FEATURED CONTENT DATA
-  // ============================================================================
+  // REAL IMAGES FROM ACTUAL ESTABLISHMENTS - 12 items for 4x3 grid
   const featuredContent = [
+    // Row 1 - Hotels
     {
-      key: 'winery',
-      name: "Monte Xanic",
+      key: 'boutique',
+      name: "Hotel Boutique",
       location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english' 
-        ? "Pioneering excellence since 1988. The Gran Ricardo blend has defined Baja wine for three decades."
-        : "Excelencia pionera desde 1988. La mezcla Gran Ricardo ha definido el vino de Baja por tres décadas.",
-      image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80"
+        ? "Contemporary hacienda style retreat with Fuego restaurant and full spa."
+        : "Retiro estilo hacienda contemporanea con restaurante Fuego y spa completo.",
+      image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80",
+      website: "https://hotelboutiquevalledeguadalupe.com"
     },
     {
-      key: 'dish',
-      name: "Baja Med Cuisine",
-      location: "Ensenada",
+      key: 'bottega',
+      name: "Hotel Bottega",
+      location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english'
-        ? "The fusion of Mediterranean techniques with Baja's bounty. Fresh seafood meets local wine."
-        : "La fusión de técnicas mediterráneas con la abundancia de Baja. Mariscos frescos con vino local.",
-      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80"
+        ? "Small boutique hotel steps from Finca Altozano and Laja restaurant."
+        : "Pequeno hotel boutique a pasos de Finca Altozano y restaurante Laja.",
+      image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80",
+      website: "https://hotelbottegaboutique.com"
     },
     {
-      key: 'cocktail',
-      name: "Craft Mixology",
-      location: "Tijuana",
+      key: 'entrevinedos',
+      name: "Entre Viñedos",
+      location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english'
-        ? "Artisanal cocktails featuring local spirits and fresh ingredients from Baja farms."
-        : "Cócteles artesanales con licores locales e ingredientes frescos de granjas de Baja.",
-      image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80"
+        ? "Mediterranean-style family rooms with vineyard and mountain views."
+        : "Habitaciones familiares estilo mediterraneo con vistas a vinedos y montanas.",
+      image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80",
+      website: "https://hotelentrevinedos.com"
     },
     {
-      key: 'hotel',
+      key: 'cuatro',
       name: "Cuatro Cuatros",
       location: "Valle de Guadalupe",
+      category: "HOTEL",
       description: language === 'english'
-        ? "Sustainable luxury overlooking the vineyards. Architecture that honors the land."
-        : "Lujo sostenible con vista a los viñedos. Arquitectura que honra la tierra.",
-      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80"
+        ? "Cliffside luxury where vineyard meets Pacific with infinity ocean views."
+        : "Lujo en acantilados donde el vinedo se encuentra con el Pacifico.",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+      website: "https://cuatrocuatros.com"
+    },
+    // Row 2 - Restaurants
+    {
+      key: 'fuego',
+      name: "Fuego Restaurant",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Rooftop dining with live music, local wines and Baja Med cuisine."
+        : "Comedor en azotea con musica en vivo, vinos locales y cocina Baja Med.",
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80",
+      website: "https://fuegococinadelvalle.com"
+    },
+    {
+      key: 'fauna',
+      name: "Fauna",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Chef David Castro Hussong's acclaimed cuisine at Bruma winery estate."
+        : "La aclamada cocina del Chef David Castro Hussong en la bodega Bruma.",
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
+      website: "https://brumawine.com/fauna"
+    },
+    {
+      key: 'finca',
+      name: "Finca Altozano",
+      location: "Valle de Guadalupe",
+      category: "RESTAURANT",
+      description: language === 'english'
+        ? "Open-air wood-fired cooking with valley views by Chef Javier Plascencia."
+        : "Cocina a lena al aire libre con vistas al valle del Chef Javier Plascencia.",
+      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80",
+      website: "https://fincaaltozano.com"
+    },
+    {
+      key: 'animalon',
+      name: "Animalon",
+      location: "Valle de Guadalupe",
+      category: "MIXOLOGY",
+      description: language === 'english'
+        ? "Wood-fired cuisine with Baja's finest local ingredients and craft cocktails."
+        : "Cocina a lena con los mejores ingredientes locales y cocteles artesanales.",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80",
+      website: "https://animalon.mx"
+    },
+    // Row 3 - Wineries & Experiences
+    {
+      key: 'monte',
+      name: "Monte Xanic",
+      location: "Valle de Guadalupe",
+      category: "WINERY",
+      description: language === 'english' 
+        ? "Mexico's first boutique winery since 1988. The Gran Ricardo defines Baja wine."
+        : "La primera bodega boutique de Mexico desde 1988. Gran Ricardo define el vino de Baja.",
+      image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80",
+      website: "https://montexanic.com.mx"
+    },
+    {
+      key: 'venacava',
+      name: "Vena Cava",
+      location: "Valle de Guadalupe",
+      category: "WINERY",
+      description: language === 'english'
+        ? "Iconic boat-hull architecture winery with exceptional wines and views."
+        : "Bodega con arquitectura iconica de casco de barco, vinos excepcionales y vistas.",
+      image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=600&q=80",
+      website: "https://venacavawine.com"
+    },
+    {
+      key: 'whale',
+      name: "Kuyima Whale Watching",
+      location: "San Ignacio Lagoon",
+      category: "ADVENTURE",
+      description: language === 'english'
+        ? "Touch gray whales in their UNESCO World Heritage winter sanctuary."
+        : "Toca ballenas grises en su santuario UNESCO de invierno.",
+      image: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=600&q=80",
+      website: "https://kuyima.com"
+    },
+    {
+      key: 'mision',
+      name: "Mision 19",
+      location: "Tijuana",
+      category: "CULINARY",
+      description: language === 'english'
+        ? "Chef Javier Plascencia's flagship. The birthplace of Baja Med cuisine."
+        : "El restaurante insignia del Chef Plascencia. La cuna de la cocina Baja Med.",
+      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80",
+      website: "https://mision19.com"
     }
   ];
 
-  // ============================================================================
-  // ESTABLISHMENTS DATA
-  // ============================================================================
-  const categories = [
-    {
-      name: language === 'english' ? 'Wineries' : 'Viñedos',
-      establishments: [
-        { name: 'Monte Xanic', region: 'Valle de Guadalupe', website: 'https://montexanic.com', image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&q=80' },
-        { name: 'Vena Cava', region: 'Valle de Guadalupe', website: 'https://venacava.com', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
-        { name: 'Finca La Carrodilla', region: 'Valle de Guadalupe', website: '#', image: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&q=80' }
-      ]
-    },
-    {
-      name: language === 'english' ? 'Fine Dining' : 'Alta Cocina',
-      establishments: [
-        { name: 'Fauna', region: 'Valle de Guadalupe', website: 'https://faunarestaurante.com', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80' },
-        { name: 'Corazón de Tierra', region: 'Valle de Guadalupe', website: 'https://corazondetierra.com', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80' },
-        { name: 'Manzanilla', region: 'Ensenada', website: 'https://manzanilla.mx', image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80' }
-      ]
-    },
-    {
-      name: language === 'english' ? 'Boutique Hotels' : 'Hoteles Boutique',
-      establishments: [
-        { name: 'Cuatro Cuatros', region: 'Valle de Guadalupe', website: 'https://cuatrocuatros.com', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80' },
-        { name: 'Encuentro Guadalupe', region: 'Valle de Guadalupe', website: 'https://encuentroguadalupe.com', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&q=80' },
-        { name: 'Bruma', region: 'Valle de Guadalupe', website: 'https://bruma.mx', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' }
-      ]
-    }
-  ];
-
-  // ============================================================================
-  // JOURNAL ARTICLES
-  // ============================================================================
   const journalArticles = [
     {
-      id: 1,
-      title: language === 'english' ? "The New Wave of Baja Winemakers" : "La Nueva Ola de Vinicultores de Baja",
+      title: language === 'english' ? "The New Geography of Desire" : "La Nueva Geografia del Deseo",
       excerpt: language === 'english' 
-        ? "How a generation of young vintners is redefining Mexican wine culture in Valle de Guadalupe."
-        : "Cómo una generación de jóvenes vinicultores está redefiniendo la cultura del vino mexicano.",
-      date: "January 2026",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
+        ? "How Valle de Guadalupe became the destination for those who've seen everything else."
+        : "Como Valle de Guadalupe se convirtio en el destino para quienes ya lo han visto todo.",
+      date: language === 'english' ? "January 2026" : "Enero 2026",
+      category: language === 'english' ? "Wine & Culture" : "Vino y Cultura",
+      readTime: "8 min",
+      image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=800&q=80"
     },
     {
-      id: 2,
-      title: language === 'english' ? "Architecture of the Valley" : "Arquitectura del Valle",
+      title: language === 'english' ? "Architecture of Escape" : "Arquitectura del Escape",
       excerpt: language === 'english'
-        ? "The sustainable design philosophy shaping Baja's most distinctive hotels and restaurants."
-        : "La filosofía de diseño sostenible que da forma a los hoteles y restaurantes más distintivos.",
-      date: "December 2025",
-      image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=600&q=80"
+        ? "Inside the private compounds reshaping Baja's coastline. Where minimalism meets the infinite horizon."
+        : "Dentro de los complejos privados que remodelan la costa de Baja. Donde el minimalismo se encuentra con el horizonte infinito.",
+      date: language === 'english' ? "January 2026" : "Enero 2026",
+      category: language === 'english' ? "Design" : "Diseno",
+      readTime: "12 min",
+      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80"
     },
     {
-      id: 3,
-      title: language === 'english' ? "Farm to Table: Baja Style" : "Del Campo a la Mesa: Estilo Baja",
+      title: language === 'english' ? "The Investment Thesis" : "La Tesis de Inversion",
       excerpt: language === 'english'
-        ? "Meet the farmers and chefs building Baja's most celebrated culinary movement."
-        : "Conoce a los agricultores y chefs que construyen el movimiento culinario más celebrado.",
-      date: "November 2025",
-      image: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&q=80"
+        ? "Why institutional capital is flowing into Baja California's luxury corridor."
+        : "Por que el capital institucional fluye hacia el corredor de lujo de Baja California.",
+      date: language === 'english' ? "December 2025" : "Diciembre 2025",
+      category: language === 'english' ? "Markets" : "Mercados",
+      readTime: "10 min",
+      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80"
     }
   ];
 
-  // ============================================================================
-  // MAGAZINE PAGES
-  // ============================================================================
+  // MAGAZINE PAGES WITH REAL IMAGES
   const magazinePages = [
-    { type: 'cover', title: 'ENJOY BAJA', subtitle: t.magazine.subtitle },
-    { type: 'article', title: language === 'english' ? 'Valle de Guadalupe' : 'Valle de Guadalupe', image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=800&q=80' },
-    { type: 'article', title: language === 'english' ? 'Culinary Excellence' : 'Excelencia Culinaria', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80' },
-    { type: 'article', title: language === 'english' ? 'Coastal Living' : 'Vida Costera', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' }
+    {
+      type: "cover",
+      title: "BAJA",
+      subtitle: language === 'english' ? "THE PENINSULA ISSUE" : "LA EDICION DE LA PENINSULA",
+      content: language === 'english' ? "Winter 2026" : "Invierno 2026",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80"
+    },
+    {
+      type: "editorial",
+      title: language === 'english' ? "EDITOR'S NOTE" : "NOTA DEL EDITOR",
+      content: language === 'english' 
+        ? "Baja California exists in that rare space between discovery and preservation. Those who find it understand immediately why it must be protected. This edition explores the peninsula through the lens of those who've chosen to call it home."
+        : "Baja California existe en ese raro espacio entre el descubrimiento y la preservacion. Quienes la encuentran comprenden de inmediato por que debe ser protegida. Esta edicion explora la peninsula a traves de quienes han elegido llamarla hogar.",
+      image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&q=80"
+    },
+    {
+      type: "feature",
+      title: language === 'english' ? "TERROIR" : "TERROIR",
+      content: language === 'english' 
+        ? "The unique combination of Pacific marine influence, Mediterranean climate, and volcanic soil creates wines found nowhere else on earth. Valle de Guadalupe's 200+ wineries represent the vanguard of Mexican viticulture."
+        : "La combinacion unica de influencia marina del Pacifico, clima mediterraneo y suelo volcanico crea vinos que no se encuentran en ningun otro lugar del mundo. Las mas de 200 bodegas de Valle de Guadalupe representan la vanguardia de la viticultura mexicana.",
+      image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200&q=80"
+    },
+    {
+      type: "feature",
+      title: language === 'english' ? "THE SHORE" : "LA COSTA",
+      content: language === 'english' 
+        ? "One thousand miles of coastline. From the sophisticated beach culture of Rosarito to the untouched wilderness of Bahia de los Angeles, the Baja coast offers solitude impossible to find elsewhere."
+        : "Mil millas de costa. Desde la sofisticada cultura de playa de Rosarito hasta la naturaleza virgen de Bahia de los Angeles, la costa de Baja ofrece una soledad imposible de encontrar en otro lugar.",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80"
+    },
+    {
+      type: "feature",
+      title: language === 'english' ? "GOLF PARADISE" : "PARAISO DEL GOLF",
+      content: language === 'english' 
+        ? "Championship courses designed by legends. Tiger Woods, Jack Nicklaus, and Greg Norman have all left their mark on Baja's fairways. Where every round comes with ocean views."
+        : "Campos de campeonato disenados por leyendas. Tiger Woods, Jack Nicklaus y Greg Norman han dejado su huella en los fairways de Baja. Donde cada ronda viene con vistas al oceano.",
+      image: "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&q=80"
+    },
+    {
+      type: "close",
+      title: language === 'english' ? "CONTACT" : "CONTACTO",
+      content: "+52 646 340 2686\ninfo@enjoybaja.com",
+      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80"
+    }
   ];
 
-  // ============================================================================
-  // RENDER
-  // ============================================================================
+  const groupByRegion = () => {
+    const grouped = {};
+    establishments.forEach(est => {
+      const region = est.region || 'Unknown';
+      if (!grouped[region]) grouped[region] = [];
+      grouped[region].push(est);
+    });
+    return grouped;
+  };
+
+  const grouped = groupByRegion();
+  const regions = Object.keys(grouped).sort();
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (email) {
+      setSubscribed(true);
+      setTimeout(() => setSubscribed(false), 4000);
+      setEmail("");
+    }
+  };
+
+  const tabStyle = (isActive) => ({
+    padding: isMobile ? '12px 16px' : '16px 32px',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: isActive ? '1px solid #cba658' : '1px solid transparent',
+    color: isActive ? '#e4e4e7' : '#71717a',
+    fontSize: '11px',
+    fontWeight: '400',
+    letterSpacing: '3px',
+    cursor: 'pointer',
+    transition: 'all 0.3s',
+    textTransform: 'uppercase'
+  });
+
+  const typeLabels = {
+    winery: language === 'english' ? 'Winery' : 'Vinedo',
+    restaurant: language === 'english' ? 'Restaurant' : 'Restaurante',
+    hotel: language === 'english' ? 'Hotel' : 'Hotel',
+    golf: language === 'english' ? 'Golf' : 'Golf',
+    spa: language === 'english' ? 'Spa' : 'Spa',
+    brewery: language === 'english' ? 'Brewery' : 'Cerveceria',
+    yacht: language === 'english' ? 'Marina' : 'Marina'
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
-      color: '#e2e8f0',
-      fontFamily: '"Helvetica Neue", -apple-system, sans-serif',
-      fontWeight: '100'
+      background: '#334155',
+      position: 'relative',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioRef}
-        loop
-        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      
+      {/* VINEYARD BACKGROUND - Beautiful Valle de Guadalupe Style */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: 0.35,
+        zIndex: 0
+      }} />
+
+      {/* LIGHTER OVERLAY - SEE THE VINEYARD */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(51,65,85,0.5) 0%, rgba(51,65,85,0.6) 50%, rgba(51,65,85,0.7) 100%)',
+        pointerEvents: 'none',
+        zIndex: 1
+      }} />
+
+      {/* SCROLLING PARTNER IMAGES - Valle de Guadalupe Hotels & Restaurants */}
+      <div style={{
+        position: 'fixed',
+        bottom: '80px',
+        left: 0,
+        right: 0,
+        height: '120px',
+        overflow: 'hidden',
+        zIndex: 2,
+        background: 'linear-gradient(to right, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 10%, rgba(15,23,42,0.7) 90%, rgba(15,23,42,0.95) 100%)'
+      }}>
+        <p style={{
+          position: 'absolute',
+          top: '8px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '9px',
+          color: '#cba658',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
+          zIndex: 3
+        }}>
+          Featured Partners
+        </p>
+        <div style={{
+          display: 'flex',
+          gap: '20px',
+          animation: 'scrollPartners 90s linear infinite',
+          paddingTop: '32px',
+          width: 'max-content'
+        }}>
+          {/* Partner Images - 24 UNIQUE images for variety */}
+          {[
+            // Hotels
+            { name: 'Hotel Boutique', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
+            { name: 'El Cielo Resort', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&q=80' },
+            { name: 'Contemplación', img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
+            { name: 'Hacienda Guadalupe', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
+            // Wine & Vineyards
+            { name: 'Entre Viñedos', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
+            { name: 'Monte Xanic', img: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&q=80' },
+            { name: 'Adobe Guadalupe', img: 'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80' },
+            { name: 'Vena Cava Winery', img: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&q=80' },
+            // Restaurants  
+            { name: 'Fuego Restaurant', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80' },
+            { name: 'Finca Altozano', img: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80' },
+            { name: 'Corazón de Tierra', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80' },
+            { name: 'Fauna Valle', img: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=400&q=80' },
+            // Luxury Experiences
+            { name: 'Wine Tasting', img: 'https://images.unsplash.com/photo-1566995541428-f2246c17cda1?w=400&q=80' },
+            { name: 'Sunset Terrace', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80' },
+            { name: 'Pool & Spa', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
+            { name: 'Fine Dining', img: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&q=80' },
+            // More Hotels & Resorts
+            { name: 'Bruma Casa 8', img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80' },
+            { name: 'Cuatro Cuatros', img: 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&q=80' },
+            { name: 'Encuentro Guadalupe', img: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80' },
+            { name: 'Villa del Valle', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80' },
+            // More Wine & Dining
+            { name: "Deckman's", img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80' },
+            { name: 'Laja Restaurant', img: 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=400&q=80' },
+            { name: 'Malva Kitchen', img: 'https://images.unsplash.com/photo-1515669097368-22e68427d265?w=400&q=80' },
+            { name: 'Baron Balché', img: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&q=80' },
+            // Duplicate set for seamless loop
+            { name: 'Hotel Boutique', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
+            { name: 'El Cielo Resort', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&q=80' },
+            { name: 'Contemplación', img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
+            { name: 'Hacienda Guadalupe', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
+            { name: 'Entre Viñedos', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
+            { name: 'Monte Xanic', img: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&q=80' },
+            { name: 'Adobe Guadalupe', img: 'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&q=80' },
+            { name: 'Vena Cava Winery', img: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&q=80' },
+            { name: 'Fuego Restaurant', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80' },
+            { name: 'Finca Altozano', img: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80' },
+            { name: 'Corazón de Tierra', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80' },
+            { name: 'Fauna Valle', img: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=400&q=80' },
+            { name: 'Wine Tasting', img: 'https://images.unsplash.com/photo-1566995541428-f2246c17cda1?w=400&q=80' },
+            { name: 'Sunset Terrace', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80' },
+            { name: 'Pool & Spa', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
+            { name: 'Fine Dining', img: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&q=80' },
+            { name: 'Bruma Casa 8', img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80' },
+            { name: 'Cuatro Cuatros', img: 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&q=80' },
+            { name: 'Encuentro Guadalupe', img: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80' },
+            { name: 'Villa del Valle', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80' },
+            { name: "Deckman's", img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80' },
+            { name: 'Laja Restaurant', img: 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=400&q=80' },
+            { name: 'Malva Kitchen', img: 'https://images.unsplash.com/photo-1515669097368-22e68427d265?w=400&q=80' },
+            { name: 'Baron Balché', img: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&q=80' }
+          ].map((partner, i) => (
+            <div key={i} style={{ 
+              width: '140px', 
+              height: '80px', 
+              position: 'relative',
+              flexShrink: 0
+            }}>
+              <img 
+                src={partner.img} 
+                alt={partner.name}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  border: '1px solid rgba(203,166,88,0.3)'
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'rgba(0,0,0,0.85)',
+                padding: '6px 10px'
+              }}>
+                <p style={{
+                  fontSize: '10px',
+                  color: '#ffffff',
+                  fontWeight: '500',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                }}>{partner.name}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <style>{`
+          @keyframes scrollPartners {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
+      </div>
+
+      {/* AUDIO ELEMENT - Subtle Jazz */}
+      <audio 
+        ref={audioRef} 
+        src={musicUrl} 
+        loop 
+        onError={() => {
+          if (currentTrackIndex < musicUrls.length - 1) {
+            setCurrentTrackIndex(currentTrackIndex + 1);
+          }
+        }}
       />
 
-      {/* HEADER */}
-      <header style={{
-        padding: isMobile ? '40px 20px' : '60px 40px',
-        borderBottom: '1px solid rgba(148,163,184,0.1)',
-        position: 'relative'
+      {/* MUSIC PLAYER - FLOATING BOTTOM LEFT */}
+      <div style={{
+        position: 'fixed',
+        bottom: 100,
+        left: 20,
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: 'rgba(51,65,85,0.9)',
+        backdropFilter: 'blur(10px)',
+        padding: '12px 16px',
+        border: '1px solid rgba(203,166,88,0.3)'
       }}>
-        {/* Language Toggle */}
+        {/* Play/Pause Button */}
         <button
-          onClick={() => setLanguage(language === 'english' ? 'spanish' : 'english')}
+          onClick={togglePlay}
           style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
             background: 'transparent',
-            border: '1px solid rgba(203,166,88,0.5)',
-            color: '#cba658',
-            padding: '8px 16px',
-            fontSize: '10px',
-            letterSpacing: '2px',
-            cursor: 'pointer'
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4
           }}
         >
-          {t.toggle}
+          {isPlaying ? (
+            <Pause size={20} color="#cba658" />
+          ) : (
+            <Play size={20} color="#cba658" />
+          )}
         </button>
 
-        {/* Audio Controls */}
+        {/* Track Info */}
         <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
           display: 'flex',
-          gap: '10px'
+          flexDirection: 'column',
+          gap: 2
         }}>
-          <button
-            onClick={togglePlay}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(148,163,184,0.3)',
-              color: '#94a3b8',
-              padding: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-          </button>
-          <button
-            onClick={toggleMute}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(148,163,184,0.3)',
-              color: '#94a3b8',
-              padding: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-          </button>
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <p style={{
+          <span style={{
             fontSize: '10px',
-            color: '#94a3b8',
-            letterSpacing: '6px',
-            marginBottom: '16px',
+            color: '#cba658',
+            letterSpacing: '1px',
             textTransform: 'uppercase'
           }}>
-            {t.header}
-          </p>
-          <h1 style={{
-            fontSize: isMobile ? '28px' : '42px',
-            fontWeight: '100',
-            letterSpacing: '8px',
-            marginBottom: '12px',
-            color: '#cba658'
+            {isPlaying ? 'NOW PLAYING' : 'LATIN JAZZ'}
+          </span>
+          <span style={{
+            fontSize: '11px',
+            color: '#94a3b8'
           }}>
-            {t.sub}
-          </h1>
-          <p style={{
-            fontSize: '12px',
-            color: '#94a3b8',
-            fontStyle: 'italic',
-            letterSpacing: '2px'
-          }}>
-            "{t.slogan}"
-          </p>
+            Baja Vibes
+          </span>
         </div>
-      </header>
 
-      {/* NAVIGATION TABS */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: isMobile ? '12px' : '32px',
-        padding: '24px 20px',
-        borderBottom: '1px solid rgba(148,163,184,0.1)',
-        flexWrap: 'wrap'
+        {/* Mute Button */}
+        <button
+          onClick={toggleMute}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4,
+            marginLeft: 8
+          }}
+        >
+          {isMuted ? (
+            <VolumeX size={18} color="#64748b" />
+          ) : (
+            <Volume2 size={18} color="#94a3b8" />
+          )}
+        </button>
+      </div>
+
+      <div style={{ 
+        maxWidth: '1100px', 
+        margin: '0 auto', 
+        padding: isMobile ? '40px 20px' : '80px 40px',
+        position: 'relative',
+        zIndex: 2
       }}>
-        {Object.entries(t.tabs).map(([key, label]) => (
+        
+        {/* HEADER */}
+        <header style={{
+          textAlign: 'center',
+          marginBottom: isMobile ? '60px' : '100px',
+          position: 'relative'
+        }}>
+          {/* Language Toggle */}
           <button
-            key={key}
-            onClick={() => setActiveTab(key)}
+            onClick={() => setLanguage(language === "english" ? "spanish" : "english")}
             style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              padding: '8px 16px',
               background: 'transparent',
-              border: 'none',
-              color: activeTab === key ? '#cba658' : '#94a3b8',
+              border: '1px solid rgba(203,166,88,0.4)',
+              color: '#cba658',
               fontSize: '10px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
+              fontWeight: '500',
+              letterSpacing: '2px',
               cursor: 'pointer',
-              padding: '8px 0',
-              borderBottom: activeTab === key ? '1px solid #cba658' : '1px solid transparent',
               transition: 'all 0.3s'
             }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#cba658';
+              e.currentTarget.style.color = '#0f172a';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#cba658';
+            }}
           >
-            {label}
+            {t.toggle}
           </button>
-        ))}
-      </nav>
 
-      {/* MAIN CONTENT */}
-      <main style={{ padding: isMobile ? '40px 20px 120px' : '60px 40px 120px', maxWidth: '1200px', margin: '0 auto' }}>
-        
+          {/* Slogan */}
+          <p style={{
+            fontSize: '10px',
+            color: '#cba658',
+            letterSpacing: '4px',
+            textTransform: 'uppercase',
+            marginBottom: '32px'
+          }}>
+            {t.slogan}
+          </p>
+
+          {/* Main Title */}
+          <h1 style={{
+            fontSize: isMobile ? '36px' : '72px',
+            fontWeight: '200',
+            color: '#e2e8f0',
+            letterSpacing: isMobile ? '8px' : '16px',
+            marginBottom: '16px',
+            lineHeight: '1'
+          }}>
+            {t.header}
+          </h1>
+
+          {/* Subtitle */}
+          <p style={{
+            fontSize: isMobile ? '12px' : '14px',
+            color: '#94a3b8',
+            letterSpacing: '6px',
+            textTransform: 'uppercase',
+            marginBottom: '24px'
+          }}>
+            {t.sub}
+          </p>
+
+          {/* Divider */}
+          <div style={{
+            width: '60px',
+            height: '1px',
+            background: '#cba658',
+            margin: '0 auto 24px'
+          }} />
+
+          {/* Count */}
+          <p style={{
+            fontSize: '11px',
+            color: '#94a3b8',
+            letterSpacing: '2px'
+          }}>
+            {establishments.length} {t.establishments}
+          </p>
+        </header>
+
+        {/* NAVIGATION */}
+        <nav style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '0',
+          marginBottom: '60px',
+          borderBottom: '1px solid rgba(148,163,184,0.2)'
+        }}>
+          {Object.entries(t.tabs).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              style={tabStyle(activeTab === key)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+
         {/* ==================== GUIDE TAB ==================== */}
-        {activeTab === 'guide' && (
+        {activeTab === "guide" && (
           <>
-            {/* Featured Grid */}
+            {/* FEATURED GRID - 4 COLUMNS, SMALLER CARDS */}
             <section style={{ marginBottom: '80px' }}>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-                gap: '24px'
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+                gap: '16px'
               }}>
                 {featuredContent.map((item, index) => (
-                  <div
-                    key={index}
+                  <article
+                    key={item.key}
+                    onClick={() => window.open(item.website, '_blank')}
+                    onMouseEnter={() => setHoveredCard(item.key)}
+                    onMouseLeave={() => setHoveredCard(null)}
                     style={{
                       position: 'relative',
-                      height: isMobile ? '300px' : '400px',
+                      height: isMobile ? '280px' : '260px',
                       overflow: 'hidden',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      background: '#ffffff'
                     }}
                   >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        transition: 'transform 0.5s'
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                    />
+                    {/* Image - FULL COLOR VIBRANT */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundImage: `url(${item.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: hoveredCard === item.key ? 'scale(1.05)' : 'scale(1)'
+                    }} />
+
+                    {/* Content */}
                     <div style={{
                       position: 'absolute',
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      padding: '32px',
-                      background: 'linear-gradient(transparent, rgba(15,23,42,0.95))'
+                      padding: '20px',
+                      background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, transparent 100%)'
                     }}>
-                      <p style={{ fontSize: '9px', color: '#cba658', letterSpacing: '3px', marginBottom: '8px', textTransform: 'uppercase' }}>
-                        {t.featured[item.key]}
+                      <p style={{
+                        fontSize: '8px',
+                        color: '#cba658',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        marginBottom: '8px'
+                      }}>
+                        {item.category}
                       </p>
-                      <h3 style={{ fontSize: '20px', fontWeight: '300', marginBottom: '4px', color: '#e2e8f0' }}>
+                      <h3 style={{
+                        fontSize: '16px',
+                        fontWeight: '400',
+                        color: '#e2e8f0',
+                        marginBottom: '4px',
+                        letterSpacing: '0.5px'
+                      }}>
                         {item.name}
                       </h3>
-                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      <p style={{
+                        fontSize: '10px',
+                        color: '#94a3b8',
+                        marginBottom: '0'
+                      }}>
                         {item.location}
                       </p>
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             </section>
 
-            {/* Establishments Accordion */}
-            <section>
+            {/* NEWSLETTER */}
+            <section style={{
+              padding: isMobile ? '48px 24px' : '64px',
+              border: '1px solid rgba(203,166,88,0.3)',
+              background: 'rgba(203,166,88,0.05)',
+              marginBottom: '80px',
+              textAlign: 'center'
+            }}>
               <p style={{
                 fontSize: '10px',
-                color: '#94a3b8',
+                color: '#cba658',
                 letterSpacing: '4px',
-                marginBottom: '32px',
                 textTransform: 'uppercase',
-                textAlign: 'center'
+                marginBottom: '16px'
               }}>
-                {t.establishments}
+                {t.newsletter.title}
               </p>
-              <Accordion>
-                {categories.map((category, catIndex) => (
-                  <AccordionItem key={catIndex} title={category.name}>
+              <p style={{
+                fontSize: '14px',
+                color: '#94a3b8',
+                marginBottom: '32px',
+                maxWidth: '500px',
+                margin: '0 auto 32px',
+                lineHeight: '1.7'
+              }}>
+                {t.newsletter.subtitle}
+              </p>
+              <form onSubmit={handleSubscribe} style={{
+                display: 'flex',
+                gap: '12px',
+                maxWidth: '480px',
+                margin: '0 auto',
+                flexDirection: isMobile ? 'column' : 'row'
+              }}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t.newsletter.placeholder}
+                  style={{
+                    flex: 1,
+                    padding: '16px 20px',
+                    background: 'rgba(15,23,42,0.8)',
+                    border: '1px solid rgba(148,163,184,0.3)',
+                    color: '#e2e8f0',
+                    fontSize: '13px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#cba658'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(148,163,184,0.3)'}
+                />
+                <button type="submit" style={{
+                  padding: '16px 32px',
+                  background: subscribed ? '#22c55e' : '#cba658',
+                  border: 'none',
+                  color: '#0f172a',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  letterSpacing: '2px',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.3s'
+                }}>
+                  {subscribed ? '✓' : t.newsletter.button}
+                </button>
+              </form>
+            </section>
+
+            {/* ESTABLISHMENTS */}
+            <section>
+              <Accordion defaultOpen={-1}>
+                {regions.map((region) => (
+                  <AccordionItem key={region} title={`${region} — ${grouped[region].length}`}>
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                      gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
                       gap: '20px'
                     }}>
-                      {category.establishments.map((est, estIndex) => (
-                        <div
-                          key={estIndex}
-                          style={{
-                            background: 'rgba(30,41,59,0.5)',
-                            border: '1px solid rgba(148,163,184,0.1)',
-                            overflow: 'hidden'
-                          }}
-                        >
-                          <img
-                            src={est.image}
-                            alt={est.name}
-                            style={{
-                              width: '100%',
-                              height: '160px',
-                              objectFit: 'cover'
-                            }}
-                          />
-                          <div style={{ padding: '20px' }}>
-                            <h4 style={{ fontSize: '14px', fontWeight: '400', marginBottom: '4px', color: '#e2e8f0' }}>
-                              {est.name}
-                            </h4>
-                            <p style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '16px' }}>
-                              {est.region}
-                            </p>
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                              <button
-                                onClick={() => window.open(est.website, '_blank')}
-                                style={{
-                                  padding: '10px 20px',
-                                  background: 'linear-gradient(135deg, #cba658, #b8944d)',
-                                  border: 'none',
-                                  color: '#0f172a',
-                                  fontSize: '10px',
-                                  letterSpacing: '2px',
-                                  cursor: 'pointer',
-                                  textTransform: 'uppercase'
-                                }}
-                              >
-                                {language === 'english' ? 'Visit' : 'Visitar'}
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const msg = language === 'english' ? `Inquiry about ${est.name}` : `Consulta sobre ${est.name}`;
-                                  window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
-                                }}
-                                style={{
-                                  padding: '10px 20px',
-                                  background: 'transparent',
-                                  border: '1px solid rgba(148,163,184,0.3)',
-                                  color: '#94a3b8',
-                                  fontSize: '10px',
-                                  letterSpacing: '2px',
-                                  cursor: 'pointer',
-                                  textTransform: 'uppercase'
-                                }}
-                              >
-                                {language === 'english' ? 'Inquire' : 'Consultar'}
-                              </button>
-                            </div>
+                      {grouped[region].map(est => (
+                        <div key={est.id} style={{
+                          padding: '24px',
+                          border: '1px solid rgba(148,163,184,0.15)',
+                          background: 'rgba(15,23,42,0.6)',
+                          transition: 'all 0.3s',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = 'rgba(203,166,88,0.4)';
+                          e.currentTarget.style.background = 'rgba(15,23,42,0.8)';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = 'rgba(148,163,184,0.15)';
+                          e.currentTarget.style.background = 'rgba(15,23,42,0.6)';
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                            <p style={{
+                              fontSize: '9px',
+                              color: '#cba658',
+                              letterSpacing: '2px',
+                              textTransform: 'uppercase'
+                            }}>{typeLabels[est.type] || est.type}</p>
+                          </div>
+                          <h3 style={{
+                            fontSize: '16px',
+                            fontWeight: '400',
+                            color: '#e2e8f0',
+                            marginBottom: '8px',
+                            letterSpacing: '0.5px'
+                          }}>{est.name}</h3>
+                          <p style={{
+                            fontSize: '12px',
+                            color: '#94a3b8',
+                            lineHeight: '1.6',
+                            marginBottom: '20px'
+                          }}>{est.description || est.city}</p>
+                          <div style={{ display: 'flex', gap: '12px' }}>
+                            <button
+                              onClick={() => est.website && window.open(est.website, '_blank')}
+                              style={{
+                                padding: '10px 20px',
+                                background: 'transparent',
+                                border: '1px solid rgba(148,163,184,0.3)',
+                                color: '#94a3b8',
+                                fontSize: '10px',
+                                letterSpacing: '2px',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                transition: 'all 0.3s'
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = '#cba658';
+                                e.currentTarget.style.color = '#0f172a';
+                                e.currentTarget.style.borderColor = '#cba658';
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = '#94a3b8';
+                                e.currentTarget.style.borderColor = 'rgba(148,163,184,0.3)';
+                              }}
+                            >
+                              {language === 'english' ? 'Visit' : 'Visitar'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                const msg = language === 'english' ? `Inquiry about ${est.name}` : `Consulta sobre ${est.name}`;
+                                window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
+                              }}
+                              style={{
+                                padding: '10px 20px',
+                                background: 'transparent',
+                                border: '1px solid rgba(148,163,184,0.3)',
+                                color: '#94a3b8',
+                                fontSize: '10px',
+                                letterSpacing: '2px',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                transition: 'all 0.3s'
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = '#cba658';
+                                e.currentTarget.style.color = '#0f172a';
+                                e.currentTarget.style.borderColor = '#cba658';
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = '#94a3b8';
+                                e.currentTarget.style.borderColor = 'rgba(148,163,184,0.3)';
+                              }}
+                            >
+                              {language === 'english' ? 'Inquire' : 'Consultar'}
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -609,169 +1097,227 @@ export default function BajaLuxuryGuide() {
           </>
         )}
 
-        {/* ==================== MAGAZINE TAB ==================== */}
-        {activeTab === 'magazine' && (
+        {/* ==================== MAGAZINE TAB - WITH REAL IMAGES ==================== */}
+        {activeTab === "magazine" && (
           <section>
             <div style={{
               position: 'relative',
               minHeight: isMobile ? '500px' : '600px',
-              border: '1px solid rgba(148,163,184,0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: isMobile ? '48px 24px' : '80px',
-              textAlign: 'center',
-              background: 'rgba(30,41,59,0.3)'
+              overflow: 'hidden'
             }}>
-              {magazinePages[magazinePage].type === 'cover' ? (
-                <>
-                  <p style={{ fontSize: '10px', color: '#94a3b8', letterSpacing: '4px', marginBottom: '40px' }}>
-                    {t.magazine.subtitle}
-                  </p>
-                  <h2 style={{
-                    fontSize: isMobile ? '48px' : '72px',
-                    fontWeight: '100',
-                    letterSpacing: '12px',
-                    color: '#cba658',
-                    marginBottom: '40px'
-                  }}>
-                    {magazinePages[magazinePage].title}
-                  </h2>
-                  <p style={{ fontSize: '12px', color: '#94a3b8', letterSpacing: '2px' }}>
-                    {t.magazine.title}
-                  </p>
-                </>
-              ) : (
-                <div style={{ width: '100%', maxWidth: '800px' }}>
-                  <img
-                    src={magazinePages[magazinePage].image}
-                    alt={magazinePages[magazinePage].title}
-                    style={{
-                      width: '100%',
-                      height: isMobile ? '300px' : '400px',
-                      objectFit: 'cover',
-                      marginBottom: '24px'
-                    }}
-                  />
-                  <h3 style={{
-                    fontSize: '24px',
-                    fontWeight: '300',
-                    color: '#e2e8f0',
-                    letterSpacing: '4px'
-                  }}>
-                    {magazinePages[magazinePage].title}
-                  </h3>
-                </div>
-              )}
-
-              {/* Page Navigation */}
+              {/* BACKGROUND IMAGE */}
               <div style={{
                 position: 'absolute',
-                bottom: '24px',
-                left: '50%',
-                transform: 'translateX(-50%)',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: `url(${magazinePages[magazinePage].image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                opacity: 0.4
+              }} />
+
+              {/* OVERLAY */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'linear-gradient(to bottom, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.9) 100%)'
+              }} />
+
+              {/* CONTENT */}
+              <div style={{
+                position: 'relative',
+                zIndex: 2,
                 display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
                 alignItems: 'center',
-                gap: '24px'
+                minHeight: isMobile ? '500px' : '600px',
+                padding: isMobile ? '48px 24px' : '80px',
+                textAlign: 'center'
               }}>
-                <button
-                  onClick={() => setMagazinePage(Math.max(0, magazinePage - 1))}
-                  disabled={magazinePage === 0}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: magazinePage === 0 ? '#475569' : '#94a3b8',
-                    cursor: magazinePage === 0 ? 'default' : 'pointer',
-                    padding: '8px'
-                  }}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <span style={{ fontSize: '10px', color: '#94a3b8', letterSpacing: '2px' }}>
-                  {t.magazine.page} {magazinePage + 1} / {magazinePages.length}
-                </span>
-                <button
-                  onClick={() => setMagazinePage(Math.min(magazinePages.length - 1, magazinePage + 1))}
-                  disabled={magazinePage === magazinePages.length - 1}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: magazinePage === magazinePages.length - 1 ? '#475569' : '#94a3b8',
-                    cursor: magazinePage === magazinePages.length - 1 ? 'default' : 'pointer',
-                    padding: '8px'
-                  }}
-                >
-                  <ChevronRight size={20} />
-                </button>
+                {magazinePages[magazinePage].type === 'cover' ? (
+                  <>
+                    <p style={{ fontSize: '10px', color: '#cba658', letterSpacing: '4px', marginBottom: '40px' }}>
+                      {t.magazine.subtitle}
+                    </p>
+                    <h2 style={{
+                      fontSize: isMobile ? '64px' : '120px',
+                      fontWeight: '100',
+                      color: '#e2e8f0',
+                      letterSpacing: '20px',
+                      marginBottom: '24px'
+                    }}>
+                      {magazinePages[magazinePage].title}
+                    </h2>
+                    <p style={{ fontSize: '12px', color: '#94a3b8', letterSpacing: '4px' }}>
+                      {magazinePages[magazinePage].subtitle}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 style={{
+                      fontSize: isMobile ? '24px' : '36px',
+                      fontWeight: '200',
+                      color: '#e2e8f0',
+                      letterSpacing: '6px',
+                      marginBottom: '40px'
+                    }}>
+                      {magazinePages[magazinePage].title}
+                    </h2>
+                    <p style={{
+                      fontSize: '15px',
+                      color: '#cbd5e1',
+                      lineHeight: '2',
+                      maxWidth: '600px',
+                      whiteSpace: 'pre-line'
+                    }}>
+                      {magazinePages[magazinePage].content}
+                    </p>
+                  </>
+                )}
+
+                {/* Page indicator */}
+                <p style={{
+                  position: 'absolute',
+                  bottom: '24px',
+                  right: '32px',
+                  fontSize: '10px',
+                  color: '#94a3b8',
+                  letterSpacing: '2px'
+                }}>
+                  {magazinePage + 1} / {magazinePages.length}
+                </p>
               </div>
+            </div>
+
+            {/* Navigation */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '16px',
+              marginTop: '32px'
+            }}>
+              <button
+                onClick={() => magazinePage > 0 && setMagazinePage(magazinePage - 1)}
+                disabled={magazinePage === 0}
+                style={{
+                  padding: '14px 28px',
+                  background: 'transparent',
+                  border: '1px solid rgba(148,163,184,0.3)',
+                  color: magazinePage === 0 ? '#475569' : '#94a3b8',
+                  fontSize: '10px',
+                  letterSpacing: '2px',
+                  cursor: magazinePage === 0 ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  textTransform: 'uppercase'
+                }}
+              >
+                <ChevronLeft size={14} /> {language === 'english' ? 'Previous' : 'Anterior'}
+              </button>
+              <button
+                onClick={() => magazinePage < magazinePages.length - 1 && setMagazinePage(magazinePage + 1)}
+                disabled={magazinePage === magazinePages.length - 1}
+                style={{
+                  padding: '14px 28px',
+                  background: 'transparent',
+                  border: '1px solid rgba(148,163,184,0.3)',
+                  color: magazinePage === magazinePages.length - 1 ? '#475569' : '#94a3b8',
+                  fontSize: '10px',
+                  letterSpacing: '2px',
+                  cursor: magazinePage === magazinePages.length - 1 ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {language === 'english' ? 'Next' : 'Siguiente'} <ChevronRight size={14} />
+              </button>
             </div>
           </section>
         )}
 
-        {/* ==================== JOURNAL TAB ==================== */}
-        {activeTab === 'journal' && (
+        {/* ==================== JOURNAL TAB - WITH IMAGES ==================== */}
+        {activeTab === "journal" && (
           <section>
-            <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-              <p style={{ fontSize: '10px', color: '#94a3b8', letterSpacing: '4px', marginBottom: '16px', textTransform: 'uppercase' }}>
+            <div style={{ marginBottom: '48px', textAlign: 'center' }}>
+              <p style={{ fontSize: '10px', color: '#cba658', letterSpacing: '4px', marginBottom: '8px', textTransform: 'uppercase' }}>
                 {t.journal.title}
               </p>
-              <p style={{ fontSize: '14px', color: '#cbd5e1' }}>
+              <p style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>
                 {t.journal.subtitle}
               </p>
             </div>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-              gap: '24px'
-            }}>
-              {journalArticles.map(article => (
-                <article
-                  key={article.id}
-                  style={{
-                    background: 'rgba(30,41,59,0.5)',
-                    border: '1px solid rgba(148,163,184,0.1)',
-                    overflow: 'hidden',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    style={{
-                      width: '100%',
-                      height: '200px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                  <div style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {journalArticles.map((article, i) => (
+                <article key={i} style={{
+                  display: 'grid',
+                  gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+                  gap: '24px',
+                  padding: '24px',
+                  border: '1px solid rgba(148,163,184,0.15)',
+                  background: 'rgba(30,41,59,0.5)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(30,41,59,0.8)';
+                  e.currentTarget.style.borderColor = 'rgba(203,166,88,0.4)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(30,41,59,0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(148,163,184,0.15)';
+                }}>
+                  {/* IMAGE */}
+                  <div style={{
+                    height: isMobile ? '200px' : '180px',
+                    backgroundImage: `url(${article.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }} />
+
+                  {/* CONTENT */}
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <p style={{
+                        fontSize: '9px',
+                        color: '#cba658',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase'
+                      }}>{article.category}</p>
+                      <p style={{ fontSize: '10px', color: '#94a3b8' }}>{article.readTime}</p>
+                    </div>
                     <h3 style={{
-                      fontSize: '16px',
+                      fontSize: isMobile ? '20px' : '24px',
                       fontWeight: '300',
                       color: '#e2e8f0',
                       marginBottom: '12px',
-                      lineHeight: '1.4'
-                    }}>
-                      {article.title}
-                    </h3>
+                      letterSpacing: '0.5px',
+                      lineHeight: '1.3'
+                    }}>{article.title}</h3>
                     <p style={{
-                      fontSize: '12px',
+                      fontSize: '14px',
                       color: '#94a3b8',
                       lineHeight: '1.7',
-                      marginBottom: '20px'
-                    }}>
-                      {article.excerpt}
-                    </p>
+                      marginBottom: '16px'
+                    }}>{article.excerpt}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '10px', color: '#64748b' }}>{article.date}</span>
+                      <p style={{ fontSize: '10px', color: '#94a3b8' }}>{article.date}</p>
                       <span style={{
                         fontSize: '10px',
                         color: '#cba658',
                         letterSpacing: '2px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px'
+                        gap: '8px'
                       }}>
                         {t.journal.readMore} <ArrowRight size={12} />
                       </span>
@@ -783,65 +1329,88 @@ export default function BajaLuxuryGuide() {
           </section>
         )}
 
-        {/* ==================== PARTNERS TAB ==================== */}
-        {activeTab === 'partners' && (
-          <section style={{ textAlign: 'center' }}>
-            <div style={{ marginBottom: '48px' }}>
-              <p style={{ fontSize: '10px', color: '#94a3b8', letterSpacing: '4px', marginBottom: '16px', textTransform: 'uppercase' }}>
-                {t.partners.title}
-              </p>
-              <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto' }}>
-                {t.partners.subtitle}
-              </p>
-            </div>
-
+        {/* ==================== PARTNERS TAB - WITH GOLF BACKGROUND ==================== */}
+        {activeTab === "partners" && (
+          <section style={{ position: 'relative' }}>
+            {/* GOLF BACKGROUND */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-              gap: '16px',
-              marginBottom: '64px'
-            }}>
-              {t.partners.benefits.map((benefit, i) => (
-                <div key={i} style={{
-                  padding: '32px 20px',
-                  border: '1px solid rgba(148,163,184,0.1)',
-                  background: 'rgba(30,41,59,0.3)'
-                }}>
-                  <p style={{
-                    fontSize: '11px',
-                    color: '#94a3b8',
-                    letterSpacing: '1px'
-                  }}>{benefit}</p>
-                </div>
-              ))}
-            </div>
+              position: 'absolute',
+              top: '-60px',
+              left: '-40px',
+              right: '-40px',
+              bottom: '-60px',
+              backgroundImage: 'url("https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&q=80")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.15,
+              zIndex: 0
+            }} />
 
-            <button
-              onClick={() => {
-                const msg = language === 'english'
-                  ? 'Partnership inquiry for EnjoyBaja.com - I\'d like to become a Lifestyle Partner'
-                  : 'Consulta de asociación para EnjoyBaja.com - Me gustaría ser Socio de Estilo';
-                window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
-              }}
-              style={{
-                padding: '18px 48px',
-                background: 'linear-gradient(135deg, #cba658, #b8944d)',
-                border: 'none',
-                color: '#0f172a',
-                fontSize: '11px',
-                fontWeight: '500',
-                letterSpacing: '3px',
-                cursor: 'pointer',
-                textTransform: 'uppercase'
-              }}
-            >
-              {t.partners.cta}
-            </button>
+            <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+              <div style={{ marginBottom: '48px' }}>
+                <p style={{ fontSize: '10px', color: '#cba658', letterSpacing: '4px', marginBottom: '16px', textTransform: 'uppercase' }}>
+                  {t.partners.title}
+                </p>
+                <p style={{ fontSize: '15px', color: '#cbd5e1', maxWidth: '600px', margin: '0 auto', lineHeight: '1.8' }}>
+                  {t.partners.subtitle}
+                </p>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                gap: '16px',
+                marginBottom: '64px'
+              }}>
+                {t.partners.benefits.map((benefit, i) => (
+                  <div key={i} style={{
+                    padding: '32px 20px',
+                    border: '1px solid rgba(203,166,88,0.3)',
+                    background: 'rgba(15,23,42,0.8)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <p style={{
+                      fontSize: '12px',
+                      color: '#e2e8f0',
+                      letterSpacing: '1px',
+                      fontWeight: '500'
+                    }}>{benefit}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  const msg = language === 'english' ? 'Partnership inquiry for EnjoyBaja.com' : 'Consulta de asociacion para EnjoyBaja.com';
+                  window.open(`https://wa.me/526463402686?text=${encodeURIComponent(msg)}`, '_blank');
+                }}
+                style={{
+                  padding: '18px 48px',
+                  background: '#cba658',
+                  border: 'none',
+                  color: '#0f172a',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  letterSpacing: '3px',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#d4b366';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#cba658';
+                }}
+              >
+                {t.partners.cta}
+              </button>
+            </div>
           </section>
         )}
 
         {/* ==================== COLLECTION TAB - LUXURY GOODS ==================== */}
-        {activeTab === 'collection' && (
+        {activeTab === "collection" && (
           <section style={{ 
             margin: '-60px -40px -120px -40px',
             position: 'relative'
@@ -851,7 +1420,7 @@ export default function BajaLuxuryGuide() {
         )}
 
         {/* ==================== ADVERTISE TAB - SELF SERVICE AD PORTAL ==================== */}
-        {activeTab === 'advertise' && (
+        {activeTab === "advertise" && (
           <section style={{ 
             margin: '-60px -40px -120px -40px',
             position: 'relative'
@@ -860,107 +1429,33 @@ export default function BajaLuxuryGuide() {
           </section>
         )}
 
-        {/* ==================== NEWSLETTER (Guide tab only) ==================== */}
-        {activeTab === 'guide' && (
-          <section style={{
-            marginTop: '80px',
-            padding: '60px 40px',
-            border: '1px solid rgba(148,163,184,0.1)',
-            textAlign: 'center',
-            background: 'rgba(30,41,59,0.3)'
+        {/* FOOTER */}
+        <footer style={{
+          marginTop: '120px',
+          padding: '48px 20px',
+          borderTop: '1px solid rgba(203,166,88,0.3)',
+          textAlign: 'center',
+          background: 'rgba(0,0,0,0.5)'
+        }}>
+          <p style={{
+            fontSize: '12px',
+            color: '#cba658',
+            letterSpacing: '3px',
+            marginBottom: '16px',
+            fontStyle: 'italic'
           }}>
-            <h3 style={{
-              fontSize: '12px',
-              letterSpacing: '4px',
-              marginBottom: '16px',
-              color: '#cba658',
-              textTransform: 'uppercase'
-            }}>
-              {t.newsletter.title}
-            </h3>
-            <p style={{
-              fontSize: '14px',
-              color: '#94a3b8',
-              marginBottom: '32px',
-              maxWidth: '400px',
-              margin: '0 auto 32px'
-            }}>
-              {t.newsletter.subtitle}
-            </p>
-            {subscribed ? (
-              <p style={{ color: '#86efac', fontSize: '12px', letterSpacing: '2px' }}>
-                {t.newsletter.success}
-              </p>
-            ) : (
-              <div style={{
-                display: 'flex',
-                gap: '12px',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t.newsletter.placeholder}
-                  style={{
-                    padding: '14px 20px',
-                    background: 'rgba(15,23,42,0.8)',
-                    border: '1px solid rgba(148,163,184,0.2)',
-                    color: '#e2e8f0',
-                    fontSize: '12px',
-                    width: isMobile ? '100%' : '280px',
-                    outline: 'none'
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    if (email) setSubscribed(true);
-                  }}
-                  style={{
-                    padding: '14px 32px',
-                    background: 'linear-gradient(135deg, #cba658, #b8944d)',
-                    border: 'none',
-                    color: '#0f172a',
-                    fontSize: '10px',
-                    fontWeight: '500',
-                    letterSpacing: '2px',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t.newsletter.button}
-                </button>
-              </div>
-            )}
-          </section>
-        )}
-      </main>
-
-      {/* FOOTER */}
-      <footer style={{
-        padding: '40px',
-        borderTop: '1px solid rgba(148,163,184,0.1)',
-        textAlign: 'center',
-        background: 'rgba(15,23,42,0.8)'
-      }}>
-        <p style={{
-          fontSize: '10px',
-          color: '#cba658',
-          letterSpacing: '3px',
-          marginBottom: '12px',
-          fontStyle: 'italic'
-        }}>
-          "{t.slogan}"
-        </p>
-        <p style={{
-          fontSize: '10px',
-          color: '#64748b',
-          letterSpacing: '2px'
-        }}>
-          SAUL GARCIA • NMLS #337526 • +52 646 340 2686
-        </p>
-      </footer>
+            "{t.slogan}"
+          </p>
+          <p style={{
+            fontSize: '13px',
+            color: '#ffffff',
+            letterSpacing: '2px',
+            fontWeight: '500'
+          }}>
+            info@enjoybaja.com | WhatsApp: +52 646 340 2686
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
