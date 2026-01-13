@@ -186,6 +186,7 @@ export default function BajaLuxuryGuide() {
         regions: ["Valle de Guadalupe", "Valle de Santo Tomás", "San Antonio de las Minas", "Ojos Negros"]
       }
     },
+    spanish: {
       slogan: "Donde las Estrellas Vienen a Brillar",
       header: "BAJA CALIFORNIA",
       sub: "LA GUIA DE LUJO",
