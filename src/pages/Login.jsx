@@ -28,7 +28,16 @@ export default function Login() {
     const result = await login(email, password);
 
     if (result.success) {
-      navigate(from, { replace: true });
+      const role = result.user?.role;
+      if (role === 'admin') {
+        sessionStorage.setItem('admin_access_level', 'owner');
+        navigate('/admin', { replace: true });
+      } else if (role === 'sales') {
+        sessionStorage.setItem('admin_access_level', 'sales');
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } else {
       setError(result.error || 'Login failed');
       setIsSubmitting(false);

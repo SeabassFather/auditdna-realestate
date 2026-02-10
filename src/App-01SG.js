@@ -10,8 +10,6 @@ import AgentRegistration from './pages/AgentRegistration';
 import AdminDashboard from './pages/AdminDashboard';
 import LuxuryGoods from './components/LuxuryGoods';
 import BajaLuxuryGuide from './components/BajaLuxuryGuide';
-import AdminPropertyUpload from './pages/AdminPropertyUpload';
-import AgentPropertyUpload from './pages/AgentPropertyUpload';
 
 // =============================================
 // MARKETING AUTOMATION SYSTEM IMPORTS
@@ -96,8 +94,6 @@ function AdminFloatingNav() {
   const menuItems = [
     { label: 'Dashboard', path: '/admin' },
     { label: 'Real Estate', path: '/mexico-real-estate' },
-    { label: 'Upload Property', path: '/admin/property-upload' },
-    { label: 'Agent Upload', path: '/agent/property-upload' },
     { label: 'Developments', path: '/developments' },
     { label: 'Mortgage', path: '/usa-mortgage' },
     { label: 'URLA 1003', path: '/1003-urla' },
@@ -274,7 +270,7 @@ function LandingPage() {
 
   const handlePinSubmit = () => {
     if (adminPin === CREDENTIALS.admin.pin) {
-      sessionStorage.setItem('admin_access_level', 'owner');
+      sessionStorage.setItem('admin_access_level', 'admin');
       sessionStorage.setItem('admin_user_name', CREDENTIALS.admin.name);
       setShowAdminModal(false);
       setAdminPin('');
@@ -283,6 +279,12 @@ function LandingPage() {
       sessionStorage.setItem('admin_access_level', 'sales');
       const salesUser = CREDENTIALS.sales.find(s => s.pin === adminPin);
       sessionStorage.setItem('admin_user_name', salesUser?.name || 'Sales');
+      setShowAdminModal(false);
+      setAdminPin('');
+      navigate('/admin');
+    } else if (adminPin === CREDENTIALS.demo.pin) {
+      sessionStorage.setItem('admin_access_level', 'demo');
+      sessionStorage.setItem('admin_user_name', 'Demo');
       setShowAdminModal(false);
       setAdminPin('');
       navigate('/admin');
@@ -510,7 +512,7 @@ function LandingPage() {
               }}>ENTER</button>
             </div>
             <p style={{ ...glassText, fontSize: '8px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '20px', letterSpacing: '1px' }}>
-              Admin: 6 digits | Sales: 4 digits
+              Admin: 6 digits | Sales: 4 digits | Demo: 0000
             </p>
           </div>
         </div>
@@ -527,7 +529,7 @@ function AdminRoute({ children }) {
   if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
   if (!isAuthenticated) return <Navigate to="/login" />;
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  if (!accessLevel || !['owner', 'sales'].includes(accessLevel)) return <Navigate to="/" />;
+  if (!accessLevel || !['admin', 'sales', 'demo'].includes(accessLevel)) return <Navigate to="/" />;
   return children;
 }
 
@@ -549,7 +551,7 @@ function AgentProtectedRoute({ children }) {
   useEffect(() => {
     const auth = sessionStorage.getItem('agent_content_authorized');
     const accessLevel = sessionStorage.getItem('admin_access_level');
-    if (auth === 'true' || accessLevel === 'owner') {
+    if (auth === 'true' || accessLevel === 'admin') {
       setAuthorized(true);
       setShowPinModal(false);
     }
@@ -639,7 +641,7 @@ function AdminPlaceholder({ title }) {
 function AppContent() {
   const location = useLocation();
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  const showAdminNav = accessLevel === 'owner' && location.pathname !== '/login';
+  const showAdminNav = accessLevel === 'admin' && location.pathname !== '/login';
 
   return (
     <>
@@ -665,11 +667,9 @@ function AppContent() {
         <Route path="/developments" element={<AgentProtectedRoute><DemoWrapper><Developments /></DemoWrapper></AgentProtectedRoute>} />
         <Route path="/usa-mortgage" element={<AgentProtectedRoute><DemoWrapper><USAMortgage /></DemoWrapper></AgentProtectedRoute>} />
         <Route path="/1003-urla" element={<AgentProtectedRoute><URLA1003 /></AgentProtectedRoute>} />
-        <Route path="/agent/property-upload" element={<AgentProtectedRoute><AgentPropertyUpload /></AgentProtectedRoute>} />
         
         {/* ADMIN ROUTES */}
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-        <Route path="/admin/property-upload" element={<AdminRoute><AdminPropertyUpload /></AdminRoute>} />
         <Route path="/admin/marketing" element={<AdminRoute><MarketingDashboard /></AdminRoute>} />
         <Route path="/admin/ads" element={<AdminRoute><AdManagementPanel /></AdminRoute>} />
         <Route path="/admin/vetting" element={<AdminRoute><AgentVettingPanel /></AdminRoute>} />
