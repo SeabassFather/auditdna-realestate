@@ -223,16 +223,7 @@ export default function MexicoRealEstate() {
       phone: "+52 646 340 2686",
       email: "gibran@auditdna.com"
     },
-    {
-      name: "Brenda Bonilla",
-      title: "REAL ESTATE SPECIALIST",
-      subtitle: "Baja Mexico & Monterrey Mexico",
-      specialties: ["Coastal Properties", "Metropolitan Markets", "Luxury Residential"],
-      description: "Dual-market specialist covering Baja California coastal properties and Monterrey metropolitan real estate.",
-      photo: "/images/team/BrendaB.jpg",
-      phone: "+52 646 340 2686",
-      email: "brenda@auditdna.com"
-    },
+
     {
       name: "Osvaldo Gutierrez",
       title: "TEAM DEVELOPMENT & REAL ESTATE",
@@ -243,16 +234,7 @@ export default function MexicoRealEstate() {
       phone: "+52 646 340 2686",
       email: "osvaldo@auditdna.com"
     },
-    {
-      name: "Saul Castro",
-      title: "PUBLIC RELATIONS SPECIALIST",
-      subtitle: "Communications & Media",
-      specialties: ["Media Relations", "Communications", "Public Outreach"],
-      description: "Managing company communications and media relations. Building strong relationships with partners and clients.",
-      photo: "/images/team/Saul-Tocayo.png",
-      phone: "+52 646 340 2686",
-      email: "scastro@auditdna.com"
-    }
+    // Brenda Bonilla & Saul Castro removed Feb 11, 2026 - saved in REMOVED_TEAM_MEMBERS.md
   ];
 
   // ════════════════════════════════════════
