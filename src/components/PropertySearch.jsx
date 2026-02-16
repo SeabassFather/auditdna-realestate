@@ -7,6 +7,107 @@ export default function PropertySearch({ language = 'english' }) {
   const [bedrooms, setBedrooms] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // SAMPLE PROPERTIES - REPLACE WITH REAL API/DATABASE LATER
+  const sampleProperties = [
+    {
+      id: 1,
+      name: 'Casa del Caracol',
+      type: 'house',
+      region: 'Ensenada',
+      price: 15000000,
+      beds: 8,
+      baths: 10,
+      sqft: 12000,
+      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=85',
+      description: 'Oceanfront masterpiece on 2.5 acres with private beach access, infinity pools, wine cellar'
+    },
+    {
+      id: 2,
+      name: 'Valle Vineyard Estate',
+      type: 'vineyard',
+      region: 'Valle de Guadalupe',
+      price: 2500000,
+      beds: 5,
+      baths: 4,
+      sqft: 4500,
+      image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200&q=85',
+      description: 'Boutique winery with producing vineyard, tasting room, luxury residence'
+    },
+    {
+      id: 3,
+      name: 'Rosarito Beach Residence',
+      type: 'condo',
+      region: 'Rosarito',
+      price: 350000,
+      beds: 2,
+      baths: 2,
+      sqft: 1200,
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=85',
+      description: 'Contemporary oceanfront with private terrace, underground parking'
+    },
+    {
+      id: 4,
+      name: 'Cabo Marina Penthouse',
+      type: 'penthouse',
+      region: 'Cabo San Lucas',
+      price: 1800000,
+      beds: 3,
+      baths: 3,
+      sqft: 2800,
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=85',
+      description: 'Panoramic marina and ocean views, rooftop terrace, boat slip included'
+    },
+    {
+      id: 5,
+      name: 'Todos Santos Villa',
+      type: 'villa',
+      region: 'Todos Santos',
+      price: 890000,
+      beds: 4,
+      baths: 3,
+      sqft: 3200,
+      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
+      description: 'Architectural villa near world-class surf breaks and art galleries'
+    },
+    {
+      id: 6,
+      name: 'La Paz Beachfront',
+      type: 'house',
+      region: 'La Paz',
+      price: 675000,
+      beds: 3,
+      baths: 2,
+      sqft: 2200,
+      image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&q=85',
+      description: 'Direct beach access on Sea of Cortez, perfect for fishing and sailing'
+    },
+    {
+      id: 7,
+      name: 'Tijuana Contemporary',
+      type: 'townhouse',
+      region: 'Tijuana',
+      price: 425000,
+      beds: 3,
+      baths: 2.5,
+      sqft: 1800,
+      image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=85',
+      description: 'Modern residence in gated community near border crossing'
+    },
+    {
+      id: 8,
+      name: 'San Felipe Gulf View',
+      type: 'condo',
+      region: 'San Felipe',
+      price: 185000,
+      beds: 2,
+      baths: 1,
+      sqft: 950,
+      image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1200&q=85',
+      description: 'Beachfront residence with Sea of Cortez views'
+    }
+  ];
 
   // COMPLETE LIST OF ALL BAJA CALIFORNIA REGIONS - TIJUANA TO CABO
   const regions = [
@@ -228,20 +329,43 @@ export default function PropertySearch({ language = 'english' }) {
 
   const handleSearch = () => {
     setIsSearching(true);
-    // Simulate search - in production this would call your API
+    setHasSearched(true);
+    
     setTimeout(() => {
-      setIsSearching(false);
-      // Show message for now
-      const searchCriteria = [];
-      if (region) searchCriteria.push(region);
-      if (propertyType) searchCriteria.push(propertyType);
-      if (priceRange) searchCriteria.push(priceRange);
+      // Filter properties based on search criteria
+      let filtered = [...sampleProperties];
       
-      alert(language === 'english' 
-        ? `Searching for properties in: ${searchCriteria.join(', ') || 'All Baja California'}\n\nContact us for available listings!\nWhatsApp: +52 646 340 2686`
-        : `Buscando propiedades en: ${searchCriteria.join(', ') || 'Toda Baja California'}\n\n¡Contáctenos para listados disponibles!\nWhatsApp: +52 646 340 2686`
-      );
-    }, 1000);
+      if (propertyType) {
+        filtered = filtered.filter(p => p.type === propertyType);
+      }
+      
+      if (region) {
+        filtered = filtered.filter(p => p.region === region);
+      }
+      
+      if (priceRange && priceRange !== '') {
+        const [min, max] = priceRange.split('-').map(n => n === '' ? Infinity : parseInt(n.replace('+', '')));
+        filtered = filtered.filter(p => {
+          if (max === Infinity) return p.price >= min;
+          return p.price >= min && p.price <= max;
+        });
+      }
+      
+      if (bedrooms) {
+        const minBeds = parseInt(bedrooms);
+        filtered = filtered.filter(p => p.beds >= minBeds);
+      }
+      
+      setSearchResults(filtered);
+      setIsSearching(false);
+    }, 800);
+  };
+
+  const formatPrice = (price) => {
+    if (price >= 1000000) {
+      return `$${(price / 1000000).toFixed(1)}M`;
+    }
+    return `$${(price / 1000).toLocaleString()}K`;
   };
 
   const inputStyle = {
@@ -427,6 +551,167 @@ export default function PropertySearch({ language = 'english' }) {
           ))}
         </div>
       </div>
+
+      {/* PROPERTY RESULTS - ONLY SHOWS AFTER SEARCH */}
+      {hasSearched && (
+        <div style={{ marginTop: '40px' }}>
+          <p style={{ 
+            fontSize: '14px', 
+            color: '#64748b', 
+            marginBottom: '24px',
+            textAlign: 'center',
+            fontWeight: '600'
+          }}>
+            {searchResults.length} {language === 'english' ? 'Properties Found' : 'Propiedades Encontradas'}
+          </p>
+
+          {searchResults.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              background: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px dashed #cbd5e1'
+            }}>
+              <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '12px' }}>
+                {language === 'english' ? 'No properties match your criteria' : 'No hay propiedades que coincidan'}
+              </p>
+              <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '20px' }}>
+                {language === 'english' ? 'Try adjusting your filters or contact us for assistance' : 'Intente ajustar los filtros o contáctenos'}
+              </p>
+              <button
+                onClick={() => window.open('https://wa.me/526463402686?text=I need help finding properties', '_blank')}
+                style={{
+                  padding: '12px 32px',
+                  background: '#cba658',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#0f172a',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                {language === 'english' ? 'Contact Us' : 'Contáctenos'}
+              </button>
+            </div>
+          ) : (
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+              gap: '24px' 
+            }}>
+              {searchResults.map((property) => (
+                <div 
+                  key={property.id} 
+                  style={{
+                    background: '#ffffff',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.08)';
+                  }}
+                >
+                  {/* Property Image */}
+                  <div style={{
+                    width: '100%',
+                    height: '240px',
+                    backgroundImage: `url(${property.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    position: 'relative'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '12px',
+                      left: '12px',
+                      background: '#cba658',
+                      color: '#ffffff',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      fontSize: '16px',
+                      fontWeight: '700'
+                    }}>
+                      {formatPrice(property.price)}
+                    </div>
+                  </div>
+
+                  {/* Property Details */}
+                  <div style={{ padding: '20px' }}>
+                    <h4 style={{
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                      marginBottom: '6px'
+                    }}>
+                      {property.name}
+                    </h4>
+                    <p style={{
+                      fontSize: '13px',
+                      color: '#cba658',
+                      marginBottom: '12px',
+                      fontWeight: '500'
+                    }}>
+                      {property.region}
+                    </p>
+                    <p style={{
+                      fontSize: '13px',
+                      color: '#475569',
+                      marginBottom: '16px',
+                      lineHeight: '1.6'
+                    }}>
+                      {property.description}
+                    </p>
+                    <div style={{
+                      display: 'flex',
+                      gap: '16px',
+                      fontSize: '13px',
+                      color: '#64748b',
+                      marginBottom: '20px',
+                      paddingTop: '12px',
+                      borderTop: '1px solid #e2e8f0'
+                    }}>
+                      <span>{property.beds} {language === 'english' ? 'beds' : 'rec'}</span>
+                      <span>•</span>
+                      <span>{property.baths} {language === 'english' ? 'baths' : 'baños'}</span>
+                      <span>•</span>
+                      <span>{property.sqft.toLocaleString()} SF</span>
+                    </div>
+                    <button
+                      onClick={() => window.open(`https://wa.me/526463402686?text=Property Inquiry: ${property.name} - ${formatPrice(property.price)}`, '_blank')}
+                      style={{
+                        width: '100%',
+                        padding: '14px',
+                        background: '#cba658',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#ffffff',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#b8944d'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#cba658'}
+                    >
+                      {language === 'english' ? 'Contact About This Property' : 'Consultar Esta Propiedad'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

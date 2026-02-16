@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AuditDNADirect from './pages/AuditDNADirect';
 import MexicoRealEstate from './pages/MexicoRealEstate';
 import Developments from './pages/Developments';
 import USAMortgage from './pages/USAMortgage';
@@ -10,6 +11,8 @@ import AgentRegistration from './pages/AgentRegistration';
 import AdminDashboard from './pages/AdminDashboard';
 import LuxuryGoods from './components/LuxuryGoods';
 import BajaLuxuryGuide from './components/BajaLuxuryGuide';
+import AdminPropertyUpload from './pages/AdminPropertyUpload';
+import AgentPropertyUpload from './pages/AgentPropertyUpload';
 
 // =============================================
 // MARKETING AUTOMATION SYSTEM IMPORTS
@@ -28,6 +31,7 @@ const floatStyles = `
   @keyframes float2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
   @keyframes float3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
   @keyframes float4 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-9px); } }
+  @keyframes float5 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-7px); } }
 `;
 
 if (typeof document !== 'undefined' && !document.getElementById('float-styles')) {
@@ -94,6 +98,8 @@ function AdminFloatingNav() {
   const menuItems = [
     { label: 'Dashboard', path: '/admin' },
     { label: 'Real Estate', path: '/mexico-real-estate' },
+    { label: 'Upload Property', path: '/admin/property-upload' },
+    { label: 'Agent Upload', path: '/agent/property-upload' },
     { label: 'Developments', path: '/developments' },
     { label: 'Mortgage', path: '/usa-mortgage' },
     { label: 'URLA 1003', path: '/1003-urla' },
@@ -270,7 +276,7 @@ function LandingPage() {
 
   const handlePinSubmit = () => {
     if (adminPin === CREDENTIALS.admin.pin) {
-      sessionStorage.setItem('admin_access_level', 'admin');
+      sessionStorage.setItem('admin_access_level', 'owner');
       sessionStorage.setItem('admin_user_name', CREDENTIALS.admin.name);
       setShowAdminModal(false);
       setAdminPin('');
@@ -279,12 +285,6 @@ function LandingPage() {
       sessionStorage.setItem('admin_access_level', 'sales');
       const salesUser = CREDENTIALS.sales.find(s => s.pin === adminPin);
       sessionStorage.setItem('admin_user_name', salesUser?.name || 'Sales');
-      setShowAdminModal(false);
-      setAdminPin('');
-      navigate('/admin');
-    } else if (adminPin === CREDENTIALS.demo.pin) {
-      sessionStorage.setItem('admin_access_level', 'demo');
-      sessionStorage.setItem('admin_user_name', 'Demo');
       setShowAdminModal(false);
       setAdminPin('');
       navigate('/admin');
@@ -301,6 +301,7 @@ function LandingPage() {
   }, []);
 
   const cards = [
+    { id: 'auditdna', title: 'AuditDNA', subtitle: 'AI-Powered Mortgage Audit', image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80', route: '/audit-direct', float: 'float5 3.8s ease-in-out infinite 0.2s' },
     { id: 'realestate', title: 'Mexico Real Estate', subtitle: 'Baja California Premium Properties', image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80', route: '/mexico-real-estate', float: 'float1 4s ease-in-out infinite' },
     { id: 'lifestyle', title: 'Lifestyle Guide', subtitle: 'Wine Country & Luxury Living', image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=600&q=80', route: '/lifestyle', float: 'float2 4.5s ease-in-out infinite 0.5s' },
     { id: 'developments', title: 'Developments', subtitle: '64 Projects Across 17 Regions', image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&q=80', route: '/developments', float: 'float3 3.5s ease-in-out infinite 1s' },
@@ -328,7 +329,7 @@ function LandingPage() {
       {/* DARK OVERLAY */}
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.7) 100%)', zIndex: 1
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.2) 0%, rgba(15,23,42,0.35) 100%)', zIndex: 1
       }} />
 
       {/* TOP NAV */}
@@ -339,7 +340,7 @@ function LandingPage() {
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
       }}>
-        <div style={{ ...glassText, fontSize: isMobile ? '10px' : '11px', letterSpacing: '4px', color: 'rgba(203, 166, 88, 0.9)' }}>
+        <div style={{ ...glassText, fontSize: isMobile ? '10px' : '11px', letterSpacing: '4px', color: 'rgba(255, 255, 255, 0.95)' }}>
           ENJOY BAJA
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -391,15 +392,15 @@ function LandingPage() {
           <h1 style={{ ...glassText, fontSize: isMobile ? '36px' : '68px', letterSpacing: isMobile ? '8px' : '16px', marginBottom: '16px', color: 'rgba(226, 232, 240, 0.9)' }}>
             ENJOY BAJA
           </h1>
-          <p style={{ ...glassText, fontSize: isMobile ? '10px' : '12px', letterSpacing: '4px', color: 'rgba(148, 163, 184, 0.7)' }}>
+          <p style={{ ...glassText, fontSize: isMobile ? '10px' : '12px', letterSpacing: '4px', color: 'rgba(255, 255, 255, 0.95)' }}>
             PREMIUM REAL ESTATE & LIFESTYLE
           </p>
         </div>
 
-        {/* 4 CARDS */}
+        {/* 5 CARDS */}
         <div style={{
-          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
-          gap: isMobile ? '16px' : '20px', maxWidth: '1400px', margin: '0 auto', width: '100%'
+          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)',
+          gap: isMobile ? '16px' : '20px', maxWidth: '1600px', margin: '0 auto', width: '100%'
         }}>
           {cards.map((card) => (
             <div
@@ -408,7 +409,7 @@ function LandingPage() {
               onMouseEnter={() => setHoveredCard(card.id)}
               onMouseLeave={() => setHoveredCard(null)}
               style={{
-                position: 'relative', height: isMobile ? '200px' : '320px',
+                position: 'relative', height: isMobile ? '200px' : '260px',
                 overflow: 'hidden', cursor: 'pointer', transition: 'all 0.4s ease',
                 border: hoveredCard === card.id ? '1px solid rgba(203, 166, 88, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
                 animation: card.float
@@ -461,8 +462,8 @@ function LandingPage() {
         background: 'rgba(15, 23, 42, 0.3)', backdropFilter: 'blur(20px)', zIndex: 10,
         display: 'flex', justifyContent: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
-        <p style={{ ...glassText, fontSize: '9px', color: 'rgba(148, 163, 184, 0.6)', letterSpacing: '3px' }}>
-          info@enjoybaja.com | WhatsApp: +52 646 340 2686
+        <p style={{ ...glassText, fontSize: '9px', color: 'rgba(255, 255, 255, 0.95)', letterSpacing: '3px' }}>
+          WhatsApp: +52 646 340 2686
         </p>
       </div>
 
@@ -512,7 +513,7 @@ function LandingPage() {
               }}>ENTER</button>
             </div>
             <p style={{ ...glassText, fontSize: '8px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '20px', letterSpacing: '1px' }}>
-              Admin: 6 digits | Sales: 4 digits | Demo: 0000
+              Admin: 6 digits | Sales: 4 digits
             </p>
           </div>
         </div>
@@ -529,7 +530,7 @@ function AdminRoute({ children }) {
   if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
   if (!isAuthenticated) return <Navigate to="/login" />;
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  if (!accessLevel || !['admin', 'sales', 'demo'].includes(accessLevel)) return <Navigate to="/" />;
+  if (!accessLevel || !['owner', 'sales'].includes(accessLevel)) return <Navigate to="/" />;
   return children;
 }
 
@@ -551,7 +552,7 @@ function AgentProtectedRoute({ children }) {
   useEffect(() => {
     const auth = sessionStorage.getItem('agent_content_authorized');
     const accessLevel = sessionStorage.getItem('admin_access_level');
-    if (auth === 'true' || accessLevel === 'admin') {
+    if (auth === 'true' || accessLevel === 'owner') {
       setAuthorized(true);
       setShowPinModal(false);
     }
@@ -641,7 +642,7 @@ function AdminPlaceholder({ title }) {
 function AppContent() {
   const location = useLocation();
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  const showAdminNav = accessLevel === 'admin' && location.pathname !== '/login';
+  const showAdminNav = accessLevel === 'owner' && location.pathname !== '/login';
 
   return (
     <>
@@ -656,6 +657,9 @@ function AppContent() {
         {/* LANDING - PUBLIC */}
         <Route path="/" element={<LandingPage />} />
         
+        {/* AUDITDNA - PUBLIC ACCESS */}
+        <Route path="/audit-direct" element={<AuditDNADirect />} />
+        
         {/* LIFESTYLE - PUBLIC */}
         <Route path="/lifestyle" element={<BajaLuxuryGuide />} />
         
@@ -667,9 +671,11 @@ function AppContent() {
         <Route path="/developments" element={<AgentProtectedRoute><DemoWrapper><Developments /></DemoWrapper></AgentProtectedRoute>} />
         <Route path="/usa-mortgage" element={<AgentProtectedRoute><DemoWrapper><USAMortgage /></DemoWrapper></AgentProtectedRoute>} />
         <Route path="/1003-urla" element={<AgentProtectedRoute><URLA1003 /></AgentProtectedRoute>} />
+        <Route path="/agent/property-upload" element={<AgentProtectedRoute><AgentPropertyUpload /></AgentProtectedRoute>} />
         
         {/* ADMIN ROUTES */}
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/property-upload" element={<AdminRoute><AdminPropertyUpload /></AdminRoute>} />
         <Route path="/admin/marketing" element={<AdminRoute><MarketingDashboard /></AdminRoute>} />
         <Route path="/admin/ads" element={<AdminRoute><AdManagementPanel /></AdminRoute>} />
         <Route path="/admin/vetting" element={<AdminRoute><AgentVettingPanel /></AdminRoute>} />

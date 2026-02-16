@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -10,85 +10,32 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
-  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedToken = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('authUser');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
+    const storedUser = sessionStorage.getItem('user');
+    if (storedUser) {
       setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
     }
-    setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/agents/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setToken(data.token);
-        setUser(data.agent);
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('authUser', JSON.stringify(data.agent));
-        return { success: true };
-      } else {
-        return { success: false, error: data.error };
-      }
-    } catch (err) {
-      return { success: false, error: 'Login failed' };
-    }
-  };
-
-  const register = async (name, email, phone, password) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/agents/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, password })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setToken(data.token);
-        setUser(data.agent);
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('authUser', JSON.stringify(data.agent));
-        return { success: true };
-      } else {
-        return { success: false, error: data.error };
-      }
-    } catch (err) {
-      return { success: false, error: 'Registration failed' };
-    }
+  const login = (userData) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+    sessionStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
-    setToken(null);
     setUser(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('authUser');
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('admin_access_level');
   };
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!token,
-    loading,
-    login,
-    register,
-    logout
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

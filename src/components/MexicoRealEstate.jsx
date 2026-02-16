@@ -190,7 +190,7 @@ export default function MexicoRealEstate() {
   };
 
   // ════════════════════════════════════════
-  // 6 TEAM MEMBERS - CORRECT TITLES (JAN 10)
+  // 5 TEAM MEMBERS - BRENDA REMOVED
   // ════════════════════════════════════════
   const teamMembers = [
     {
@@ -222,16 +222,6 @@ export default function MexicoRealEstate() {
       photo: "/images/team/gibran-lyle.png",
       phone: "+52 646 340 2686",
       email: "gibran@auditdna.com"
-    },
-    {
-      name: "Brenda Bonilla",
-      title: "REAL ESTATE SPECIALIST",
-      subtitle: "Baja Mexico & Monterrey Mexico",
-      specialties: ["Coastal Properties", "Metropolitan Markets", "Luxury Residential"],
-      description: "Dual-market specialist covering Baja California coastal properties and Monterrey metropolitan real estate.",
-      photo: "/images/team/BrendaB.jpg",
-      phone: "+52 646 340 2686",
-      email: "brenda@auditdna.com"
     },
     {
       name: "Osvaldo Gutierrez",
@@ -472,7 +462,7 @@ export default function MexicoRealEstate() {
                   </div>
                 )}
 
-                {/* TEAM SECTION - SHARP SQUARE PHOTOS */}
+                {/* TEAM SECTION - SHARP SQUARE PHOTOS - 5 MEMBERS */}
                 {section.id === 'team' && (
                   <div>
                     <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '24px', fontSize: '11px', letterSpacing: '1.5px', fontWeight: '300' }}>

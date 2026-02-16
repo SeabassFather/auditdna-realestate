@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // FAQ Component to handle accordion state properly
@@ -94,7 +94,7 @@ function FAQSection() {
                 color: '#64748b',
                 transition: 'transform 0.3s',
                 transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-              }}>⌄</span>
+              }}>âŒ„</span>
             </button>
             {isOpen && (
               <div style={{ 
@@ -322,7 +322,7 @@ export default function USAMortgage() {
                 marginBottom: '32px'
               }}
             >
-              START 1003 APPLICATION →
+              START 1003 APPLICATION â†’
             </button>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
@@ -467,7 +467,7 @@ export default function USAMortgage() {
                   'Proof of income'
                 ].map((req, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#cbd5e1' }}>
-                    <span style={{ color: '#22c55e', fontSize: '16px' }}>✓</span>
+                    <span style={{ color: '#22c55e', fontSize: '16px' }}>âœ“</span>
                     <span>{req}</span>
                   </div>
                 ))}
@@ -801,13 +801,13 @@ export default function USAMortgage() {
                         <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.5' }}>{item.desc}</p>
                       </div>
                       <div style={{ fontSize: '12px', color: '#22c55e', textAlign: 'right', whiteSpace: 'nowrap', marginLeft: '16px' }}>
-                        ⏱️ {item.time}
+                        â±ï¸ {item.time}
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '12px' }}>
                       {item.details.map((detail, idx) => (
                         <div key={idx} style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: '#cbd5e1' }}>•</span>
+                          <span style={{ color: '#cbd5e1' }}>â€¢</span>
                           {detail}
                         </div>
                       ))}
@@ -1230,7 +1230,7 @@ export default function USAMortgage() {
                   'Proof of income/assets'
                 ].map((req, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#cbd5e1' }}>
-                    <span style={{ color: '#22c55e', fontSize: '16px' }}>✓</span>
+                    <span style={{ color: '#22c55e', fontSize: '16px' }}>âœ“</span>
                     <span>{req}</span>
                   </div>
                 ))}
@@ -1328,7 +1328,7 @@ export default function USAMortgage() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
                       {property.features.map((feature, i) => (
                         <div key={i} style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: '#cbd5e1' }}>•</span>
+                          <span style={{ color: '#cbd5e1' }}>â€¢</span>
                           {feature}
                         </div>
                       ))}
@@ -1464,7 +1464,7 @@ export default function USAMortgage() {
                 marginBottom: '32px'
               }}
             >
-              START 1003 APPLICATION →
+              START 1003 APPLICATION â†’
             </button>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}>
@@ -1516,7 +1516,7 @@ export default function USAMortgage() {
               </p>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: '1.8' }}>
                 <strong style={{ color: '#cbd5e1' }}>Accuracy Matters:</strong> Provide accurate information. False statements
-                on a loan application are a federal crime (18 U.S.C. § 1001).
+                on a loan application are a federal crime (18 U.S.C. Â§ 1001).
               </p>
             </div>
           </div>
@@ -1636,7 +1636,7 @@ export default function USAMortgage() {
                       id="photo-upload"
                     />
                     <label htmlFor="photo-upload" style={{ cursor: 'pointer' }}>
-                      <div style={{ fontSize: '48px', marginBottom: '12px' }}>📸</div>
+                      <div style={{ fontSize: '48px', marginBottom: '12px' }}>ðŸ“¸</div>
                       <div style={{ fontSize: '14px', color: '#cbd5e1', marginBottom: '8px' }}>
                         Click to upload photos or drag and drop
                       </div>
@@ -1654,7 +1654,7 @@ export default function USAMortgage() {
                             onClick={() => setUploadedPhotos(uploadedPhotos.filter(p => p.id !== photo.id))}
                             style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', border: 'none', borderRadius: '4px', color: 'white', width: '24px', height: '24px', cursor: 'pointer', fontSize: '14px' }}
                           >
-                            ×
+                            Ã—
                           </button>
                         </div>
                       ))}
@@ -1795,12 +1795,12 @@ export default function USAMortgage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
               {[
-                { title: 'Upload Listings', desc: 'Add your properties to our platform', icon: '📤' },
-                { title: 'Client Management', desc: 'Track client applications and status', icon: '👥' },
-                { title: 'Lender Network', desc: 'Access to 8+ preferred lenders', icon: '🏦' },
-                { title: 'Marketing Support', desc: 'Co-branded marketing materials', icon: '📊' },
-                { title: 'Commission Tracking', desc: 'Monitor your pipeline and earnings', icon: '💰' },
-                { title: 'Training Resources', desc: 'Loan product training and updates', icon: '📚' }
+                { title: 'Upload Listings', desc: 'Add your properties to our platform', icon: 'ðŸ“¤' },
+                { title: 'Client Management', desc: 'Track client applications and status', icon: 'ðŸ‘¥' },
+                { title: 'Lender Network', desc: 'Access to 8+ preferred lenders', icon: 'ðŸ¦' },
+                { title: 'Marketing Support', desc: 'Co-branded marketing materials', icon: 'ðŸ“Š' },
+                { title: 'Commission Tracking', desc: 'Monitor your pipeline and earnings', icon: 'ðŸ’°' },
+                { title: 'Training Resources', desc: 'Loan product training and updates', icon: 'ðŸ“š' }
               ].map((tool, idx) => (
                 <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '24px', textAlign: 'center' }}>
                   <div style={{ fontSize: '40px', marginBottom: '12px' }}>{tool.icon}</div>
@@ -2099,7 +2099,7 @@ export default function USAMortgage() {
                   { title: 'Better Negotiation', desc: 'Negotiate from a position of strength' }
                 ].map((reason, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ color: '#22c55e', fontSize: '20px', flexShrink: 0 }}>✓</div>
+                    <div style={{ color: '#22c55e', fontSize: '20px', flexShrink: 0 }}>âœ“</div>
                     <div>
                       <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: '500', marginBottom: '4px' }}>{reason.title}</div>
                       <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5' }}>{reason.desc}</div>
@@ -2373,7 +2373,7 @@ export default function USAMortgage() {
                     justifyContent: 'center',
                     border: '1px solid rgba(148, 163, 184, 0.2)'
                   }}>
-                    <span style={{ fontSize: '24px', color: '#94a3b8' }}>↑</span>
+                    <span style={{ fontSize: '24px', color: '#94a3b8' }}>â†‘</span>
                   </div>
                   <div style={{ 
                     fontSize: '14px', 
@@ -2389,7 +2389,7 @@ export default function USAMortgage() {
                     color: '#64748b',
                     letterSpacing: '0.5px'
                   }}>
-                    or click to browse • PDF, DOC, JPG, PNG up to 25MB
+                    or click to browse â€¢ PDF, DOC, JPG, PNG up to 25MB
                   </div>
                 </div>
               </label>
@@ -2402,10 +2402,10 @@ export default function USAMortgage() {
                   {uploadedDocs.map((doc, idx) => (
                     <div key={idx} style={{ background: 'rgba(71, 85, 105, 0.5)', border: '1px solid rgba(203, 213, 225, 0.1)', borderRadius: '0', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <div style={{ fontSize: '24px' }}>📄</div>
+                        <div style={{ fontSize: '24px' }}>ðŸ“„</div>
                         <div>
                           <div style={{ fontSize: '13px', color: '#e2e8f0', fontWeight: '500' }}>{doc.name}</div>
-                          <div style={{ fontSize: '11px', color: '#cbd5e1' }}>{doc.size} • {doc.uploaded}</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1' }}>{doc.size} â€¢ {doc.uploaded}</div>
                         </div>
                       </div>
                       <button style={{ background: '#ef4444', border: 'none', borderRadius: '4px', color: 'white', padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }}>
@@ -2698,7 +2698,7 @@ export default function USAMortgage() {
                     transition: 'transform 0.3s ease',
                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
                   }}>
-                    ⌄
+                    âŒ„
                   </div>
                 </button>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Developments() {
@@ -10,16 +10,16 @@ export default function Developments() {
     { name: 'Rosarito & Primo Tapia', projects: 3, value: '$120M+' },
     { name: 'Tecate & Wine Country', projects: 4, value: '$120M+' },
     { name: 'Ensenada', projects: 4, value: '$148M+' },
-    { name: 'San Quintín & Vicente Guerrero', projects: 2, value: '$30M+' },
+    { name: 'San QuintÃ­n & Vicente Guerrero', projects: 2, value: '$30M+' },
     { name: 'San Felipe & Gulf Coast', projects: 3, value: '$87M+' },
-    { name: 'Bahía de los Ángeles', projects: 2, value: '$31M+' },
-    { name: 'Guerrero Negro & Vizcaíno', projects: 2, value: '$22M+' },
-    { name: 'Santa Rosalía & Mulegé', projects: 3, value: '$45M+' },
+    { name: 'BahÃ­a de los Ãngeles', projects: 2, value: '$31M+' },
+    { name: 'Guerrero Negro & VizcaÃ­no', projects: 2, value: '$22M+' },
+    { name: 'Santa RosalÃ­a & MulegÃ©', projects: 3, value: '$45M+' },
     { name: 'Loreto', projects: 4, value: '$180M+' },
     { name: 'La Paz', projects: 5, value: '$320M+' },
     { name: 'Todos Santos & El Pescadero', projects: 4, value: '$275M+' },
     { name: 'East Cape & Los Barriles', projects: 4, value: '$195M+' },
-    { name: 'San José del Cabo', projects: 4, value: '$450M+' },
+    { name: 'San JosÃ© del Cabo', projects: 4, value: '$450M+' },
     { name: 'Cabo San Lucas', projects: 5, value: '$580M+' },
     { name: 'Inland - Mexicali & Valleys', projects: 3, value: '$65M+' },
     { name: 'Inland - Sierra & Desert', projects: 3, value: '$41M+' }
@@ -74,7 +74,7 @@ export default function Developments() {
           backdropFilter: 'blur(10px)'
         }}
       >
-        ← BACK
+        â† BACK
       </button>
 
       {/* CONTENT */}
@@ -169,7 +169,7 @@ export default function Developments() {
                     transition: 'transform 0.2s',
                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
                   }}>
-                    ⌄
+                    âŒ„
                   </span>
                 </button>
 
