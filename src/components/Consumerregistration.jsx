@@ -1,8 +1,10 @@
 // CONSUMER REGISTRATION CARD - STEP 0 (BEFORE Lock Screen!)
+// Bilingual: EN/ES | Updated: 2026
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function ConsumerRegistration({ onRegistrationComplete }) {
+  const [lang, setLang] = useState('en');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -95,6 +97,11 @@ function ConsumerRegistration({ onRegistrationComplete }) {
         width: '100%',
         border: '1px solid rgba(148, 163, 184, 0.2)'
       }}>
+        <div style={{textAlign: 'right', marginBottom: '16px'}}>
+          <button type="button" onClick={() => setLang(lang === 'en' ? 'es' : 'en')} style={{padding: '8px 20px', background: 'rgba(203,166,88,0.15)', border: '1px solid rgba(203,166,88,0.4)', color: '#cba658', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', letterSpacing: '1px'}}>
+            {lang === 'en' ? '🌐 Español' : '🌐 English'}
+          </button>
+        </div>
         <h1 style={{
           ...glassText,
           fontSize: '32px',
@@ -104,7 +111,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
           letterSpacing: '2px',
           textAlign: 'center'
         }}>
-          Register for AuditDNA
+          {lang === 'es' ? 'Regístrate en AuditDNA' : 'Register for AuditDNA'}
         </h1>
         <p style={{
           ...glassText,
@@ -114,12 +121,12 @@ function ConsumerRegistration({ onRegistrationComplete }) {
           textAlign: 'center',
           marginBottom: '40px'
         }}>
-          US Mortgage Financial Recovery Service
+          {lang === 'es' ? 'Servicio de Recuperación Financiera Hipotecaria USA' : 'US Mortgage Financial Recovery Service'}
         </p>
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-            FULL NAME *
+            {lang === 'es' ? 'NOMBRE COMPLETO *' : 'FULL NAME *'}
           </label>
           <input
             type="text"
@@ -143,7 +150,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <div>
             <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-              EMAIL *
+              {lang === 'es' ? 'CORREO ELECTRÓNICO *' : 'EMAIL *'}
             </label>
             <input
               type="email"
@@ -166,7 +173,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
 
           <div>
             <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-              PHONE *
+              {lang === 'es' ? 'TELÉFONO *' : 'PHONE *'}
             </label>
             <input
               type="tel"
@@ -191,13 +198,13 @@ function ConsumerRegistration({ onRegistrationComplete }) {
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-            PROPERTY ADDRESS *
+            {lang === 'es' ? 'DOMICILIO DE LA PROPIEDAD *' : 'PROPERTY ADDRESS *'}
           </label>
           <input
             type="text"
             value={formData.propertyAddress}
             onChange={(e) => handleChange('propertyAddress', e.target.value)}
-            placeholder="123 Main Street"
+            placeholder={lang === 'es' ? 'Ej: 123 Calle Principal' : '123 Main Street'}
             style={{
               width: '100%',
               padding: '14px',
@@ -217,7 +224,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
-              placeholder="City"
+              placeholder={lang === 'es' ? 'Ciudad' : 'City'}
               style={{
                 padding: '14px',
                 background: 'rgba(15, 23, 42, 0.6)',
@@ -251,7 +258,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
               type="text"
               value={formData.zip}
               onChange={(e) => handleChange('zip', e.target.value)}
-              placeholder="ZIP"
+              placeholder={lang === 'es' ? 'ZIP / CP' : 'ZIP'}
               maxLength={5}
               style={{
                 padding: '14px',
@@ -270,9 +277,12 @@ function ConsumerRegistration({ onRegistrationComplete }) {
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-            HOW DID YOU HEAR ABOUT US?
+            {lang === 'es' ? '¿CÓMO NOS CONOCISTE?' : 'HOW DID YOU HEAR ABOUT US?'}
           </label>
-          {['Google Search', 'Partner Referral', 'Social Media', 'Friend/Family'].map(source => (
+          {(lang === 'es'
+            ? ['Búsqueda Google', 'Referido de Socio', 'Redes Sociales', 'Amigo/Familiar']
+            : ['Google Search', 'Partner Referral', 'Social Media', 'Friend/Family']
+          ).map(source => (
             <label key={source} style={{ display: 'flex', gap: '12px', marginBottom: '10px', cursor: 'pointer', alignItems: 'center' }}>
               <input
                 type="radio"
@@ -290,7 +300,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
         {formData.referralSource === 'Partner Referral' && (
           <div style={{ marginBottom: '24px' }}>
             <label style={{ ...glassText, fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-              PARTNER REFERRAL CODE
+              {lang === 'es' ? 'CÓDIGO DE REFERIDO' : 'PARTNER REFERRAL CODE'}
             </label>
             <input
               type="text"
@@ -321,7 +331,7 @@ function ConsumerRegistration({ onRegistrationComplete }) {
               style={{ marginTop: '4px', width: '16px', height: '16px' }}
             />
             <span style={{ ...glassText, fontSize: '12px', lineHeight: '1.6' }}>
-              I agree to the Terms of Service and Privacy Policy. I authorize AuditDNA to audit my mortgage documents.
+              {lang === 'es' ? 'Acepto los Términos de Servicio y la Política de Privacidad. Autorizo a AuditDNA a auditar mis documentos hipotecarios.' : 'I agree to the Terms of Service and Privacy Policy. I authorize AuditDNA to audit my mortgage documents.'}
             </span>
           </label>
           {errors.agreeToTerms && <p style={{ ...glassText, fontSize: '11px', color: '#ef4444', marginTop: '4px' }}>{errors.agreeToTerms}</p>}
@@ -349,11 +359,11 @@ function ConsumerRegistration({ onRegistrationComplete }) {
             cursor: isSubmitting ? 'not-allowed' : 'pointer'
           }}
         >
-          {isSubmitting ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
+          {isSubmitting ? 'CREATING ACCOUNT...' : lang === 'es' ? 'CREAR CUENTA' : 'CREATE ACCOUNT'}
         </button>
 
         <p style={{ ...glassText, fontSize: '12px', textAlign: 'center', marginTop: '24px', color: '#64748b' }}>
-          Already have an account? <span style={{ color: '#cba658', cursor: 'pointer' }}>Sign In</span>
+          {lang === 'es' ? '¿Ya tienes cuenta?' : 'Already have an account?'} <span style={{ color: '#cba658', cursor: 'pointer' }}>{lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}</span>
         </p>
       </div>
     </div>

@@ -74,20 +74,14 @@ const SelfServiceAdPortal = ({ embedded = false, onClose = null }) => {
 
   // STEP 1: Packages - NO PRICES on paid
   const renderPackages = () => (
-    <div style={{ minHeight: '100vh', position: 'relative', padding: '60px 20px' }}>
+    <div style={{ position: 'relative', padding: '0', margin: 0 }}>
       <div style={bgStyle} /><div style={overlayStyle} />
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <div style={{ ...glassText, fontSize: '11px', letterSpacing: '6px', color: 'rgba(226,232,240,0.5)', marginBottom: '16px', textTransform: 'uppercase' }}>Baja California Magazine</div>
-          <h1 style={{ ...glassText, fontSize: '42px', fontWeight: '100', letterSpacing: '12px', color: 'rgba(226,232,240,0.95)', marginBottom: '16px', textTransform: 'uppercase' }}>Advertise</h1>
-          <div style={{ width: '60px', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(226,232,240,0.4), transparent)', margin: '0 auto 20px' }} />
-          <p style={{ ...glassText, fontSize: '13px', color: 'rgba(148,163,184,0.7)', letterSpacing: '2px', maxWidth: '500px', margin: '0 auto', lineHeight: '1.8' }}>Reach affluent buyers across Baja California and beyond</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1400px', margin: 0, padding: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '30px', maxWidth: '1400px', margin: 0, padding: '0 20px' }}>
           {Object.values(AD_PACKAGES).map((pkg) => (
-            <div key={pkg.id} onClick={() => { setSelectedPackage(pkg.id); setStep(2); }} style={{ background: pkg.highlight ? 'linear-gradient(135deg, rgba(226,232,240,0.12) 0%, rgba(226,232,240,0.05) 100%)' : 'rgba(15,23,42,0.4)', backdropFilter: 'blur(20px)', border: pkg.highlight ? '1px solid rgba(226,232,240,0.3)' : '1px solid rgba(148,163,184,0.1)', padding: '36px 32px', cursor: 'pointer', transition: 'all 0.4s ease', position: 'relative', overflow: 'hidden' }}>
+            <div key={pkg.id} onClick={() => { setSelectedPackage(pkg.id); setStep(2); }} style={{ minHeight: '420px', background: pkg.highlight ? 'linear-gradient(135deg, rgba(226,232,240,0.12) 0%, rgba(226,232,240,0.05) 100%)' : 'rgba(15,23,42,0.4)', backdropFilter: 'blur(20px)', border: pkg.highlight ? '1px solid rgba(226,232,240,0.3)' : '1px solid rgba(148,163,184,0.1)', padding: '32px 28px', cursor: 'pointer', transition: 'all 0.4s ease', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               {pkg.highlight && <div style={{ position: 'absolute', top: '20px', right: '-35px', background: 'rgba(226,232,240,0.9)', color: '#0f172a', fontSize: '8px', fontWeight: '600', letterSpacing: '1px', padding: '6px 40px', transform: 'rotate(45deg)', textTransform: 'uppercase' }}>Limited Time</div>}
-              <div style={{ ...glassText, fontSize: '9px', letterSpacing: '3px', color: pkg.highlight ? 'rgba(226,232,240,0.8)' : 'rgba(148,163,184,0.5)', marginBottom: '8px', textTransform: 'uppercase' }}>{pkg.subtitle}</div>
+              <div style={{ ...glassText, fontSize: '9px', letterSpacing: '3px', color: pkg.highlight ? 'rgba(203,166,88,0.95)' : 'rgba(148,163,184,0.9)', marginBottom: '8px', textTransform: 'uppercase' }}>{pkg.subtitle}</div>
               <h3 style={{ ...glassText, fontSize: '22px', fontWeight: '100', color: 'rgba(226,232,240,0.95)', marginBottom: '8px', letterSpacing: '3px' }}>{pkg.name}</h3>
               <div style={{ marginBottom: '20px' }}>
                 {pkg.showPrice ? (
@@ -96,18 +90,18 @@ const SelfServiceAdPortal = ({ embedded = false, onClose = null }) => {
                   <div style={{ ...glassText, fontSize: '14px', fontWeight: '100', color: 'rgba(203,166,88,0.9)', letterSpacing: '2px', padding: '12px 0', borderTop: '1px solid rgba(148,163,184,0.1)', borderBottom: '1px solid rgba(148,163,184,0.1)' }}>REQUEST QUOTE</div>
                 )}
               </div>
-              <p style={{ ...glassText, fontSize: '12px', color: 'rgba(148,163,184,0.6)', marginBottom: '24px', lineHeight: '1.7', minHeight: '40px' }}>{pkg.description}</p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>{pkg.features.map((f, i) => <li key={i} style={{ ...glassText, fontSize: '11px', color: 'rgba(148,163,184,0.7)', marginBottom: '10px', paddingLeft: '20px', position: 'relative', letterSpacing: '0.5px' }}><span style={{ position: 'absolute', left: 0, color: pkg.highlight ? 'rgba(134,239,172,0.7)' : 'rgba(148,163,184,0.4)', fontSize: '8px' }}>*</span>{f}</li>)}</ul>
-              <button style={{ width: '100%', padding: '14px', background: pkg.highlight ? 'rgba(226,232,240,0.1)' : 'transparent', border: '1px solid rgba(148,163,184,0.2)', color: 'rgba(226,232,240,0.8)', fontSize: '10px', letterSpacing: '3px', cursor: 'pointer', fontFamily: '"Helvetica Neue", sans-serif', textTransform: 'uppercase' }}>{pkg.showPrice ? 'Get Started Free' : 'Request Quote'}</button>
+              <p style={{ ...glassText, fontSize: '12px', color: 'rgba(226,232,240,0.9)', marginBottom: '24px', lineHeight: '1.7', minHeight: '65px' }}>{pkg.description}</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', flexGrow: 1 }}>{pkg.features.map((f, i) => <li key={i} style={{ ...glassText, fontSize: '11px', color: 'rgba(226,232,240,0.85)', marginBottom: '10px', paddingLeft: '20px', position: 'relative', letterSpacing: '0.5px' }}><span style={{ position: 'absolute', left: 0, color: pkg.highlight ? 'rgba(203,166,88,0.9)' : 'rgba(148,163,184,0.6)', fontSize: '8px' }}>✓</span>{f}</li>)}</ul>
+              <button style={{ width: '100%', padding: '18px', background: pkg.highlight ? 'rgba(226,232,240,0.1)' : 'transparent', border: '1px solid rgba(148,163,184,0.2)', color: 'rgba(226,232,240,0.8)', fontSize: '10px', letterSpacing: '3px', cursor: 'pointer', fontFamily: '"Helvetica Neue", sans-serif', textTransform: 'uppercase', marginTop: 'auto' }}>{pkg.showPrice ? 'Get Started Free' : 'Request Quote'}</button>
             </div>
           ))}
         </div>
-        <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: 'rgba(203,166,88,0.1)', border: '1px solid rgba(203,166,88,0.2)' }}>
-          <p style={{ ...glassText, fontSize: '11px', color: 'rgba(203,166,88,0.9)', letterSpacing: '1px', margin: '0 0 8px 0', fontWeight: '400' }}>FILE FORMAT REQUIREMENTS</p>
-          <p style={{ ...glassText, fontSize: '10px', color: 'rgba(148,163,184,0.6)', letterSpacing: '1px', margin: 0, lineHeight: '1.8' }}>Images: JPG recommended (PNG accepted) - Max 10MB | Video: MP4 recommended (MOV accepted) - Max 50MB, 30 sec<br /><span style={{ color: 'rgba(248,113,113,0.7)' }}>We are not responsible for quality issues with incorrectly formatted uploads.</span></p>
+        <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: 'transparent', backdropFilter: 'blur(15px)', border: '1px solid rgba(226,232,240,0.15)', margin: '40px 20px 0 20px' }}>
+          <p style={{ ...glassText, fontSize: '11px', color: 'rgba(255,255,255,0.95)', letterSpacing: '1px', margin: '0 0 8px 0', fontWeight: '400' }}>FILE FORMAT REQUIREMENTS</p>
+          <p style={{ ...glassText, fontSize: '10px', color: 'rgba(255,255,255,0.75)', letterSpacing: '1px', margin: 0, lineHeight: '1.8' }}>Images: JPG recommended (PNG accepted) - Max 10MB | Video: MP4 recommended (MOV accepted) - Max 50MB, 30 sec<br /><span style={{ color: 'rgba(248,113,113,0.9)' }}>We are not responsible for quality issues with incorrectly formatted uploads.</span></p>
         </div>
-        <div style={{ textAlign: 'center', marginTop: '20px', padding: '24px', background: 'rgba(15,23,42,0.3)', backdropFilter: 'blur(10px)', border: '1px solid rgba(148,163,184,0.1)' }}>
-          <p style={{ ...glassText, fontSize: '11px', color: 'rgba(148,163,184,0.5)', letterSpacing: '1px', margin: 0 }}>Submissions reviewed within 24 hours - Quote via email/phone - WhatsApp +52 646 340 2686</p>
+        <div style={{ textAlign: 'center', marginTop: '20px', padding: '24px', background: 'transparent', backdropFilter: 'blur(15px)', border: '1px solid rgba(226,232,240,0.15)', margin: '20px 20px 40px 20px' }}>
+          <p style={{ ...glassText, fontSize: '11px', color: 'rgba(255,255,255,0.85)', letterSpacing: '1px', margin: 0 }}>Submissions reviewed within 24 hours - Quote via email/phone - WhatsApp +52 646 340 2686</p>
         </div>
       </div>
     </div>

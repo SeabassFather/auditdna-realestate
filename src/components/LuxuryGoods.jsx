@@ -1,335 +1,316 @@
 // =============================================
-// LUXURY GOODS MARKETPLACE
-// 4-SQUARE HERO - FERRARI/JET/YACHT/WATCH
-// PIMPED OUT SILVER/PLATINUM SHINE
-// HIGH END AS FUCK
+// LUXURY GOODS MARKETPLACE - ENTERPRISE EDITION
+// - KYC SELLER VERIFICATION (INE/Passport/License + Selfie)
+// - CATEGORY-BASED COMMISSION STRUCTURE
+// - BRAIN INTEGRATION & CROSS-MODULE COMMUNICATION
+// - FRAUD PREVENTION & LEGAL COMPLIANCE
 // =============================================
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ModuleNavBar from '../components/ModuleNavBar';
+
+// ========== COMMISSION STRUCTURE BY CATEGORY ==========
+const COMMISSION_SCHEDULE = {
+  'Aviation': { rate: 3.0, description: 'Private Jets, Helicopters, Aircraft' },
+  'Yachts': { rate: 5.0, description: 'Superyachts, Motor Yachts, Sailing Yachts' },
+  'Automobiles': { rate: 4.0, description: 'Exotic Cars, Classic Cars, Hypercars' },
+  'Watches': { rate: 8.0, description: 'Luxury Timepieces, Vintage Watches' },
+  'Jewelry': { rate: 10.0, description: 'Fine Jewelry, Precious Stones, Custom Pieces' },
+  'Art': { rate: 12.0, description: 'Fine Art, Sculptures, Limited Editions' },
+  'Wine Collections': { rate: 15.0, description: 'Rare Wines, Vintage Collections, Cellars' },
+  'Real Estate': { rate: 2.5, description: 'Luxury Properties, Estates, Villas' },
+  'Other Luxury': { rate: 7.5, description: 'Designer Items, Collectibles, Memorabilia' }
+};
 
 // ========== LUXURY GOODS DATA ==========
 const LUXURY_ITEMS = [
   // AVIATION
   {
-    id: 'jet-001',
-    category: 'Aviation',
-    title: '2019 Gulfstream G650ER',
-    subtitle: 'Ultra Long Range Business Jet',
-    price: '$62,500,000',
+    id: 'jet-001', category: 'Aviation', title: '2019 Gulfstream G650ER',
+    subtitle: 'Ultra Long Range Business Jet', price: '$62,500,000',
     image: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=85',
     specs: ['Range: 7,500 nm', 'Speed: Mach 0.925', 'Passengers: 19', 'Hours: 1,847 TTAF'],
-    location: 'San Diego, CA',
-    featured: true
+    location: 'San Diego, CA', featured: true, seller: 'Verified Dealer', verified: true
   },
   {
-    id: 'jet-002',
-    category: 'Aviation',
-    title: '2021 Bombardier Global 7500',
-    subtitle: 'Largest Purpose-Built Business Jet',
-    price: '$72,000,000',
-    image: 'https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=800&q=85',
-    specs: ['Range: 7,700 nm', '4 Living Spaces', 'Full Kitchen', 'Hours: 423 TTAF'],
-    location: 'Scottsdale, AZ',
-    featured: false
-  },
-  {
-    id: 'jet-003',
-    category: 'Aviation',
-    title: '2022 Cessna Citation X+',
-    subtitle: 'Fastest Civilian Aircraft',
-    price: '$23,000,000',
-    image: 'https://images.unsplash.com/photo-1559628233-100c798642d4?w=800&q=85',
-    specs: ['Speed: Mach 0.935', 'Range: 3,460 nm', 'Passengers: 12', 'Hours: 892 TTAF'],
-    location: 'Van Nuys, CA',
-    featured: false
-  },
-  {
-    id: 'heli-001',
-    category: 'Aviation',
-    title: '2022 Airbus H160',
-    subtitle: 'VIP Configured Helicopter',
-    price: '$21,000,000',
-    image: 'https://images.unsplash.com/photo-1608236415053-3691891f1ee3?w=800&q=85',
-    specs: ['Range: 450 nm', 'Speed: 160 kts', 'VIP 6-Seat Interior', 'Hours: 127'],
-    location: 'Los Angeles, CA',
-    featured: false
-  },
-  // YACHTS
-  {
-    id: 'yacht-001',
-    category: 'Yachts',
-    title: '2020 Benetti Oasis 40M',
-    subtitle: 'Italian Luxury Superyacht',
-    price: '$18,500,000',
+    id: 'yacht-001', category: 'Yachts', title: '2020 Benetti Oasis 40M',
+    subtitle: 'Italian Luxury Superyacht', price: '$18,500,000',
     image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=800&q=85',
     specs: ['Length: 131 ft', 'Beam: 28 ft', 'Guests: 10', 'Crew: 7'],
-    location: 'Cabo San Lucas, MX',
-    featured: true
+    location: 'Cabo San Lucas, MX', featured: true, seller: 'Private Owner', verified: true
   },
   {
-    id: 'yacht-002',
-    category: 'Yachts',
-    title: '2018 Azimut Grande 35M',
-    subtitle: 'Tri-Deck Motor Yacht',
-    price: '$9,200,000',
-    image: 'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=800&q=85',
-    specs: ['Length: 115 ft', 'Speed: 26 kts', 'Guests: 10', 'Crew: 5'],
-    location: 'Ensenada, MX',
-    featured: false
-  },
-  {
-    id: 'yacht-003',
-    category: 'Yachts',
-    title: '2023 Riva 110 Dolcevita',
-    subtitle: 'Italian Flybridge Masterpiece',
-    price: '$14,800,000',
-    image: 'https://images.unsplash.com/photo-1559526642-c3f001ea68ee?w=800&q=85',
-    specs: ['Length: 110 ft', 'Speed: 28 kts', 'Mahogany Interior', 'Crew: 4'],
-    location: 'La Paz, MX',
-    featured: false
-  },
-  // AUTOMOBILES
-  {
-    id: 'car-001',
-    category: 'Automobiles',
-    title: '2024 Rolls-Royce Phantom EWB',
-    subtitle: 'Extended Wheelbase - Bespoke',
-    price: '$685,000',
+    id: 'car-001', category: 'Automobiles', title: '2024 Rolls-Royce Phantom EWB',
+    subtitle: 'Extended Wheelbase - Bespoke', price: '$685,000',
     image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=800&q=85',
     specs: ['V12 Twin-Turbo', 'Starlight Headliner', 'Bespoke Interior', '2,400 Miles'],
-    location: 'Beverly Hills, CA',
-    featured: true
+    location: 'Beverly Hills, CA', featured: true, seller: 'Authorized Dealer', verified: true
   },
   {
-    id: 'car-002',
-    category: 'Automobiles',
-    title: '2024 Ferrari SF90 XX Stradale',
-    subtitle: 'Limited Edition Hypercar',
-    price: '$892,000',
-    image: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?w=800&q=85',
-    specs: ['1,016 HP', '0-60: 2.3s', 'Assetto Fiorano Package', '124 Miles'],
-    location: 'Newport Beach, CA',
-    featured: true
-  },
-  {
-    id: 'car-003',
-    category: 'Automobiles',
-    title: '1967 Ferrari 275 GTB/4',
-    subtitle: 'Classiche Certified - Matching Numbers',
-    price: '$3,200,000',
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=85',
-    specs: ['V12 4-Cam', 'Matching Numbers', 'Full Documentation', 'Concours Winner'],
-    location: 'Pebble Beach, CA',
-    featured: true
-  },
-  {
-    id: 'car-004',
-    category: 'Automobiles',
-    title: '2024 Lamborghini Revuelto',
-    subtitle: 'First HPEV V12 Supercar',
-    price: '$608,000',
-    image: 'https://images.unsplash.com/photo-1621135802920-133df287f89c?w=800&q=85',
-    specs: ['1,001 HP', 'V12 Hybrid', '0-60: 2.5s', 'Delivery Miles'],
-    location: 'Scottsdale, AZ',
-    featured: false
-  },
-  // TIMEPIECES
-  {
-    id: 'watch-001',
-    category: 'Timepieces',
-    title: 'Patek Philippe Nautilus 5711/1A',
-    subtitle: 'Final Production Year - Blue Dial',
-    price: '$185,000',
+    id: 'watch-001', category: 'Watches', title: 'Patek Philippe Nautilus 5711/1A',
+    subtitle: 'Tiffany Blue Dial - Final Edition', price: '$850,000',
     image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&q=85',
-    specs: ['40mm Steel', 'Blue Dial', 'Full Set 2021', 'Unworn'],
-    location: 'Los Angeles, CA',
-    featured: true
-  },
-  {
-    id: 'watch-002',
-    category: 'Timepieces',
-    title: 'Rolex Daytona "Paul Newman" 6239',
-    subtitle: 'Exotic Dial - Museum Quality',
-    price: '$425,000',
-    image: 'https://images.unsplash.com/photo-1548171915-e79a380a2a4b?w=800&q=85',
-    specs: ['37mm Steel', 'Exotic Dial', 'Circa 1968', 'Full Provenance'],
-    location: 'New York, NY',
-    featured: false
-  },
-  {
-    id: 'watch-003',
-    category: 'Timepieces',
-    title: 'Richard Mille RM 11-03',
-    subtitle: 'Automatic Flyback Chronograph',
-    price: '$285,000',
-    image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=800&q=85',
-    specs: ['Titanium Case', 'Skeleton Dial', 'Full Set', 'Like New'],
-    location: 'Miami, FL',
-    featured: false
-  },
-  // JEWELRY
-  {
-    id: 'jewelry-001',
-    category: 'Jewelry',
-    title: 'Kashmir Sapphire Ring',
-    subtitle: '18.92ct - No Heat - GIA Certified',
-    price: '$2,800,000',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=85',
-    specs: ['18.92 Carats', 'Kashmir Origin', 'No Heat Treatment', 'Platinum Setting'],
-    location: 'Geneva, CH',
-    featured: true
-  },
-  {
-    id: 'jewelry-002',
-    category: 'Jewelry',
-    title: 'Fancy Vivid Yellow Diamond',
-    subtitle: '15.03ct Cushion Cut - GIA',
-    price: '$1,450,000',
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=85',
-    specs: ['15.03 Carats', 'Fancy Vivid', 'VVS1 Clarity', 'Excellent Cut'],
-    location: 'New York, NY',
-    featured: false
-  },
-  // FINE ART
-  {
-    id: 'art-001',
-    category: 'Fine Art',
-    title: 'Banksy - "Girl with Balloon"',
-    subtitle: 'Signed Screen Print - AP Edition',
-    price: '$950,000',
-    image: 'https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=800&q=85',
-    specs: ['Screen Print', 'Artist Proof', 'Pest Control COA', 'Museum Frame'],
-    location: 'London, UK',
-    featured: true
-  },
-  {
-    id: 'art-002',
-    category: 'Fine Art',
-    title: 'Jean-Michel Basquiat - "Untitled"',
-    subtitle: 'Acrylic and Oil Stick on Canvas',
-    price: '$4,200,000',
-    image: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&q=85',
-    specs: ['1982', '72 x 60 inches', 'Full Provenance', 'Museum Exhibited'],
-    location: 'New York, NY',
-    featured: false
-  },
-  // ESTATES
-  {
-    id: 'estate-001',
-    category: 'Estates',
-    title: 'Valle de Guadalupe Vineyard',
-    subtitle: '45 Acre Wine Estate with Villa',
-    price: '$8,500,000',
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=85',
-    specs: ['45 Acres', '12,000 sf Villa', 'Producing Vineyard', 'Wine Cave'],
-    location: 'Valle de Guadalupe, MX',
-    featured: true
+    specs: ['Ref: 5711/1A-018', 'Steel Case', 'Box & Papers', 'Unworn 2023'],
+    location: 'Geneva, Switzerland', featured: true, seller: 'Certified Dealer', verified: true
   }
 ];
 
-const CATEGORIES = ['All', 'Aviation', 'Yachts', 'Automobiles', 'Timepieces', 'Jewelry', 'Fine Art', 'Estates'];
-
-// 4-SQUARE HERO IMAGES
+// ========== HERO IMAGES (4-SQUARE) ==========
 const HERO_IMAGES = [
-  { 
-    url: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?w=800&q=90',
-    label: 'AUTOMOBILES'
-  },
-  { 
-    url: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=90',
-    label: 'AVIATION'
-  },
-  { 
-    url: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=800&q=90',
-    label: 'YACHTS'
-  },
-  { 
-    url: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&q=90',
-    label: 'TIMEPIECES'
-  }
+  { url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=90', label: 'EXOTIC AUTOMOBILES' },
+  { url: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=90', label: 'PRIVATE AVIATION' },
+  { url: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=800&q=90', label: 'SUPERYACHTS' },
+  { url: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&q=90', label: 'FINE TIMEPIECES' }
 ];
-
-// ========== TYPOGRAPHY ==========
-const serifText = {
-  fontFamily: '"Playfair Display", "Times New Roman", Georgia, serif',
-  fontWeight: '400'
-};
-
-const sansText = {
-  fontFamily: '"Helvetica Neue", -apple-system, sans-serif',
-  fontWeight: '300'
-};
 
 export default function LuxuryGoods() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [showSellerModal, setShowSellerModal] = useState(false);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
-  const [inquiryForm, setInquiryForm] = useState({ name: '', email: '', phone: '', message: '' });
-  const [inquirySent, setInquirySent] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  
+  // Seller registration state
+  const [sellerForm, setSellerForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    company: '',
+    category: '',
+    idType: '',
+    idDocument: null,
+    selfiePhoto: null,
+    termsAccepted: false,
+    commissionAcknowledged: false
+  });
+
+  const [dragActive, setDragActive] = useState({ id: false, selfie: false });
+
+  // Typography styles
+  const sansText = {
+    fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+    textTransform: 'uppercase'
+  };
+
+  const serifText = {
+    fontFamily: 'Georgia, "Times New Roman", serif'
+  };
+
+  // Handle file drag & drop
+  const handleDrag = (e, field) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive({ ...dragActive, [field]: true });
+    } else if (e.type === "dragleave") {
+      setDragActive({ ...dragActive, [field]: false });
+    }
+  };
+
+  const handleDrop = (e, field) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive({ ...dragActive, [field]: false });
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        setSellerForm({ ...sellerForm, [field]: file });
+        
+        // SEND TO BRAIN - Document uploaded
+        sendToBrain({
+          action: 'DOCUMENT_UPLOAD',
+          module: 'LuxuryGoods',
+          timestamp: new Date().toISOString(),
+          user: sellerForm.email || 'Unknown',
+          documentType: field === 'idDocument' ? sellerForm.idType : 'Selfie Photo',
+          fileName: file.name,
+          fileSize: file.size,
+          status: 'Pending Verification'
+        });
+      } else {
+        alert('Please upload an image file (JPG, PNG, or PDF)');
+      }
+    }
+  };
+
+  const handleFileSelect = (e, field) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSellerForm({ ...sellerForm, [field]: file });
+      
+      // SEND TO BRAIN
+      sendToBrain({
+        action: 'DOCUMENT_UPLOAD',
+        module: 'LuxuryGoods',
+        timestamp: new Date().toISOString(),
+        user: sellerForm.email || 'Unknown',
+        documentType: field === 'idDocument' ? sellerForm.idType : 'Selfie Photo',
+        fileName: file.name,
+        fileSize: file.size,
+        status: 'Pending Verification'
+      });
+    }
+  };
+
+  // Submit seller registration
+  const handleSellerSubmit = () => {
+    // Validation
+    if (!sellerForm.fullName || !sellerForm.email || !sellerForm.phone) {
+      alert('Please fill all required fields');
+      return;
+    }
+    if (!sellerForm.category) {
+      alert('Please select a selling category');
+      return;
+    }
+    if (!sellerForm.idType || !sellerForm.idDocument) {
+      alert('Please upload a government-issued ID');
+      return;
+    }
+    if (!sellerForm.selfiePhoto) {
+      alert('Please upload a selfie with your phone visible');
+      return;
+    }
+    if (!sellerForm.termsAccepted || !sellerForm.commissionAcknowledged) {
+      alert('Please accept Terms & Conditions and Commission Agreement');
+      return;
+    }
+
+    // Generate seller application
+    const sellerApplication = {
+      id: `SELLER-${Date.now()}`,
+      ...sellerForm,
+      status: 'Pending Verification',
+      submittedAt: new Date().toISOString(),
+      commission: COMMISSION_SCHEDULE[sellerForm.category],
+      verificationSteps: {
+        idVerification: 'Pending',
+        selfieVerification: 'Pending',
+        backgroundCheck: 'Pending',
+        approvalStatus: 'Pending Review'
+      }
+    };
+
+    // Store in localStorage (simulating backend)
+    const existing = JSON.parse(localStorage.getItem('luxury_seller_applications') || '[]');
+    existing.push(sellerApplication);
+    localStorage.setItem('luxury_seller_applications', JSON.stringify(existing));
+
+    // SEND TO BRAIN - Complete registration
+    sendToBrain({
+      action: 'SELLER_REGISTRATION',
+      module: 'LuxuryGoods',
+      timestamp: new Date().toISOString(),
+      sellerId: sellerApplication.id,
+      sellerData: {
+        name: sellerForm.fullName,
+        email: sellerForm.email,
+        phone: sellerForm.phone,
+        category: sellerForm.category,
+        commission: COMMISSION_SCHEDULE[sellerForm.category].rate + '%'
+      },
+      verificationRequired: true,
+      status: 'Submitted for Review'
+    });
+
+    alert('Seller application submitted! You will receive verification results within 24-48 hours.');
+    setShowSellerModal(false);
+    resetSellerForm();
+  };
+
+  const resetSellerForm = () => {
+    setSellerForm({
+      fullName: '', email: '', phone: '', company: '', category: '',
+      idType: '', idDocument: null, selfiePhoto: null,
+      termsAccepted: false, commissionAcknowledged: false
+    });
+  };
+
+  // BRAIN INTEGRATION - Send data to admin dashboard & monitoring system
+  const sendToBrain = (data) => {
+    // Store in luxury_brain_log
+    const brainLog = JSON.parse(localStorage.getItem('luxury_brain_log') || '[]');
+    brainLog.push({
+      ...data,
+      recordedAt: new Date().toISOString(),
+      source: 'LuxuryGoods Module'
+    });
+    localStorage.setItem('luxury_brain_log', JSON.stringify(brainLog));
+
+    // Also store in master brain log (cross-module)
+    const masterBrainLog = JSON.parse(localStorage.getItem('master_brain_log') || '[]');
+    masterBrainLog.push({
+      ...data,
+      recordedAt: new Date().toISOString(),
+      module: 'LuxuryGoods'
+    });
+    localStorage.setItem('master_brain_log', JSON.stringify(masterBrainLog));
+
+    // Log to console for monitoring
+    console.log('🧠 BRAIN LOG:', data);
+  };
+
+  // Handle inquiry submission
+  const handleInquiry = (item) => {
+    const inquiry = {
+      id: `INQ-${Date.now()}`,
+      itemId: item.id,
+      itemTitle: item.title,
+      itemPrice: item.price,
+      category: item.category,
+      timestamp: new Date().toISOString(),
+      status: 'New'
+    };
+
+    // Store inquiry
+    const inquiries = JSON.parse(localStorage.getItem('luxury_inquiries') || '[]');
+    inquiries.push(inquiry);
+    localStorage.setItem('luxury_inquiries', JSON.stringify(inquiries));
+
+    // SEND TO BRAIN
+    sendToBrain({
+      action: 'BUYER_INQUIRY',
+      module: 'LuxuryGoods',
+      timestamp: new Date().toISOString(),
+      inquiryId: inquiry.id,
+      item: {
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        category: item.category
+      },
+      status: 'New Inquiry'
+    });
+
+    setSelectedItem(null);
+    setShowInquiryModal(true);
+    setTimeout(() => setShowInquiryModal(false), 3000);
+  };
 
   const filteredItems = selectedCategory === 'All' 
     ? LUXURY_ITEMS 
     : LUXURY_ITEMS.filter(item => item.category === selectedCategory);
 
-  const featuredItems = LUXURY_ITEMS.filter(item => item.featured);
-
-  const handleInquiry = (item) => {
-    setSelectedItem(item);
-    setShowInquiryModal(true);
-    setInquirySent(false);
-    setInquiryForm({ name: '', email: '', phone: '', message: '' });
-  };
-
-  const submitInquiry = () => {
-    console.log('INQUIRY SUBMITTED TO ADMIN:', {
-      item: selectedItem,
-      buyer: inquiryForm,
-      timestamp: new Date().toISOString()
-    });
-    setInquirySent(true);
-    setTimeout(() => {
-      setShowInquiryModal(false);
-    }, 3000);
-  };
-
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      position: 'relative',
-      background: '#050505'
-    }}>
+    <div style={{ minHeight: '100vh', position: 'relative', background: '#050505' }}>
       
-      {/* ============================================= */}
-      {/* 4-SQUARE HERO SECTION - PIMPED OUT */}
-      {/* ============================================= */}
+      {/* MODULE NAVIGATION BAR - ALL 5 MODULES */}
+      <ModuleNavBar />
+      
+      {/* 4-SQUARE HERO SECTION */}
       <section style={{
-        position: 'relative',
-        height: '100vh',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gridTemplateRows: '1fr 1fr',
-        gap: '4px',
-        background: '#0a0a0a'
+        position: 'relative', height: '100vh', display: 'grid',
+        gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr',
+        gap: '4px', background: '#0a0a0a'
       }}>
         {HERO_IMAGES.map((img, idx) => (
-          <div
-            key={idx}
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              cursor: 'pointer'
-            }}
-          >
-            {/* IMAGE */}
+          <div key={idx} style={{ position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
             <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundImage: `url(${img.url})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              backgroundImage: `url(${img.url})`, backgroundSize: 'cover', backgroundPosition: 'center',
               transition: 'transform 0.8s ease, filter 0.5s ease',
               filter: 'brightness(0.6) saturate(0.9)'
             }}
@@ -342,931 +323,884 @@ export default function LuxuryGoods() {
               e.currentTarget.style.filter = 'brightness(0.6) saturate(0.9)';
             }}
             />
-            
-            {/* SILVER SHINE OVERLAY */}
             <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: `linear-gradient(
-                ${idx === 0 ? '135deg' : idx === 1 ? '225deg' : idx === 2 ? '45deg' : '315deg'},
-                rgba(203,213,225,0.15) 0%,
-                transparent 50%,
-                rgba(148,163,176,0.1) 100%
-              )`,
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              background: `linear-gradient(${idx === 0 ? '135deg' : idx === 1 ? '225deg' : idx === 2 ? '45deg' : '315deg'},
+                rgba(203,213,225,0.15) 0%, transparent 50%, rgba(148,163,176,0.1) 100%)`,
               pointerEvents: 'none'
             }} />
-
-            {/* DIAMOND SPARKLE */}
             <div style={{
-              position: 'absolute',
-              top: '20%',
-              left: '30%',
-              width: '100px',
-              height: '100px',
-              background: 'radial-gradient(ellipse, rgba(255,255,255,0.2) 0%, transparent 70%)',
-              pointerEvents: 'none',
-              animation: 'sparkle 3s ease-in-out infinite',
-              animationDelay: `${idx * 0.5}s`
-            }} />
-
-            {/* CATEGORY LABEL */}
-            <div style={{
-              position: 'absolute',
-              bottom: '30px',
-              left: '30px',
-              zIndex: 10
+              position: 'absolute', bottom: '30px', left: '30px', zIndex: 10
             }}>
               <p style={{
-                ...sansText,
-                fontSize: '10px',
-                letterSpacing: '4px',
-                color: '#b8944d',
-                marginBottom: '8px',
-                textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                ...sansText, fontSize: '10px', letterSpacing: '4px', color: '#b8944d',
+                marginBottom: '8px', textShadow: '0 2px 10px rgba(0,0,0,0.5)'
               }}>
                 {img.label}
               </p>
               <div style={{
-                width: '40px',
-                height: '2px',
+                width: '40px', height: '2px',
                 background: 'linear-gradient(90deg, #cbd5e1, transparent)',
                 boxShadow: '0 0 10px rgba(203,213,225,0.5)'
               }} />
             </div>
-
-            {/* CORNER ACCENTS */}
-            <div style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              width: '30px',
-              height: '30px',
-              borderTop: '1px solid rgba(203,213,225,0.4)',
-              borderRight: '1px solid rgba(203,213,225,0.4)'
-            }} />
-            <div style={{
-              position: 'absolute',
-              bottom: '20px',
-              left: '20px',
-              width: '30px',
-              height: '30px',
-              borderBottom: '1px solid rgba(203,213,225,0.4)',
-              borderLeft: '1px solid rgba(203,213,225,0.4)'
-            }} />
           </div>
         ))}
 
-        {/* CENTER OVERLAY - LOGO & TITLE */}
+        {/* CENTER OVERLAY - TITLE & CTA */}
         <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 20,
-          textAlign: 'center',
-          padding: '60px 80px',
-          background: 'rgba(5,5,5,0.85)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(203,213,225,0.2)',
-          boxShadow: '0 0 100px rgba(0,0,0,0.8), 0 0 60px rgba(203,213,225,0.1)'
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 20
         }}>
-          {/* DIAMOND ICON */}
-          <div style={{
-            width: '60px',
-            height: '60px',
-            margin: '0 auto 24px',
-            position: 'relative'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%) rotate(45deg)',
-              width: '40px',
-              height: '40px',
-              border: '1px solid rgba(203,213,225,0.5)',
-              background: 'linear-gradient(135deg, rgba(203,213,225,0.15) 0%, rgba(148,163,176,0.05) 100%)',
-              boxShadow: '0 0 40px rgba(203,213,225,0.3), inset 0 0 20px rgba(255,255,255,0.1)'
-            }} />
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: '#cbd5e1',
-              fontSize: '20px',
-              textShadow: '0 0 20px rgba(203,213,225,0.8)'
-            }}>
-              ◇
-            </div>
-          </div>
-
           <h1 style={{
-            ...serifText,
-            fontSize: '42px',
-            fontWeight: '400',
-            letterSpacing: '12px',
-            color: '#cbd5e1',
-            margin: '0 0 8px',
-            textShadow: '0 0 60px rgba(203,213,225,0.4)'
+            ...serifText, fontSize: '64px', fontWeight: '300',
+            color: '#cbd5e1', margin: '0 0 20px 0', letterSpacing: '8px',
+            textShadow: '0 4px 30px rgba(0,0,0,0.8), 0 0 60px rgba(203,213,225,0.3)'
           }}>
-            ENJOY BAJA
+            LUXURY GOODS
           </h1>
           <p style={{
-            ...sansText,
-            fontSize: '11px',
-            letterSpacing: '8px',
-            color: '#94a3b8',
-            margin: '0 0 20px'
+            ...sansText, fontSize: '12px', letterSpacing: '6px',
+            color: '#b8944d', marginBottom: '40px',
+            textShadow: '0 2px 15px rgba(0,0,0,0.6)'
           }}>
-            LUXURY COLLECTION
+            CURATED MARKETPLACE FOR DISCERNING COLLECTORS
           </p>
-          <div style={{
-            width: '100px',
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent, #b8944d, transparent)',
-            margin: '0 auto 20px',
-            boxShadow: '0 0 15px rgba(184,148,77,0.4)'
-          }} />
-          <p style={{
-            ...sansText,
-            fontSize: '9px',
-            letterSpacing: '4px',
-            color: '#64748b'
-          }}>
-            PRIVATE BROKERAGE
-          </p>
-        </div>
-
-        {/* SCROLL INDICATOR */}
-        <div style={{
-          position: 'absolute',
-          bottom: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 20,
-          textAlign: 'center'
-        }}>
-          <p style={{
-            ...sansText,
-            fontSize: '8px',
-            letterSpacing: '4px',
-            color: '#64748b',
-            marginBottom: '10px'
-          }}>
-            SCROLL TO EXPLORE
-          </p>
-          <div style={{
-            width: '1px',
-            height: '40px',
-            background: 'linear-gradient(180deg, #cbd5e1, transparent)',
-            margin: '0 auto',
-            animation: 'pulse 2s ease-in-out infinite'
-          }} />
-        </div>
-
-        {/* PLATINUM CORNER BADGES */}
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          zIndex: 20,
-          padding: '12px 20px',
-          background: 'linear-gradient(135deg, rgba(203,213,225,0.15) 0%, rgba(148,163,176,0.08) 100%)',
-          border: '1px solid rgba(203,213,225,0.3)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <span style={{
-            ...sansText,
-            fontSize: '8px',
-            letterSpacing: '3px',
-            color: '#cbd5e1'
-          }}>
-            EST. 2024
-          </span>
-        </div>
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          zIndex: 20,
-          padding: '12px 20px',
-          background: 'linear-gradient(135deg, rgba(203,213,225,0.15) 0%, rgba(148,163,176,0.08) 100%)',
-          border: '1px solid rgba(203,213,225,0.3)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <span style={{
-            ...sansText,
-            fontSize: '8px',
-            letterSpacing: '3px',
-            color: '#cbd5e1'
-          }}>
-            BAJA CALIFORNIA
-          </span>
-        </div>
-      </section>
-
-      {/* SPARKLE ANIMATION KEYFRAMES */}
-      <style>{`
-        @keyframes sparkle {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.2); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
-        }
-        @keyframes shine {
-          0% { left: -100%; }
-          100% { left: 200%; }
-        }
-      `}</style>
-
-      {/* FEATURED SECTION */}
-      <section style={{
-        position: 'relative',
-        zIndex: 5,
-        padding: '100px 48px',
-        background: 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%)'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <p style={{
-            ...sansText,
-            fontSize: '10px',
-            letterSpacing: '6px',
-            color: '#b8944d',
-            marginBottom: '16px'
-          }}>
-            CURATED SELECTIONS
-          </p>
-          <h2 style={{
-            ...serifText,
-            fontSize: '48px',
-            fontWeight: '400',
-            letterSpacing: '10px',
-            color: '#cbd5e1',
-            margin: 0,
-            textShadow: '0 0 60px rgba(203,213,225,0.2)'
-          }}>
-            FEATURED
-          </h2>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-          gap: '28px'
-        }}>
-          {featuredItems.slice(0, 4).map(item => (
-            <div
-              key={item.id}
-              onClick={() => handleInquiry(item)}
-              style={{
-                background: 'linear-gradient(145deg, rgba(30,41,59,0.6) 0%, rgba(15,23,42,0.8) 100%)',
-                border: '1px solid rgba(148,163,176,0.15)',
-                cursor: 'pointer',
-                transition: 'all 0.4s ease',
-                backdropFilter: 'blur(10px)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-8px)';
-                e.currentTarget.style.boxShadow = '0 30px 80px rgba(203,213,225,0.12), 0 0 40px rgba(148,163,176,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(203,213,225,0.35)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(148,163,176,0.15)';
-              }}
-            >
-              <div style={{
-                height: '280px',
-                backgroundImage: `url(${item.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                position: 'relative'
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '16px',
-                  left: '16px',
-                  background: 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)',
-                  padding: '8px 16px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-                }}>
-                  <span style={{
-                    ...sansText,
-                    fontSize: '9px',
-                    letterSpacing: '2px',
-                    color: '#0f172a',
-                    fontWeight: '500'
-                  }}>
-                    FEATURED
-                  </span>
-                </div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '120px',
-                  background: 'linear-gradient(transparent, rgba(15,23,42,0.95))'
-                }} />
-              </div>
-              <div style={{ padding: '28px' }}>
-                <p style={{
-                  ...sansText,
-                  fontSize: '9px',
-                  letterSpacing: '3px',
-                  color: '#b8944d',
-                  marginBottom: '10px'
-                }}>
-                  {item.category.toUpperCase()}
-                </p>
-                <h3 style={{
-                  ...serifText,
-                  fontSize: '22px',
-                  fontWeight: '500',
-                  color: '#e2e8f0',
-                  margin: '0 0 8px'
-                }}>
-                  {item.title}
-                </h3>
-                <p style={{
-                  ...sansText,
-                  fontSize: '12px',
-                  color: '#94a3b8',
-                  marginBottom: '20px'
-                }}>
-                  {item.subtitle}
-                </p>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingTop: '20px',
-                  borderTop: '1px solid rgba(148,163,176,0.12)'
-                }}>
-                  <span style={{
-                    ...serifText,
-                    fontSize: '22px',
-                    fontWeight: '500',
-                    color: '#cbd5e1',
-                    textShadow: '0 0 20px rgba(203,213,225,0.3)'
-                  }}>
-                    {item.price}
-                  </span>
-                  <span style={{
-                    ...sansText,
-                    fontSize: '10px',
-                    letterSpacing: '3px',
-                    color: '#b8944d',
-                    padding: '10px 20px',
-                    border: '1px solid rgba(184,148,77,0.3)'
-                  }}>
-                    INQUIRE →
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CATEGORY FILTERS */}
-      <section style={{
-        position: 'relative',
-        zIndex: 5,
-        padding: '50px 48px',
-        borderTop: '1px solid rgba(148,163,176,0.1)',
-        borderBottom: '1px solid rgba(148,163,176,0.1)',
-        background: 'rgba(15,23,42,0.6)',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          gap: '12px'
-        }}>
-          {CATEGORIES.map(cat => (
+          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => setShowSellerModal(true)}
               style={{
-                ...sansText,
-                fontSize: '10px',
-                letterSpacing: '3px',
-                padding: '14px 28px',
-                background: selectedCategory === cat 
-                  ? 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)' 
-                  : 'transparent',
-                color: selectedCategory === cat ? '#0f172a' : '#94a3b8',
-                border: selectedCategory === cat ? 'none' : '1px solid rgba(148,163,176,0.25)',
+                padding: '16px 40px',
+                background: 'linear-gradient(135deg, #cbd5e1, #94a3b0)',
+                border: 'none', color: '#0a0a0a',
+                ...sansText, fontSize: '11px', letterSpacing: '3px', fontWeight: '700',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                fontWeight: selectedCategory === cat ? '500' : '300'
+                boxShadow: '0 8px 30px rgba(203,213,225,0.4), 0 0 60px rgba(203,213,225,0.2)',
+                transition: 'all 0.3s'
               }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             >
-              {cat.toUpperCase()}
+              BECOME A SELLER
             </button>
-          ))}
-        </div>
-      </section>
-
-      {/* FULL CATALOG */}
-      <section style={{
-        position: 'relative',
-        zIndex: 5,
-        padding: '70px 48px',
-        background: '#0a0a0a'
-      }}>
-        <p style={{
-          ...sansText,
-          fontSize: '10px',
-          letterSpacing: '5px',
-          color: '#64748b',
-          marginBottom: '50px',
-          textAlign: 'center'
-        }}>
-          {selectedCategory === 'All' ? 'COMPLETE CATALOG' : selectedCategory.toUpperCase()}
-        </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: '24px'
-        }}>
-          {filteredItems.map(item => (
-            <div
-              key={item.id}
-              onClick={() => handleInquiry(item)}
+            <button
+              onClick={() => document.getElementById('marketplace').scrollIntoView({ behavior: 'smooth' })}
               style={{
-                background: 'linear-gradient(145deg, rgba(30,41,59,0.5) 0%, rgba(15,23,42,0.7) 100%)',
-                border: '1px solid rgba(148,163,176,0.12)',
+                padding: '16px 40px',
+                background: 'transparent',
+                border: '2px solid #b8944d', color: '#b8944d',
+                ...sansText, fontSize: '11px', letterSpacing: '3px', fontWeight: '700',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                boxShadow: '0 8px 30px rgba(184,148,77,0.3)',
+                transition: 'all 0.3s'
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 20px 50px rgba(203,213,225,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(203,213,225,0.25)';
+                e.currentTarget.style.background = 'rgba(184,148,77,0.1)';
+                e.currentTarget.style.transform = 'scale(1.05)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(148,163,176,0.12)';
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <div style={{
-                height: '220px',
-                backgroundImage: `url(${item.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }} />
-              <div style={{ padding: '24px' }}>
-                <p style={{
-                  ...sansText,
-                  fontSize: '8px',
-                  letterSpacing: '3px',
-                  color: '#b8944d',
-                  marginBottom: '8px'
-                }}>
-                  {item.category.toUpperCase()} · {item.location}
-                </p>
-                <h3 style={{
-                  ...serifText,
-                  fontSize: '18px',
-                  fontWeight: '500',
-                  color: '#e2e8f0',
-                  margin: '0 0 6px'
-                }}>
-                  {item.title}
-                </h3>
-                <p style={{
-                  ...sansText,
-                  fontSize: '11px',
-                  color: '#94a3b8',
-                  marginBottom: '14px'
-                }}>
-                  {item.subtitle}
-                </p>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                  marginBottom: '18px'
-                }}>
-                  {item.specs.slice(0, 2).map((spec, idx) => (
-                    <span key={idx} style={{
-                      ...sansText,
-                      fontSize: '9px',
-                      color: '#64748b',
-                      padding: '5px 12px',
-                      background: 'rgba(30,41,59,0.5)',
-                      border: '1px solid rgba(148,163,176,0.1)'
-                    }}>
-                      {spec}
-                    </span>
-                  ))}
-                </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingTop: '16px',
-                  borderTop: '1px solid rgba(148,163,176,0.08)'
-                }}>
-                  <span style={{
-                    ...serifText,
-                    fontSize: '18px',
-                    fontWeight: '500',
-                    color: '#cbd5e1'
-                  }}>
-                    {item.price}
-                  </span>
-                  <span style={{
-                    ...sansText,
-                    fontSize: '9px',
-                    letterSpacing: '2px',
-                    color: '#b8944d'
-                  }}>
-                    INQUIRE →
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* DISCRETION NOTICE */}
-      <section style={{
-        position: 'relative',
-        zIndex: 5,
-        padding: '80px 48px',
-        background: 'linear-gradient(180deg, #0a0a0a 0%, rgba(15,23,42,0.9) 100%)',
-        textAlign: 'center',
-        borderTop: '1px solid rgba(148,163,176,0.08)'
-      }}>
-        <div style={{
-          width: '70px',
-          height: '70px',
-          margin: '0 auto 28px',
-          position: 'relative'
-        }}>
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) rotate(45deg)',
-            width: '50px',
-            height: '50px',
-            border: '1px solid rgba(203,213,225,0.25)',
-            background: 'linear-gradient(135deg, rgba(203,213,225,0.08) 0%, transparent 100%)',
-            boxShadow: '0 0 40px rgba(203,213,225,0.12)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            color: '#cbd5e1',
-            fontSize: '24px'
-          }}>
-            ◇
+              BROWSE COLLECTION
+            </button>
           </div>
         </div>
-        <h3 style={{
-          ...serifText,
-          fontSize: '26px',
-          fontWeight: '400',
-          letterSpacing: '8px',
-          color: '#cbd5e1',
-          marginBottom: '18px',
-          textShadow: '0 0 40px rgba(203,213,225,0.15)'
-        }}>
-          ABSOLUTE DISCRETION
-        </h3>
-        <p style={{
-          ...sansText,
-          fontSize: '13px',
-          lineHeight: '2.2',
-          color: '#94a3b8',
-          maxWidth: '650px',
-          margin: '0 auto',
-          letterSpacing: '1px'
-        }}>
-          All inquiries are handled with the utmost confidentiality. Buyer and seller information 
-          remains private until mutual consent is established. Our brokerage ensures secure, 
-          discreet transactions for discerning clientele.
-        </p>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{
-        position: 'relative',
-        zIndex: 5,
-        padding: '40px 48px',
-        borderTop: '1px solid rgba(148,163,176,0.08)',
-        textAlign: 'center',
-        background: 'rgba(15,23,42,0.8)'
+      {/* COMMISSION SCHEDULE BANNER */}
+      <section style={{
+        background: 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))',
+        padding: '40px 60px', borderTop: '1px solid rgba(203,166,88,0.2)',
+        borderBottom: '1px solid rgba(203,166,88,0.2)'
       }}>
-        <p style={{
-          ...sansText,
-          fontSize: '9px',
-          letterSpacing: '4px',
-          color: '#64748b'
-        }}>
-          ENJOY BAJA LUXURY COLLECTION · PRIVATE BROKERAGE · ALL INQUIRIES CONFIDENTIAL
-        </p>
-      </footer>
-
-      {/* INQUIRY MODAL */}
-      {showInquiryModal && selectedItem && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(5, 5, 5, 0.95)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          backdropFilter: 'blur(20px)',
-          padding: '20px'
-        }} onClick={() => setShowInquiryModal(false)}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', textAlign: 'center' }}>
+          <h3 style={{
+            ...sansText, fontSize: '12px', letterSpacing: '4px',
+            color: '#b8944d', marginBottom: '30px'
+          }}>
+            TRANSPARENT COMMISSION STRUCTURE
+          </h3>
           <div style={{
-            background: 'linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.98) 100%)',
-            border: '1px solid rgba(203,213,225,0.2)',
-            maxWidth: '520px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 80px rgba(203,213,225,0.08)'
-          }} onClick={e => e.stopPropagation()}>
-            <div style={{
-              height: '220px',
-              backgroundImage: `url(${selectedItem.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              position: 'relative'
-            }}>
-              <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '28px',
-                background: 'linear-gradient(transparent, rgba(15, 23, 42, 0.98))'
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '20px'
+          }}>
+            {Object.entries(COMMISSION_SCHEDULE).map(([category, info]) => (
+              <div key={category} style={{
+                padding: '20px', background: 'rgba(203,213,225,0.05)',
+                border: '1px solid rgba(203,213,225,0.1)'
               }}>
                 <p style={{
-                  ...sansText,
-                  fontSize: '9px',
-                  letterSpacing: '3px',
-                  color: '#b8944d',
-                  marginBottom: '6px'
+                  ...sansText, fontSize: '10px', letterSpacing: '2px',
+                  color: '#cbd5e1', marginBottom: '8px'
                 }}>
-                  {selectedItem.category.toUpperCase()}
+                  {category}
                 </p>
-                <h3 style={{
-                  ...serifText,
-                  fontSize: '24px',
-                  fontWeight: '500',
-                  color: '#e2e8f0',
-                  margin: 0
+                <p style={{
+                  fontSize: '32px', fontWeight: '700',
+                  color: '#b8944d', marginBottom: '8px'
                 }}>
-                  {selectedItem.title}
-                </h3>
+                  {info.rate}%
+                </p>
+                <p style={{
+                  fontSize: '9px', color: '#94a3b8', lineHeight: '1.4'
+                }}>
+                  {info.description}
+                </p>
               </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowTermsModal(true)}
+            style={{
+              marginTop: '30px', padding: '12px 30px',
+              background: 'transparent', border: '1px solid rgba(203,166,88,0.3)',
+              color: '#cbd5e1', ...sansText, fontSize: '10px', letterSpacing: '2px',
+              cursor: 'pointer', transition: 'all 0.3s'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#cba658';
+              e.currentTarget.style.color = '#cba658';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(203,166,88,0.3)';
+              e.currentTarget.style.color = '#cbd5e1';
+            }}
+          >
+            VIEW FULL TERMS & CONDITIONS
+          </button>
+        </div>
+      </section>
+
+      {/* MARKETPLACE SECTION */}
+      <section id="marketplace" style={{
+        padding: '100px 60px', background: '#0f172a'
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          
+          {/* Category Filter */}
+          <div style={{
+            display: 'flex', gap: '15px', justifyContent: 'center',
+            marginBottom: '60px', flexWrap: 'wrap'
+          }}>
+            {['All', ...Object.keys(COMMISSION_SCHEDULE)].map(cat => (
               <button
-                onClick={() => setShowInquiryModal(false)}
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
                 style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  width: '44px',
-                  height: '44px',
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '1px solid rgba(148,163,176,0.3)',
-                  color: '#94a3b8',
-                  fontSize: '22px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backdropFilter: 'blur(10px)'
+                  padding: '12px 24px',
+                  background: selectedCategory === cat ? 'linear-gradient(135deg, #cbd5e1, #94a3b0)' : 'rgba(203,213,225,0.05)',
+                  border: selectedCategory === cat ? 'none' : '1px solid rgba(203,213,225,0.2)',
+                  color: selectedCategory === cat ? '#0a0a0a' : '#cbd5e1',
+                  ...sansText, fontSize: '10px', letterSpacing: '2px', fontWeight: '600',
+                  cursor: 'pointer', transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => {
+                  if (selectedCategory !== cat) {
+                    e.currentTarget.style.background = 'rgba(203,213,225,0.1)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (selectedCategory !== cat) {
+                    e.currentTarget.style.background = 'rgba(203,213,225,0.05)';
+                  }
                 }}
               >
-                ×
+                {cat}
               </button>
-            </div>
-            <div style={{ padding: '36px' }}>
-              {!inquirySent ? (
-                <>
-                  <p style={{
-                    ...sansText,
-                    fontSize: '10px',
-                    letterSpacing: '3px',
-                    color: '#64748b',
-                    marginBottom: '28px',
-                    textAlign: 'center'
-                  }}>
-                    PRIVATE INQUIRY · {selectedItem.price}
-                  </p>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{
-                      ...sansText,
-                      fontSize: '9px',
-                      letterSpacing: '2px',
-                      color: '#64748b',
-                      display: 'block',
-                      marginBottom: '10px'
+            ))}
+          </div>
+
+          {/* Items Grid */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+            gap: '40px'
+          }}>
+            {filteredItems.map(item => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedItem(item)}
+                style={{
+                  background: 'rgba(30,41,59,0.6)',
+                  border: '1px solid rgba(203,213,225,0.1)',
+                  overflow: 'hidden', cursor: 'pointer',
+                  transition: 'all 0.4s',
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-8px)';
+                  e.currentTarget.style.boxShadow = '0 20px 60px rgba(203,213,225,0.2)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.3)';
+                }}
+              >
+                <div style={{ position: 'relative', height: '280px', overflow: 'hidden' }}>
+                  <img src={item.image} alt={item.title} style={{
+                    width: '100%', height: '100%', objectFit: 'cover',
+                    transition: 'transform 0.6s'
+                  }} />
+                  {item.verified && (
+                    <div style={{
+                      position: 'absolute', top: '20px', right: '20px',
+                      background: 'rgba(184,148,77,0.95)', padding: '8px 16px',
+                      ...sansText, fontSize: '9px', letterSpacing: '2px',
+                      color: '#0a0a0a', fontWeight: '700'
                     }}>
-                      FULL NAME *
-                    </label>
-                    <input
-                      type="text"
-                      value={inquiryForm.name}
-                      onChange={(e) => setInquiryForm({...inquiryForm, name: e.target.value})}
-                      style={{
-                        width: '100%',
-                        padding: '16px 18px',
-                        background: 'rgba(30,41,59,0.6)',
-                        border: '1px solid rgba(148,163,176,0.2)',
-                        color: '#e2e8f0',
-                        fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: '"Helvetica Neue", sans-serif',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{
-                      ...sansText,
-                      fontSize: '9px',
-                      letterSpacing: '2px',
-                      color: '#64748b',
-                      display: 'block',
-                      marginBottom: '10px'
-                    }}>
-                      EMAIL *
-                    </label>
-                    <input
-                      type="email"
-                      value={inquiryForm.email}
-                      onChange={(e) => setInquiryForm({...inquiryForm, email: e.target.value})}
-                      style={{
-                        width: '100%',
-                        padding: '16px 18px',
-                        background: 'rgba(30,41,59,0.6)',
-                        border: '1px solid rgba(148,163,176,0.2)',
-                        color: '#e2e8f0',
-                        fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: '"Helvetica Neue", sans-serif',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{
-                      ...sansText,
-                      fontSize: '9px',
-                      letterSpacing: '2px',
-                      color: '#64748b',
-                      display: 'block',
-                      marginBottom: '10px'
-                    }}>
-                      PHONE
-                    </label>
-                    <input
-                      type="tel"
-                      value={inquiryForm.phone}
-                      onChange={(e) => setInquiryForm({...inquiryForm, phone: e.target.value})}
-                      style={{
-                        width: '100%',
-                        padding: '16px 18px',
-                        background: 'rgba(30,41,59,0.6)',
-                        border: '1px solid rgba(148,163,176,0.2)',
-                        color: '#e2e8f0',
-                        fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: '"Helvetica Neue", sans-serif',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '28px' }}>
-                    <label style={{
-                      ...sansText,
-                      fontSize: '9px',
-                      letterSpacing: '2px',
-                      color: '#64748b',
-                      display: 'block',
-                      marginBottom: '10px'
-                    }}>
-                      MESSAGE
-                    </label>
-                    <textarea
-                      value={inquiryForm.message}
-                      onChange={(e) => setInquiryForm({...inquiryForm, message: e.target.value})}
-                      rows={4}
-                      style={{
-                        width: '100%',
-                        padding: '16px 18px',
-                        background: 'rgba(30,41,59,0.6)',
-                        border: '1px solid rgba(148,163,176,0.2)',
-                        color: '#e2e8f0',
-                        fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: '"Helvetica Neue", sans-serif',
-                        resize: 'vertical',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <button
-                    onClick={submitInquiry}
-                    disabled={!inquiryForm.name || !inquiryForm.email}
-                    style={{
-                      width: '100%',
-                      padding: '18px',
-                      background: inquiryForm.name && inquiryForm.email 
-                        ? 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)' 
-                        : 'rgba(100,116,139,0.3)',
-                      border: 'none',
-                      color: inquiryForm.name && inquiryForm.email ? '#0f172a' : '#64748b',
-                      fontSize: '11px',
-                      letterSpacing: '4px',
-                      cursor: inquiryForm.name && inquiryForm.email ? 'pointer' : 'not-allowed',
-                      fontFamily: '"Helvetica Neue", sans-serif',
-                      fontWeight: '500',
-                      boxShadow: inquiryForm.name && inquiryForm.email 
-                        ? '0 4px 20px rgba(203,213,225,0.2)' 
-                        : 'none'
-                    }}
-                  >
-                    SUBMIT PRIVATE INQUIRY
-                  </button>
-                  <p style={{
-                    ...sansText,
-                    fontSize: '9px',
-                    color: '#64748b',
-                    textAlign: 'center',
-                    marginTop: '20px',
-                    lineHeight: '1.8'
-                  }}>
-                    Your inquiry will be reviewed by our brokerage team.<br />
-                    All communications remain strictly confidential.
-                  </p>
-                </>
-              ) : (
-                <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                      ✓ VERIFIED
+                    </div>
+                  )}
                   <div style={{
-                    width: '70px',
-                    height: '70px',
-                    margin: '0 auto 28px',
-                    border: '2px solid #cbd5e1',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 0 40px rgba(203,213,225,0.3)'
+                    position: 'absolute', bottom: '20px', left: '20px',
+                    background: 'rgba(203,213,225,0.95)', padding: '8px 16px',
+                    ...sansText, fontSize: '9px', letterSpacing: '2px',
+                    color: '#0a0a0a', fontWeight: '700'
                   }}>
-                    <span style={{ fontSize: '32px', color: '#cbd5e1' }}>✓</span>
+                    {item.category.toUpperCase()}
                   </div>
+                </div>
+
+                <div style={{ padding: '30px' }}>
                   <h3 style={{
-                    ...serifText,
-                    fontSize: '22px',
-                    fontWeight: '500',
-                    color: '#e2e8f0',
-                    marginBottom: '12px',
-                    letterSpacing: '3px'
+                    ...serifText, fontSize: '24px', color: '#f1f5f9',
+                    marginBottom: '8px'
                   }}>
-                    INQUIRY RECEIVED
+                    {item.title}
                   </h3>
                   <p style={{
-                    ...sansText,
-                    fontSize: '12px',
-                    color: '#94a3b8',
-                    letterSpacing: '1px'
+                    fontSize: '13px', color: '#94a3b8',
+                    marginBottom: '20px', lineHeight: '1.6'
                   }}>
-                    Our team will contact you within 24 hours
+                    {item.subtitle}
                   </p>
+                  
+                  <div style={{
+                    borderTop: '1px solid rgba(203,213,225,0.1)',
+                    paddingTop: '20px', marginBottom: '20px'
+                  }}>
+                    {item.specs.map((spec, idx) => (
+                      <p key={idx} style={{
+                        fontSize: '11px', color: '#cbd5e1',
+                        marginBottom: '6px', ...sansText
+                      }}>
+                        • {spec}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <p style={{
+                      fontSize: '28px', fontWeight: '700',
+                      color: '#b8944d'
+                    }}>
+                      {item.price}
+                    </p>
+                    <p style={{
+                      fontSize: '10px', color: '#94a3b8',
+                      ...sansText
+                    }}>
+                      {item.location}
+                    </p>
+                  </div>
                 </div>
-              )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SELLER REGISTRATION MODAL */}
+      {showSellerModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.9)', zIndex: 10000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', backdropFilter: 'blur(10px)'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            maxWidth: '700px', width: '100%', maxHeight: '90vh',
+            overflow: 'auto', border: '2px solid #cba658',
+            boxShadow: '0 20px 80px rgba(203,166,88,0.3)'
+          }}>
+            <div style={{
+              padding: '40px', borderBottom: '1px solid rgba(203,166,88,0.2)'
+            }}>
+              <h2 style={{
+                ...sansText, fontSize: '24px', letterSpacing: '4px',
+                color: '#cba658', marginBottom: '10px'
+              }}>
+                SELLER REGISTRATION
+              </h2>
+              <p style={{
+                fontSize: '13px', color: '#94a3b8', lineHeight: '1.6'
+              }}>
+                Complete KYC verification to list luxury items. All sellers must provide valid identification and undergo verification to prevent fraud.
+              </p>
+            </div>
+
+            <div style={{ padding: '40px' }}>
+              
+              {/* Personal Information */}
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{
+                  display: 'block', ...sansText, fontSize: '10px',
+                  letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                }}>
+                  FULL NAME *
+                </label>
+                <input
+                  type="text"
+                  value={sellerForm.fullName}
+                  onChange={e => setSellerForm({...sellerForm, fullName: e.target.value})}
+                  style={{
+                    width: '100%', padding: '14px',
+                    background: 'rgba(15,23,42,0.5)',
+                    border: '1px solid rgba(203,166,88,0.3)',
+                    color: '#f1f5f9', fontSize: '14px',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr',
+                gap: '20px', marginBottom: '30px'
+              }}>
+                <div>
+                  <label style={{
+                    display: 'block', ...sansText, fontSize: '10px',
+                    letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                  }}>
+                    EMAIL *
+                  </label>
+                  <input
+                    type="email"
+                    value={sellerForm.email}
+                    onChange={e => setSellerForm({...sellerForm, email: e.target.value})}
+                    style={{
+                      width: '100%', padding: '14px',
+                      background: 'rgba(15,23,42,0.5)',
+                      border: '1px solid rgba(203,166,88,0.3)',
+                      color: '#f1f5f9', fontSize: '14px',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{
+                    display: 'block', ...sansText, fontSize: '10px',
+                    letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                  }}>
+                    PHONE *
+                  </label>
+                  <input
+                    type="tel"
+                    value={sellerForm.phone}
+                    onChange={e => setSellerForm({...sellerForm, phone: e.target.value})}
+                    style={{
+                      width: '100%', padding: '14px',
+                      background: 'rgba(15,23,42,0.5)',
+                      border: '1px solid rgba(203,166,88,0.3)',
+                      color: '#f1f5f9', fontSize: '14px',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{
+                  display: 'block', ...sansText, fontSize: '10px',
+                  letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                }}>
+                  COMPANY (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={sellerForm.company}
+                  onChange={e => setSellerForm({...sellerForm, company: e.target.value})}
+                  style={{
+                    width: '100%', padding: '14px',
+                    background: 'rgba(15,23,42,0.5)',
+                    border: '1px solid rgba(203,166,88,0.3)',
+                    color: '#f1f5f9', fontSize: '14px',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              {/* Category Selection */}
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{
+                  display: 'block', ...sansText, fontSize: '10px',
+                  letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                }}>
+                  SELLING CATEGORY * (Commission: {sellerForm.category ? COMMISSION_SCHEDULE[sellerForm.category].rate + '%' : 'Select category'})
+                </label>
+                <select
+                  value={sellerForm.category}
+                  onChange={e => setSellerForm({...sellerForm, category: e.target.value})}
+                  style={{
+                    width: '100%', padding: '14px',
+                    background: 'rgba(15,23,42,0.5)',
+                    border: '1px solid rgba(203,166,88,0.3)',
+                    color: '#f1f5f9', fontSize: '14px',
+                    outline: 'none', cursor: 'pointer'
+                  }}
+                >
+                  <option value="">Select Category</option>
+                  {Object.keys(COMMISSION_SCHEDULE).map(cat => (
+                    <option key={cat} value={cat}>
+                      {cat} - {COMMISSION_SCHEDULE[cat].rate}% Commission
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* ID Verification */}
+              <div style={{
+                marginBottom: '30px',
+                padding: '20px',
+                background: 'rgba(248,113,113,0.05)',
+                border: '1px solid rgba(248,113,113,0.2)'
+              }}>
+                <p style={{
+                  ...sansText, fontSize: '10px', letterSpacing: '2px',
+                  color: '#f87171', marginBottom: '15px'
+                }}>
+                  ⚠️ GOVERNMENT-ISSUED ID REQUIRED (NO EXCEPTIONS)
+                </p>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block', ...sansText, fontSize: '10px',
+                    letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px'
+                  }}>
+                    ID TYPE *
+                  </label>
+                  <select
+                    value={sellerForm.idType}
+                    onChange={e => setSellerForm({...sellerForm, idType: e.target.value})}
+                    style={{
+                      width: '100%', padding: '14px',
+                      background: 'rgba(15,23,42,0.5)',
+                      border: '1px solid rgba(203,166,88,0.3)',
+                      color: '#f1f5f9', fontSize: '14px',
+                      outline: 'none', cursor: 'pointer'
+                    }}
+                  >
+                    <option value="">Select ID Type</option>
+                    <option value="INE">INE (Mexico)</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Driver License">Driver's License (USA/Canada)</option>
+                    <option value="National ID">National ID Card</option>
+                  </select>
+                </div>
+
+                {/* ID Document Upload - Drag & Drop */}
+                <div
+                  onDragEnter={(e) => handleDrag(e, 'idDocument')}
+                  onDragLeave={(e) => handleDrag(e, 'idDocument')}
+                  onDragOver={(e) => handleDrag(e, 'idDocument')}
+                  onDrop={(e) => handleDrop(e, 'idDocument')}
+                  style={{
+                    padding: '40px',
+                    border: `2px dashed ${dragActive.id ? '#cba658' : 'rgba(203,166,88,0.3)'}`,
+                    background: dragActive.id ? 'rgba(203,166,88,0.1)' : 'rgba(15,23,42,0.3)',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onClick={() => document.getElementById('idUpload').click()}
+                >
+                  <input
+                    id="idUpload"
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleFileSelect(e, 'idDocument')}
+                    style={{ display: 'none' }}
+                  />
+                  {sellerForm.idDocument ? (
+                    <div>
+                      <p style={{ color: '#22c55e', fontSize: '14px', marginBottom: '8px' }}>
+                        ✓ {sellerForm.idDocument.name}
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        Click to change
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ ...sansText, fontSize: '12px', letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px' }}>
+                        📄 DRAG & DROP ID DOCUMENT
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        Or click to browse (JPG, PNG, or PDF)
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Selfie Verification */}
+              <div style={{
+                marginBottom: '30px',
+                padding: '20px',
+                background: 'rgba(248,113,113,0.05)',
+                border: '1px solid rgba(248,113,113,0.2)'
+              }}>
+                <p style={{
+                  ...sansText, fontSize: '10px', letterSpacing: '2px',
+                  color: '#f87171', marginBottom: '15px'
+                }}>
+                  📸 SELFIE WITH PHONE REQUIRED (FRAUD PREVENTION)
+                </p>
+                
+                {/* Selfie Upload - Drag & Drop */}
+                <div
+                  onDragEnter={(e) => handleDrag(e, 'selfiePhoto')}
+                  onDragLeave={(e) => handleDrag(e, 'selfiePhoto')}
+                  onDragOver={(e) => handleDrag(e, 'selfiePhoto')}
+                  onDrop={(e) => handleDrop(e, 'selfiePhoto')}
+                  style={{
+                    padding: '40px',
+                    border: `2px dashed ${dragActive.selfie ? '#cba658' : 'rgba(203,166,88,0.3)'}`,
+                    background: dragActive.selfie ? 'rgba(203,166,88,0.1)' : 'rgba(15,23,42,0.3)',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onClick={() => document.getElementById('selfieUpload').click()}
+                >
+                  <input
+                    id="selfieUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileSelect(e, 'selfiePhoto')}
+                    style={{ display: 'none' }}
+                  />
+                  {sellerForm.selfiePhoto ? (
+                    <div>
+                      <p style={{ color: '#22c55e', fontSize: '14px', marginBottom: '8px' }}>
+                        ✓ {sellerForm.selfiePhoto.name}
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        Click to change
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ ...sansText, fontSize: '12px', letterSpacing: '2px', color: '#cbd5e1', marginBottom: '10px' }}>
+                        🤳 DRAG & DROP SELFIE WITH PHONE
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.6' }}>
+                        Take a selfie holding your phone with the screen visible<br/>
+                        (JPG or PNG)
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Terms & Conditions */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'flex', alignItems: 'center', cursor: 'pointer',
+                  padding: '15px', background: 'rgba(203,166,88,0.05)',
+                  border: '1px solid rgba(203,166,88,0.2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={sellerForm.termsAccepted}
+                    onChange={e => setSellerForm({...sellerForm, termsAccepted: e.target.checked})}
+                    style={{ marginRight: '12px', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                    I accept the <span style={{ color: '#cba658', textDecoration: 'underline', cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); setShowTermsModal(true); }}>Terms & Conditions</span> and agree to platform policies
+                  </span>
+                </label>
+              </div>
+
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{
+                  display: 'flex', alignItems: 'center', cursor: 'pointer',
+                  padding: '15px', background: 'rgba(203,166,88,0.05)',
+                  border: '1px solid rgba(203,166,88,0.2)'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={sellerForm.commissionAcknowledged}
+                    onChange={e => setSellerForm({...sellerForm, commissionAcknowledged: e.target.checked})}
+                    style={{ marginRight: '12px', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                    I acknowledge the {sellerForm.category ? COMMISSION_SCHEDULE[sellerForm.category].rate + '%' : 'category-based'} commission fee and payment terms
+                  </span>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <button
+                  onClick={handleSellerSubmit}
+                  style={{
+                    flex: 1, padding: '18px',
+                    background: 'linear-gradient(135deg, #cba658, #b8944d)',
+                    border: 'none', color: '#0a0a0a',
+                    ...sansText, fontSize: '12px', letterSpacing: '2px', fontWeight: '700',
+                    cursor: 'pointer', transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  SUBMIT APPLICATION
+                </button>
+                <button
+                  onClick={() => { setShowSellerModal(false); resetSellerForm(); }}
+                  style={{
+                    flex: 1, padding: '18px',
+                    background: 'rgba(148,163,184,0.1)',
+                    border: '1px solid rgba(148,163,184,0.3)', color: '#cbd5e1',
+                    ...sansText, fontSize: '12px', letterSpacing: '2px', fontWeight: '700',
+                    cursor: 'pointer', transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(148,163,184,0.2)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(148,163,184,0.1)'}
+                >
+                  CANCEL
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* TERMS & CONDITIONS MODAL */}
+      {showTermsModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.9)', zIndex: 10001,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', backdropFilter: 'blur(10px)'
+        }} onClick={() => setShowTermsModal(false)}>
+          <div style={{
+            background: '#0f172a', maxWidth: '800px', width: '100%',
+            maxHeight: '80vh', overflow: 'auto',
+            padding: '40px', border: '2px solid #cba658'
+          }} onClick={e => e.stopPropagation()}>
+            <h2 style={{
+              ...sansText, fontSize: '20px', letterSpacing: '3px',
+              color: '#cba658', marginBottom: '30px'
+            }}>
+              LUXURY GOODS MARKETPLACE - TERMS & CONDITIONS
+            </h2>
+            
+            <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8', marginBottom: '20px' }}>
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                1. SELLER VERIFICATION & KYC REQUIREMENTS
+              </h3>
+              <p style={{ marginBottom: '15px' }}>
+                All sellers must complete Know Your Customer (KYC) verification including:
+              </p>
+              <ul style={{ marginLeft: '20px', marginBottom: '20px' }}>
+                <li>Government-issued photo ID (INE, Passport, or Driver's License)</li>
+                <li>Live selfie photograph with phone visible for identity confirmation</li>
+                <li>Verification of contact information (email and phone)</li>
+                <li>Background check for fraud prevention</li>
+              </ul>
+              
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                2. COMMISSION STRUCTURE
+              </h3>
+              <p style={{ marginBottom: '15px' }}>
+                Commission fees are category-based and calculated on the final sale price:
+              </p>
+              <ul style={{ marginLeft: '20px', marginBottom: '20px' }}>
+                {Object.entries(COMMISSION_SCHEDULE).map(([cat, info]) => (
+                  <li key={cat}>{cat}: {info.rate}% - {info.description}</li>
+                ))}
+              </ul>
+              
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                3. FRAUD PREVENTION & ZERO TOLERANCE POLICY
+              </h3>
+              <p style={{ marginBottom: '15px' }}>
+                We maintain a ZERO TOLERANCE policy for fraudulent transactions. All listings are verified. Sellers found engaging in fraudulent activities will be permanently banned and reported to authorities.
+              </p>
+              
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                4. PAYMENT & ESCROW
+              </h3>
+              <p style={{ marginBottom: '15px' }}>
+                All transactions are processed through secure escrow. Seller receives payment after buyer confirms receipt and satisfactory condition of item.
+              </p>
+              
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                5. LISTING REQUIREMENTS
+              </h3>
+              <p style={{ marginBottom: '15px' }}>
+                All listings must include accurate descriptions, current photos, and complete specifications. Misrepresentation results in immediate listing removal.
+              </p>
+              
+              <h3 style={{ color: '#cba658', marginBottom: '15px', fontSize: '14px', ...sansText, letterSpacing: '2px' }}>
+                6. PLATFORM MONITORING & RECORDING
+              </h3>
+              <p style={{ marginBottom: '20px' }}>
+                All platform activities, communications, and transactions are monitored, recorded, and stored in our admin dashboard and brain system for security, compliance, and quality assurance purposes.
+              </p>
+            </div>
+            
+            <button
+              onClick={() => setShowTermsModal(false)}
+              style={{
+                width: '100%', padding: '16px',
+                background: 'linear-gradient(135deg, #cba658, #b8944d)',
+                border: 'none', color: '#0a0a0a',
+                ...sansText, fontSize: '12px', letterSpacing: '2px', fontWeight: '700',
+                cursor: 'pointer'
+              }}
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* INQUIRY SUCCESS MODAL */}
+      {showInquiryModal && (
+        <div style={{
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+          padding: '30px 50px', zIndex: 10002,
+          boxShadow: '0 20px 60px rgba(34,197,94,0.4)',
+          textAlign: 'center'
+        }}>
+          <p style={{
+            ...sansText, fontSize: '14px', letterSpacing: '3px',
+            color: '#fff', fontWeight: '700'
+          }}>
+            ✓ INQUIRY SUBMITTED
+          </p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.9)', marginTop: '10px' }}>
+            We will contact you within 24 hours
+          </p>
+        </div>
+      )}
+
+      {/* ITEM DETAIL MODAL */}
+      {selectedItem && !showInquiryModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.95)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', backdropFilter: 'blur(10px)'
+        }} onClick={() => setSelectedItem(null)}>
+          <div style={{
+            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            maxWidth: '900px', width: '100%',
+            display: 'grid', gridTemplateColumns: '1fr 1fr',
+            overflow: 'hidden', border: '2px solid #cba658'
+          }} onClick={e => e.stopPropagation()}>
+            
+            <div style={{ position: 'relative', height: '600px' }}>
+              <img src={selectedItem.image} alt={selectedItem.title} style={{
+                width: '100%', height: '100%', objectFit: 'cover'
+              }} />
+            </div>
+
+            <div style={{ padding: '50px' }}>
+              <p style={{
+                ...sansText, fontSize: '10px', letterSpacing: '3px',
+                color: '#b8944d', marginBottom: '15px'
+              }}>
+                {selectedItem.category.toUpperCase()}
+              </p>
+              
+              <h2 style={{
+                ...serifText, fontSize: '32px', color: '#f1f5f9',
+                marginBottom: '10px'
+              }}>
+                {selectedItem.title}
+              </h2>
+              
+              <p style={{
+                fontSize: '14px', color: '#94a3b8',
+                marginBottom: '30px', lineHeight: '1.6'
+              }}>
+                {selectedItem.subtitle}
+              </p>
+
+              <div style={{
+                borderTop: '1px solid rgba(203,166,88,0.2)',
+                borderBottom: '1px solid rgba(203,166,88,0.2)',
+                padding: '20px 0', marginBottom: '30px'
+              }}>
+                {selectedItem.specs.map((spec, idx) => (
+                  <p key={idx} style={{
+                    fontSize: '12px', color: '#cbd5e1',
+                    marginBottom: '10px', ...sansText
+                  }}>
+                    • {spec}
+                  </p>
+                ))}
+              </div>
+
+              <p style={{
+                fontSize: '36px', fontWeight: '700',
+                color: '#cba658', marginBottom: '10px'
+              }}>
+                {selectedItem.price}
+              </p>
+
+              <p style={{
+                fontSize: '11px', color: '#94a3b8',
+                marginBottom: '30px', ...sansText
+              }}>
+                📍 {selectedItem.location}
+              </p>
+
+              <button
+                onClick={() => handleInquiry(selectedItem)}
+                style={{
+                  width: '100%', padding: '18px',
+                  background: 'linear-gradient(135deg, #cba658, #b8944d)',
+                  border: 'none', color: '#0a0a0a',
+                  ...sansText, fontSize: '12px', letterSpacing: '2px', fontWeight: '700',
+                  cursor: 'pointer', marginBottom: '15px',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                REQUEST INFORMATION
+              </button>
+
+              <button
+                onClick={() => setSelectedItem(null)}
+                style={{
+                  width: '100%', padding: '14px',
+                  background: 'rgba(148,163,184,0.1)',
+                  border: '1px solid rgba(148,163,184,0.3)',
+                  color: '#cbd5e1',
+                  ...sansText, fontSize: '11px', letterSpacing: '2px',
+                  cursor: 'pointer', transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(148,163,184,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(148,163,184,0.1)'}
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

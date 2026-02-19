@@ -10,7 +10,7 @@ import Login from './pages/Login';
 import AgentRegistration from './pages/AgentRegistration';
 import AdminDashboard from './pages/AdminDashboard';
 import LuxuryGoods from './components/LuxuryGoods';
-import BajaLuxuryGuide from './components/BajaLuxuryGuide';
+import BajaLuxuryGuide from './pages/BajaLuxuryGuide';
 import AdminPropertyUpload from './pages/AdminPropertyUpload';
 import AgentPropertyUpload from './pages/AgentPropertyUpload';
 
@@ -24,6 +24,13 @@ import MarketingDashboard from './components/admin/MarketingDashboard';
 import AdManagementPanel from './components/admin/AdManagementPanel';
 import AgentRegistrationWizard from './components/registration/AgentRegistrationWizard';
 import AgentVettingPanel from './components/admin/AgentVettingPanel';
+import MagazineEditor from './pages/MagazineEditor';
+import UserManagement from './pages/UserManagement';
+import ContentManager from './pages/ContentManager';
+import CRMSystem from './pages/CRMSystem';
+import AdCalendar from './pages/AdCalendar';
+import AIAgents from './pages/AIAgents';
+import PlatformSettings from './pages/PlatformSettings';
 
 // FLOATING ANIMATION - Subtle water-like effect
 const floatStyles = `
@@ -42,45 +49,100 @@ if (typeof document !== 'undefined' && !document.getElementById('float-styles'))
 }
 
 // =============================================
-// MASTER CREDENTIALS CONFIGURATION
+// MASTER CREDENTIALS CONFIGURATION v3.0
+// Updated: 2026 - New Email Format eb.com
 // =============================================
 const CREDENTIALS = {
-  admin: {
-    email: 'saul@enjoybaja.com',
-    password: 'Admin2026!',
-    pin: '060905',
-    role: 'admin',
-    name: 'Saul Garcia'
+  // ---- OWNER (Full Platform Access) ----
+  owner: {
+    email: 'sg01@eb.com',
+    password: '060905Dsg#321',
+    pin: '10051974',
+    role: 'owner',
+    name: 'Saul Garcia',
+    access: 'all'
   },
+
+  // ---- ADMINS (All modules except owner-only: brain/analytics) ----
+  admins: [
+    { email: 'jl-02@eb.com',    password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin JL' },
+    { email: 'ab-03@eb.com',    password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin AB' },
+    { email: 'admin01@eb.com',  password: 'Admin2026!', pin: '0101', role: 'admin', name: 'Admin 01' },
+    { email: 'admin02@eb.com',  password: 'Admin2026!', pin: '0202', role: 'admin', name: 'Admin 02' },
+    { email: 'admin03@eb.com',  password: 'Admin2026!', pin: '0303', role: 'admin', name: 'Admin 03' },
+    { email: 'admin04@eb.com',  password: 'Admin2026!', pin: '0404', role: 'admin', name: 'Admin 04' },
+    { email: 'admin05@eb.com',  password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin 05' }
+  ],
+
+  // ---- SALES TEAM (Email, Marketing, CRM, Lifestyle, Magazine) ----
+  sales: [
+    { email: 'sales01@eb.com', password: 'Sales2026!', pin: '1001', role: 'sales', name: 'Sales 01' },
+    { email: 'sales02@eb.com', password: 'Sales2026!', pin: '1002', role: 'sales', name: 'Sales 02' },
+    { email: 'sales03@eb.com', password: 'Sales2026!', pin: '1003', role: 'sales', name: 'Sales 03' },
+    { email: 'sales04@eb.com', password: 'Sales2026!', pin: '1004', role: 'sales', name: 'Sales 04' },
+    { email: 'sales05@eb.com', password: 'Sales2026!', pin: '1005', role: 'sales', name: 'Sales 05' }
+  ],
+
+  // ---- REAL ESTATE AGENTS (Mexico RE, Loans, Lifestyle ONLY) ----
+  // Active slots: REagent-00 through REagent-50 (51 accounts)
+  // Tenant expansion: REagent-51 through REagent-999 (reserved for 1000-agent buildout)
+  agents: (() => {
+    const agentList = [];
+    for (let i = 0; i <= 50; i++) {
+      const num = String(i).padStart(2, '0');
+      agentList.push({
+        email: `REagent-${num}@eb.com`,
+        password: `Agent${num}#2026`,
+        pin: String(1000 + i),
+        role: 'agent',
+        name: `RE Agent ${num}`,
+        type: 'external', // default; updated on registration
+        status: i === 0 ? 'active' : 'reserved' // REagent-00 active, rest reserved for assignment
+      });
+    }
+    // ---- TENANT SPACE: 1000-agent capacity (slots 51-999 reserved) ----
+    // These are NOT pre-created but the ID format is locked:
+    // REagent-051@eb.com ... REagent-999@eb.com
+    // PIN range: 1051 - 1999
+    // All to be provisioned via AdminDashboard > Users > Provision Agent
+    return agentList;
+  })(),
+
+  // ---- DEMO (Read-only public modules) ----
   demo: {
-    email: 'demo@enjoybaja.com',
+    email: 'demo@eb.com',
     password: 'Demo2026!',
     pin: '0000',
     role: 'demo',
     name: 'Demo User'
-  },
-  agents: [
-    { email: 'agent1@enjoybaja.com', password: 'Agent1!', pin: '7701', name: 'Agent 1' },
-    { email: 'agent2@enjoybaja.com', password: 'Agent2!', pin: '7702', name: 'Agent 2' },
-    { email: 'agent3@enjoybaja.com', password: 'Agent3!', pin: '7703', name: 'Agent 3' },
-    { email: 'agent4@enjoybaja.com', password: 'Agent4!', pin: '7704', name: 'Agent 4' },
-    { email: 'agent5@enjoybaja.com', password: 'Agent5!', pin: '7705', name: 'Agent 5' }
-  ],
-  sales: [
-    { email: 'sales1@enjoybaja.com', password: 'Sales1!', pin: '1111', name: 'Sales Rep 1' },
-    { email: 'sales2@enjoybaja.com', password: 'Sales2!', pin: '2222', name: 'Sales Rep 2' },
-    { email: 'sales3@enjoybaja.com', password: 'Sales3!', pin: '3333', name: 'Sales Rep 3' },
-    { email: 'sales4@enjoybaja.com', password: 'Sales4!', pin: '4444', name: 'Sales Rep 4' },
-    { email: 'sales5@enjoybaja.com', password: 'Sales5!', pin: '5555', name: 'Sales Rep 5' }
-  ]
+  }
 };
 
+// ---- FLAT LOOKUP HELPERS ----
+const ALL_USERS = [
+  CREDENTIALS.owner,
+  ...CREDENTIALS.admins,
+  ...CREDENTIALS.sales,
+  ...CREDENTIALS.agents,
+  CREDENTIALS.demo
+];
+
+const findUserByEmail = (email) => ALL_USERS.find(u => u.email === email);
+const findUserByPin   = (pin)   => ALL_USERS.find(u => u.pin === pin);
+
 const getPinsByRole = () => ({
-  admin: [CREDENTIALS.admin.pin],
-  demo: [CREDENTIALS.demo.pin],
-  agent: CREDENTIALS.agents.map(a => a.pin),
-  sales: CREDENTIALS.sales.map(s => s.pin),
-  allAgentContent: [CREDENTIALS.admin.pin, CREDENTIALS.demo.pin, ...CREDENTIALS.agents.map(a => a.pin)]
+  owner:  [CREDENTIALS.owner.pin],
+  admin:  CREDENTIALS.admins.map(a => a.pin),
+  demo:   [CREDENTIALS.demo.pin],
+  agent:  CREDENTIALS.agents.map(a => a.pin),
+  sales:  CREDENTIALS.sales.map(s => s.pin),
+  allAdminAccess: [CREDENTIALS.owner.pin, ...CREDENTIALS.admins.map(a => a.pin)],
+  allAgentContent: [
+    CREDENTIALS.owner.pin,
+    ...CREDENTIALS.admins.map(a => a.pin),
+    CREDENTIALS.demo.pin,
+    ...CREDENTIALS.agents.map(a => a.pin)
+  ]
 });
 
 // =============================================
@@ -93,7 +155,7 @@ function AdminFloatingNav() {
   const [isHovered, setIsHovered] = useState(false);
   const accessLevel = sessionStorage.getItem('admin_access_level');
   
-  if (accessLevel !== 'admin') return null;
+  if (accessLevel !== 'owner' && accessLevel !== 'admin') return null;
 
   const menuItems = [
     { label: 'Dashboard', path: '/admin' },
@@ -171,7 +233,8 @@ function AdminFloatingNav() {
         transition: 'left 0.3s ease',
         backdropFilter: 'blur(20px)',
         overflowY: 'auto',
-        paddingTop: '20px'
+        paddingTop: '20px',
+        paddingBottom: '40px'
       }}>
         <div style={{
           padding: '16px 20px',
@@ -193,7 +256,7 @@ function AdminFloatingNav() {
             marginTop: '4px',
             letterSpacing: '1px'
           }}>
-            saul@enjoybaja.com
+            {sessionStorage.getItem('admin_user_email') || 'sg01@eb.com'}
           </div>
         </div>
 
@@ -275,21 +338,34 @@ function LandingPage() {
   };
 
   const handlePinSubmit = () => {
-    if (adminPin === CREDENTIALS.admin.pin) {
+    const PINS = getPinsByRole();
+    const matchedUser = findUserByPin(adminPin);
+
+    if (adminPin === CREDENTIALS.owner.pin) {
       sessionStorage.setItem('admin_access_level', 'owner');
-      sessionStorage.setItem('admin_user_name', CREDENTIALS.admin.name);
+      sessionStorage.setItem('admin_user_name', CREDENTIALS.owner.name);
+      sessionStorage.setItem('admin_user_email', CREDENTIALS.owner.email);
+      setShowAdminModal(false);
+      setAdminPin('');
+      navigate('/admin');
+    } else if (PINS.admin.includes(adminPin)) {
+      const adminUser = CREDENTIALS.admins.find(a => a.pin === adminPin);
+      sessionStorage.setItem('admin_access_level', 'admin');
+      sessionStorage.setItem('admin_user_name', adminUser?.name || 'Admin');
+      sessionStorage.setItem('admin_user_email', adminUser?.email || '');
       setShowAdminModal(false);
       setAdminPin('');
       navigate('/admin');
     } else if (PINS.sales.includes(adminPin)) {
-      sessionStorage.setItem('admin_access_level', 'sales');
       const salesUser = CREDENTIALS.sales.find(s => s.pin === adminPin);
+      sessionStorage.setItem('admin_access_level', 'sales');
       sessionStorage.setItem('admin_user_name', salesUser?.name || 'Sales');
+      sessionStorage.setItem('admin_user_email', salesUser?.email || '');
       setShowAdminModal(false);
       setAdminPin('');
       navigate('/admin');
     } else {
-      setPinError('Invalid PIN');
+      setPinError('Invalid PIN — Contact sg01@eb.com for access');
       setAdminPin('');
     }
   };
@@ -489,8 +565,8 @@ function LandingPage() {
               value={adminPin}
               onChange={(e) => setAdminPin(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handlePinSubmit()}
-              placeholder="------"
-              maxLength={6}
+              placeholder="--------"
+              maxLength={8}
               style={{
                 width: '100%', padding: '16px', background: 'rgba(30, 41, 59, 0.6)',
                 border: pinError ? '1px solid rgba(248, 113, 113, 0.5)' : '1px solid rgba(148, 163, 184, 0.2)',
@@ -513,7 +589,7 @@ function LandingPage() {
               }}>ENTER</button>
             </div>
             <p style={{ ...glassText, fontSize: '8px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '20px', letterSpacing: '1px' }}>
-              Admin: 6 digits | Sales: 4 digits
+              Owner: 8 digits | Admin: 4 digits | Sales: 4 digits
             </p>
           </div>
         </div>
@@ -530,19 +606,21 @@ function AdminRoute({ children }) {
   if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
   if (!isAuthenticated) return <Navigate to="/login" />;
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  if (!accessLevel || !['owner', 'sales'].includes(accessLevel)) return <Navigate to="/" />;
+  if (!accessLevel || !['owner', 'admin', 'sales'].includes(accessLevel)) return <Navigate to="/" />;
   return children;
 }
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
-  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
   return children;
 }
 
 function AgentProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
   const [showPinModal, setShowPinModal] = useState(true);
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
@@ -552,25 +630,26 @@ function AgentProtectedRoute({ children }) {
   useEffect(() => {
     const auth = sessionStorage.getItem('agent_content_authorized');
     const accessLevel = sessionStorage.getItem('admin_access_level');
-    if (auth === 'true' || accessLevel === 'owner') {
+    if (auth === 'true' || accessLevel === 'owner' || accessLevel === 'admin') {
       setAuthorized(true);
       setShowPinModal(false);
     }
   }, []);
 
   const handlePinSubmit = () => {
-    if (pin === CREDENTIALS.admin.pin || PINS.agent.includes(pin) || pin === CREDENTIALS.demo.pin || PINS.sales.includes(pin)) {
+    const PINS = getPinsByRole();
+    if (PINS.allAgentContent.includes(pin)) {
       sessionStorage.setItem('agent_content_authorized', 'true');
       setAuthorized(true);
       setShowPinModal(false);
     } else {
-      setPinError('Invalid PIN - Contact admin for access');
+      setPinError('Invalid PIN — Contact sg01@eb.com for access');
       setPin('');
     }
   };
 
   if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
-  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
 
   if (!authorized && showPinModal) {
     return (
@@ -591,7 +670,7 @@ function AgentProtectedRoute({ children }) {
           />
           {pinError && <p style={{ fontSize: '10px', color: '#f87171', marginBottom: '12px', letterSpacing: '1px' }}>{pinError}</p>}
           <button onClick={handlePinSubmit} style={{ width: '100%', padding: '14px', background: 'rgba(203, 166, 88, 0.2)', border: '1px solid rgba(203, 166, 88, 0.5)', color: '#cba658', fontSize: '11px', letterSpacing: '3px', cursor: 'pointer', marginTop: '8px', fontFamily: '"Helvetica Neue", sans-serif' }}>ENTER</button>
-          <p style={{ fontFamily: '"Helvetica Neue", sans-serif', fontSize: '9px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '24px', letterSpacing: '1px' }}>Contact admin@enjoybaja.com for access</p>
+          <p style={{ fontFamily: '"Helvetica Neue", sans-serif', fontSize: '9px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '24px', letterSpacing: '1px' }}>Contact sg01@eb.com for access</p>
         </div>
       </div>
     );
@@ -642,7 +721,7 @@ function AdminPlaceholder({ title }) {
 function AppContent() {
   const location = useLocation();
   const accessLevel = sessionStorage.getItem('admin_access_level');
-  const showAdminNav = accessLevel === 'owner' && location.pathname !== '/login';
+  const showAdminNav = (accessLevel === 'owner' || accessLevel === 'admin') && location.pathname !== '/login';
 
   return (
     <>
@@ -679,13 +758,13 @@ function AppContent() {
         <Route path="/admin/marketing" element={<AdminRoute><MarketingDashboard /></AdminRoute>} />
         <Route path="/admin/ads" element={<AdminRoute><AdManagementPanel /></AdminRoute>} />
         <Route path="/admin/vetting" element={<AdminRoute><AgentVettingPanel /></AdminRoute>} />
-        <Route path="/admin/magazine" element={<AdminRoute><AdminPlaceholder title="Magazine Editor" /></AdminRoute>} />
-        <Route path="/admin/users" element={<AdminRoute><AdminPlaceholder title="User Management" /></AdminRoute>} />
-        <Route path="/admin/content" element={<AdminRoute><AdminPlaceholder title="Content Manager" /></AdminRoute>} />
-        <Route path="/admin/crm" element={<AdminRoute><AdminPlaceholder title="CRM / PBX System" /></AdminRoute>} />
-        <Route path="/admin/calendar" element={<AdminRoute><AdminPlaceholder title="Ad Calendar" /></AdminRoute>} />
-        <Route path="/admin/agents" element={<AdminRoute><AdminPlaceholder title="AI Agents" /></AdminRoute>} />
-        <Route path="/admin/settings" element={<AdminRoute><AdminPlaceholder title="Platform Settings" /></AdminRoute>} />
+        <Route path="/admin/magazine" element={<AdminRoute><MagazineEditor /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+        <Route path="/admin/content" element={<AdminRoute><ContentManager /></AdminRoute>} />
+        <Route path="/admin/crm" element={<AdminRoute><CRMSystem /></AdminRoute>} />
+        <Route path="/admin/calendar" element={<AdminRoute><AdCalendar /></AdminRoute>} />
+        <Route path="/admin/agents" element={<AdminRoute><AIAgents /></AdminRoute>} />
+        <Route path="/admin/settings" element={<AdminRoute><PlatformSettings /></AdminRoute>} />
         
         {/* CATCH ALL */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -13,7 +13,7 @@ const brain = require('../Brain');
 router.get('/status', (req, res) => {
   try {
     const status = {
-      miners: brain.getAllMinersStatus(),
+      miners: brain.getAllMiners(),
       metrics: brain.getMetrics(),
       activeWorkflows: brain.activeWorkflows.size,
       timestamp: new Date().toISOString()
@@ -38,7 +38,7 @@ router.get('/metrics', (req, res) => {
 // GET /api/brain/miners - All miners status
 router.get('/miners', (req, res) => {
   try {
-    res.json(brain.getAllMinersStatus());
+    res.json(brain.getAllMiners());
   } catch (error) {
     console.error('Brain miners error:', error);
     res.status(500).json({ error: 'Failed to get miners' });

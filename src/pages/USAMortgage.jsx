@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ModuleNavBar from '../components/ModuleNavBar';
 
 // FAQ Component to handle accordion state properly
 function FAQSection() {
@@ -2575,69 +2576,37 @@ export default function USAMortgage() {
 
       {/* CONTENT */}
       <div style={{ position: 'relative', zIndex: 2 }}>
-      {/* HEADER - ULTRA HIGH END GLASS */}
+      
+      {/* MODULE NAVIGATION BAR - ALL 5 MODULES */}
+      <ModuleNavBar />
+
+      {/* PAGE TITLE */}
       <div style={{ 
-        background: 'rgba(15, 23, 42, 0.3)', 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
-        padding: '24px 40px', 
-        backdropFilter: 'blur(30px)',
-        WebkitBackdropFilter: 'blur(30px)',
-        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+        padding: '24px 40px',
+        textAlign: 'center'
       }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h1 style={{ 
-                fontSize: '18px', 
-                fontWeight: '100', 
-                color: 'rgba(255, 255, 255, 0.95)', 
-                margin: '0 0 6px 0', 
-                letterSpacing: '6px', 
-                textTransform: 'uppercase',
-                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                textShadow: '0 2px 10px rgba(0,0,0,0.3)'
-              }}>
-                US & Mexico Mortgage Loans
-              </h1>
-              <p style={{ 
-                fontSize: '9px', 
-                fontWeight: '300', 
-                color: 'rgba(203, 213, 225, 0.7)', 
-                margin: 0, 
-                letterSpacing: '3px',
-                textTransform: 'uppercase'
-              }}>
-                NMLS #337526 | Everwise Home Loans & Realty
-              </p>
-            </div>
-            <button
-              onClick={() => navigate('/')}
-              style={{
-                padding: '10px 20px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '9px',
-                fontWeight: '300',
-                cursor: 'pointer',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-              }}
-            >
-              Back to Home
-            </button>
-          </div>
-        </div>
+        <h1 style={{ 
+          fontSize: '18px', 
+          fontWeight: '100', 
+          color: 'rgba(255, 255, 255, 0.95)', 
+          margin: '0 0 6px 0', 
+          letterSpacing: '6px', 
+          textTransform: 'uppercase',
+          fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+          textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+        }}>
+          US & Mexico Mortgage Loans
+        </h1>
+        <p style={{ 
+          fontSize: '9px', 
+          fontWeight: '300', 
+          color: 'rgba(203, 213, 225, 0.7)', 
+          margin: 0, 
+          letterSpacing: '3px',
+          textTransform: 'uppercase'
+        }}>
+          NMLS #337526 | Everwise Home Loans & Realty
+        </p>
       </div>
 
       {/* MAIN CONTENT */}

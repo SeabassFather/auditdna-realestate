@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function AgentPropertyUpload() {
   const navigate = useNavigate();
+  const [lang, setLang] = useState('es'); // Default Spanish for Mexico RE
   const [images, setImages] = useState([]);
   const [generatingDesc, setGeneratingDesc] = useState(false);
   const [analyzingPrice, setAnalyzingPrice] = useState(false);
@@ -12,8 +13,14 @@ export default function AgentPropertyUpload() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [formData, setFormData] = useState({
-    title: '', region: '', city: '', price: '', beds: '', baths: '', sqft: '',
-    propertyType: '', description: '', amenities: '', yearBuilt: '', lotSize: ''
+    title: '', propertyType: '',
+    // Mexico address fields
+    domicilio: '', noExterior: '', noInterior: '', colonia: '', municipio: '',
+    estado: '', cp: '', carretera: '', referencia: '',
+    region: '', city: '',
+    // Property details
+    price: '', currency: 'MXN', beds: '', baths: '', metrosCuadrados: '', metrosTerreno: '',
+    description: '', caracteristicas: '', amenities: '', yearBuilt: '', lotSize: ''
   });
 
   const regions = ['Baja California Norte', 'Baja California Sur', 'Jalisco', 'Nayarit', 'Quintana Roo', 'Guanajuato', 'Yucatan', 'Sinaloa', 'Oaxaca', 'CDMX', 'Queretaro'];
@@ -146,19 +153,80 @@ export default function AgentPropertyUpload() {
   return (
     <div style={s.container}>
       <div style={s.header}>
-        <h1 style={s.title}>List New Property</h1>
-        <p style={s.subtitle}>AI-Powered Listing Creation</p>
+        <h1 style={s.title}>{lang === 'es' ? 'Publicar Nueva Propiedad' : 'List New Property'}</h1>
+        <p style={s.subtitle}>{lang === 'es' ? 'Creación de Listado con IA' : 'AI-Powered Listing Creation'}</p>
+        <button onClick={() => setLang(lang === 'en' ? 'es' : 'en')} style={{marginTop: '12px', padding: '8px 20px', background: 'rgba(203,166,88,0.15)', border: '1px solid rgba(203,166,88,0.4)', color: '#cba658', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', letterSpacing: '1px'}}>
+          {lang === 'en' ? '🌐 Español' : '🌐 English'}
+        </button>
       </div>
       <form style={s.form} onSubmit={handleSubmit}>
         <div style={s.section}>
-          <h3 style={s.sectionTitle}>Property Details</h3>
+          <h3 style={s.sectionTitle}>{lang === 'es' ? 'Detalles de la Propiedad' : 'Property Details'}</h3>
           <div style={s.grid}>
-            <div style={s.inputGroup}><label style={s.label}>Title*</label><input style={s.input} value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required /></div>
-            <div style={s.inputGroup}><label style={s.label}>Type*</label><select style={s.input} value={formData.propertyType} onChange={(e) => setFormData({...formData, propertyType: e.target.value})} required><option value="">Select</option><option>Villa</option><option>Estate</option><option>Condo</option><option>Beach House</option></select></div>
-            <div style={s.inputGroup}><label style={s.label}>Region*</label><select style={s.input} value={formData.region} onChange={(e) => setFormData({...formData, region: e.target.value, city: ''})} required><option value="">Select</option>{regions.map(r => <option key={r}>{r}</option>)}</select></div>
-            <div style={s.inputGroup}><label style={s.label}>City*</label><select style={s.input} value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} required disabled={!formData.region}><option value="">Select</option>{formData.region && cities[formData.region]?.map(c => <option key={c}>{c}</option>)}</select></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Título *' : 'Title *'}</label><input style={s.input} value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required /></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Tipo *' : 'Type *'}</label><select style={s.input} value={formData.propertyType} onChange={(e) => setFormData({...formData, propertyType: e.target.value})} required><option value="">Select</option><option>Villa</option><option>Estate</option><option>Condo</option><option>Beach House</option></select></div>
+            {/* MEXICO ADDRESS BLOCK */}
+            <div style={{...s.inputGroup, gridColumn: '1 / -1'}}>
+              <label style={{...s.label, color: '#cba658', fontSize: '13px', letterSpacing: '2px'}}>
+                {lang === 'es' ? 'DOMICILIO (Dirección México)' : 'PROPERTY ADDRESS (Mexico Format)'}
+              </label>
+              <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px', marginBottom: '12px'}}>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Domicilio / Calle *' : 'Street / Domicilio *'}</label>
+                  <input style={s.input} placeholder={lang === 'es' ? 'Ej: Blvd. Costero' : 'e.g. Blvd. Costero'} value={formData.domicilio} onChange={(e) => setFormData({...formData, domicilio: e.target.value})} required />
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'No. Exterior' : 'Ext. No.'}</label>
+                  <input style={s.input} placeholder="123" value={formData.noExterior} onChange={(e) => setFormData({...formData, noExterior: e.target.value})} />
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'No. Interior' : 'Int. No.'}</label>
+                  <input style={s.input} placeholder="A" value={formData.noInterior} onChange={(e) => setFormData({...formData, noInterior: e.target.value})} />
+                </div>
+              </div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px', marginBottom: '12px'}}>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Colonia / Fracc.' : 'Colonia / Subdivision'}</label>
+                  <input style={s.input} placeholder={lang === 'es' ? 'Ej: Fracc. Marina' : 'e.g. Fracc. Marina'} value={formData.colonia} onChange={(e) => setFormData({...formData, colonia: e.target.value})} />
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Municipio / Delegación *' : 'Municipality *'}</label>
+                  <input style={s.input} placeholder={lang === 'es' ? 'Ej: Ensenada' : 'e.g. Ensenada'} value={formData.municipio} onChange={(e) => setFormData({...formData, municipio: e.target.value})} required />
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Estado *' : 'State *'}</label>
+                  <select style={s.input} value={formData.estado} onChange={(e) => setFormData({...formData, estado: e.target.value})} required>
+                    <option value="">—</option>
+                    {['Baja California','Baja California Sur','Jalisco','Nayarit','Quintana Roo','Guanajuato','Yucatán','Sinaloa','Oaxaca','CDMX','Querétaro','Sonora','Colima'].map(st => <option key={st}>{st}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Código Postal' : 'Postal Code'}</label>
+                  <input style={s.input} placeholder="22800" maxLength={5} value={formData.cp} onChange={(e) => setFormData({...formData, cp: e.target.value})} />
+                </div>
+              </div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Carretera / Km' : 'Highway / Km Reference'}</label>
+                  <input style={s.input} placeholder={lang === 'es' ? 'Ej: Carretera Tijuana-Ensenada Km 103' : 'e.g. Hwy Tijuana-Ensenada Km 103'} value={formData.carretera} onChange={(e) => setFormData({...formData, carretera: e.target.value})} />
+                </div>
+                <div>
+                  <label style={s.label}>{lang === 'es' ? 'Referencias / Cómo llegar' : 'Directions / Location Reference'}</label>
+                  <input style={s.input} placeholder={lang === 'es' ? 'Ej: A 2km de la autopista, frente al mar' : 'e.g. 2km from highway, oceanfront'} value={formData.referencia} onChange={(e) => setFormData({...formData, referencia: e.target.value})} />
+                </div>
+              </div>
+            </div>
+
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Región *' : 'Region *'}</label><select style={s.input} value={formData.region} onChange={(e) => setFormData({...formData, region: e.target.value, city: ''})} required><option value="">—</option>{regions.map(r => <option key={r}>{r}</option>)}</select></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Ciudad *' : 'City *'}</label><select style={s.input} value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} required disabled={!formData.region}><option value="">—</option>{formData.region && cities[formData.region]?.map(c => <option key={c}>{c}</option>)}</select></div>
             <div style={s.inputGroup}>
-              <label style={s.label}>Price (USD)*</label>
+              <div style={{display: 'flex', gap: '8px', marginBottom: '8px'}}>
+                <label style={s.label}>{lang === 'es' ? 'Precio *' : 'Price *'}</label>
+                <select style={{...s.input, width: 'auto', padding: '4px 8px'}} value={formData.currency} onChange={(e) => setFormData({...formData, currency: e.target.value})}>
+                  <option value="MXN">MXN $</option>
+                  <option value="USD">USD $</option>
+                </select>
+              </div>
               <button type="button" onClick={analyzePricing} disabled={analyzingPrice} style={{ marginBottom: '12px', padding: '12px', width: '100%', background: analyzingPrice ? '#64748b' : 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: analyzingPrice ? 'not-allowed' : 'pointer' }}>
                 {analyzingPrice ? ' Analyzing...' : ' AI Price Analysis'}
               </button>
@@ -169,20 +237,32 @@ export default function AgentPropertyUpload() {
               )}
               <input type="number" style={s.input} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
             </div>
-            <div style={s.inputGroup}><label style={s.label}>Beds*</label><input type="number" style={s.input} value={formData.beds} onChange={(e) => setFormData({...formData, beds: e.target.value})} required /></div>
-            <div style={s.inputGroup}><label style={s.label}>Baths*</label><input type="number" step="0.5" style={s.input} value={formData.baths} onChange={(e) => setFormData({...formData, baths: e.target.value})} required /></div>
-            <div style={s.inputGroup}><label style={s.label}>Sqft*</label><input type="number" style={s.input} value={formData.sqft} onChange={(e) => setFormData({...formData, sqft: e.target.value})} required /></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Recámaras *' : 'Bedrooms *'}</label><input type="number" style={s.input} value={formData.beds} onChange={(e) => setFormData({...formData, beds: e.target.value})} required /></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Baños *' : 'Bathrooms *'}</label><input type="number" step="0.5" style={s.input} value={formData.baths} onChange={(e) => setFormData({...formData, baths: e.target.value})} required /></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Metros Cuadrados (Construcción) *' : 'Sq Meters (Built) *'}</label><input type="number" style={s.input} placeholder="120" value={formData.metrosCuadrados} onChange={(e) => setFormData({...formData, metrosCuadrados: e.target.value})} required /></div>
+            <div style={s.inputGroup}><label style={s.label}>{lang === 'es' ? 'Metros Terreno' : 'Lot Size (m²)'}</label><input type="number" style={s.input} placeholder="500" value={formData.metrosTerreno} onChange={(e) => setFormData({...formData, metrosTerreno: e.target.value})} /></div>
           </div>
           <div style={s.inputGroup}>
-            <label style={s.label}>Description*</label>
+            <label style={s.label}>{lang === 'es' ? 'Descripción General *' : 'General Description *'}</label>
             <button type="button" onClick={generateAIDescription} disabled={generatingDesc} style={{ marginBottom: '12px', padding: '12px 24px', background: generatingDesc ? '#64748b' : 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: generatingDesc ? 'not-allowed' : 'pointer' }}>
               {generatingDesc ? ' Generating...' : ' Generate AI Description'}
             </button>
-            <textarea style={s.textarea} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} required />
+            <textarea style={s.textarea} placeholder={lang === 'es' ? 'Descripción general de la propiedad...' : 'General property description...'} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} required />
+            <div style={{marginTop: '16px'}}>
+              <label style={s.label}>{lang === 'es' ? 'Características y Ubicación *' : 'Property Characteristics & Location Details *'}</label>
+              <p style={{fontSize: '11px', color: '#64748b', marginBottom: '8px'}}>{lang === 'es' ? 'Incluye detalles de acceso, servicios, vista, estilo de construcción, etc.' : 'Include access details, utilities, view, construction style, remote location info, etc.'}</p>
+              <textarea style={{...s.textarea, minHeight: '160px'}}
+                placeholder={lang === 'es'
+                  ? 'Ej: Propiedad ubicada sobre Carretera Transpeninsular Km 103, a 5 min de playa. Cuenta con cisterna de 10,000 lts, fosa séptica, paneles solares. Vista panorámica al Pacífico. Acceso por camino de terracería de 500m...'
+                  : 'e.g. Property on Transpeninsular Hwy Km 103, 5min to beach. Has 10,000L cistern, septic tank, solar panels. Panoramic Pacific view. Access via 500m dirt road...'}
+                value={formData.caracteristicas}
+                onChange={(e) => setFormData({...formData, caracteristicas: e.target.value})}
+              />
+            </div>
           </div>
         </div>
         <div style={s.section}>
-          <h3 style={s.sectionTitle}>Photos (Min 8)*</h3>
+          <h3 style={s.sectionTitle}>{lang === 'es' ? 'Fotos (Mínimo 8) *' : 'Photos (Min 8) *'}</h3>
           <input type="file" id="img" multiple accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
           <div style={s.imageGrid}>
             {images.map((img, idx) => (

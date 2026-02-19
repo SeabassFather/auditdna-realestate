@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Brain from '../services/Brain';
 
 // ========== CONFIG ==========
 const ZADARMA_CONFIG = {
@@ -38,10 +39,10 @@ const styles = {
 };
 
 // ========== SIDEBAR COMPONENT ==========
-function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount }) {
+function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount, brainMetrics }) {
   const modules = [
     { icon: '⚡', label: 'Command Center', section: 'command', owner: true },
-    { icon: '🧠', label: 'AuditDNA Brain', section: 'auditdna', owner: true, badge: '127 AUDITS' },
+    { icon: '🧠', label: 'AuditDNA Brain', section: 'auditdna', owner: true, badge: brainMetrics ? `${brainMetrics.completedTasks || 0} AUDITS` : '…' },
     { icon: '🏠', label: 'Properties', section: 'properties', owner: true },
     { icon: '📞', label: 'CRM / PBX', section: 'crm', owner: false },
     { icon: '📅', label: 'Calendar', section: 'calendar', owner: false },
@@ -53,6 +54,7 @@ function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount }) {
   ];
 
   const isOwner = accessLevel === 'owner';
+  const isAdminOrOwner = accessLevel === 'owner' || accessLevel === 'admin';
 
   return (
     <div style={{
@@ -68,11 +70,11 @@ function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount }) {
       overflow: 'hidden',
       zIndex: 99
     }}>
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '20px', height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
         <h3 style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: '#cba658', marginBottom: '16px' }}>QUICK ACCESS</h3>
         
         {modules.map((m, i) => {
-          if (m.owner && !isOwner) return null;
+          if (m.owner && !isAdminOrOwner) return null;
           
           return (
             <div
@@ -121,7 +123,7 @@ function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount }) {
 
         <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(203, 166, 88, 0.05)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '6px' }}>
           <p style={{ ...glassText, fontSize: '9px', color: '#cba658', marginBottom: '4px' }}>EMAIL NOTIFICATIONS</p>
-          <p style={{ ...glassText, fontSize: '8px', color: '#94a3b8' }}>Pings sent to: saul@enjoybaja.com</p>
+          <p style={{ ...glassText, fontSize: '8px', color: '#94a3b8' }}>Pings sent to: sg01@eb.com</p>
         </div>
       </div>
     </div>
@@ -214,7 +216,7 @@ function NotificationCenter({ notifications, setNotifications }) {
       <div style={{ marginTop: '20px', padding: '14px', background: 'rgba(203, 166, 88, 0.05)', border: '1px solid rgba(203, 166, 88, 0.2)', borderRadius: '6px' }}>
         <h4 style={{ ...glassText, fontSize: '10px', color: '#cba658', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL PING SETTINGS</h4>
         <p style={{ ...glassText, fontSize: '9px', color: '#94a3b8', marginBottom: '12px' }}>
-          Instant email alerts sent to: <span style={{ color: '#cba658' }}>saul@enjoybaja.com</span>
+          Instant email alerts sent to: <span style={{ color: '#cba658' }}>sg01@eb.com</span>
         </p>
         {[
           'Consumer Signup',
@@ -411,6 +413,44 @@ function AccordionSection({ title, subtitle, icon, isOpen, onToggle, badge, lock
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  // ── LIVE BRAIN METRICS (81 Niner Miners) ──────────────────
+  const [brainMetrics, setBrainMetrics] = useState(null);
+  const [brainMiners,  setBrainMiners]  = useState(null);
+  const [brainOnline,  setBrainOnline]  = useState(false);
+
+  // ── LIVE DATA FROM ALL BACKEND ROUTES ─────────────────────────────────────
+  const [propStats,    setPropStats]    = useState(null);
+  const [leadStats,    setLeadStats]    = useState(null);
+  const [agentStats,   setAgentStats]   = useState(null);
+  const [auditStats,   setAuditStats]   = useState(null);
+
+  useEffect(() => {
+    const fetchBrainData = async () => {
+      const [status, metrics, miners] = await Promise.all([
+        Brain.getStatus(), Brain.getMetrics(), Brain.getMiners()
+      ]);
+      if (status)  setBrainOnline(true);
+      if (metrics) setBrainMetrics(metrics);
+      if (miners)  setBrainMiners(miners);
+
+      // Wire all backend routes
+      const [props, leads, agents, audits] = await Promise.all([
+        Brain.getPropertyStats(),
+        Brain.getLeadStats(),
+        Brain.getAgentStats(),
+        Brain.getAuditStats(),
+      ]);
+      if (props)  setPropStats(props);
+      if (leads)  setLeadStats(leads);
+      if (agents) setAgentStats(agents);
+      if (audits) setAuditStats(audits);
+    };
+    fetchBrainData();
+    const interval = setInterval(fetchBrainData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+  // ────────────────────────────────────────────────────────────
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [accessLevel, setAccessLevel] = useState('sales');
   const [openSections, setOpenSections] = useState({ command: true, auditdna: false, crm: false, properties: false, calendar: false, marketing: false, agents: false, analytics: false, training: false, notifications: false });
@@ -456,23 +496,24 @@ export default function AdminDashboard() {
 
   const handleLogout = () => { sessionStorage.removeItem('admin_access_level'); logout(); navigate('/'); };
   const isOwner = accessLevel === 'owner';
+  const isAdminOrOwner = accessLevel === 'owner' || accessLevel === 'admin';
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', position: 'relative' }}>
-      {/* SIDEBAR */}
-      {isOwner && <Sidebar isOpen={sidebarOpen} toggle={toggle} navigate={navigate} accessLevel={accessLevel} unreadCount={unreadCount} />}
+      {/* SIDEBAR — visible to owner AND admin */}
+      {isAdminOrOwner && <Sidebar isOpen={sidebarOpen} toggle={toggle} navigate={navigate} accessLevel={accessLevel} unreadCount={unreadCount} brainMetrics={brainMetrics} />}
 
       {/* TOP NAV */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '16px 48px', background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(203,166,88,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          {isOwner && (
+          {isAdminOrOwner && (
             <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ ...styles.button, ...styles.buttonPrimary }}>
               {sidebarOpen ? '◀' : '▶'} MENU
             </button>
           )}
           <div onClick={() => navigate('/')} style={{ ...glassText, fontSize: '11px', letterSpacing: '4px', color: 'rgba(203,166,88,0.9)', cursor: 'pointer' }}>ENJOY BAJA</div>
-          <div style={{ ...glassText, fontSize: '9px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)', padding: '4px 12px', background: 'rgba(203,166,88,0.1)', border: '1px solid rgba(203,166,88,0.2)' }}>{isOwner?'OWNER ACCESS':'SALES ACCESS'}</div>
-          {isOwner && unreadCount > 0 && (
+          <div style={{ ...glassText, fontSize: '9px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)', padding: '4px 12px', background: 'rgba(203,166,88,0.1)', border: '1px solid rgba(203,166,88,0.2)' }}>{isOwner ? 'OWNER ACCESS' : isAdminOrOwner ? 'ADMIN ACCESS' : 'SALES ACCESS'}</div>
+          {isAdminOrOwner && unreadCount > 0 && (
             <div onClick={() => toggle('notifications')} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)', borderRadius: '12px', cursor: 'pointer' }}>
               <span>🔔</span>
               <span style={{ ...glassText, fontSize: '9px', color: '#60a5fa' }}>{unreadCount} NEW</span>
@@ -486,10 +527,10 @@ export default function AdminDashboard() {
       </nav>
 
       {/* MAIN CONTENT */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '100px 48px 60px', paddingLeft: isOwner && sidebarOpen ? '288px' : '48px', maxWidth: '1600px', margin: '0 auto', transition: 'padding-left 0.3s' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '100px 48px 60px', paddingLeft: isAdminOrOwner && sidebarOpen ? '288px' : '48px', maxWidth: '1600px', margin: '0 auto', transition: 'padding-left 0.3s' }}>
         <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ ...glassText, fontSize: '32px', letterSpacing: '6px', marginBottom: '8px', color: 'rgba(226,232,240,0.9)' }}>{isOwner?'ADMIN COMMAND CENTER':'SALES DASHBOARD'}</h1>
-          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{isOwner?'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS':'ZADARMA CRM/PBX • TEAM CALENDAR'}</p>
+          <h1 style={{ ...glassText, fontSize: '32px', letterSpacing: '6px', marginBottom: '8px', color: 'rgba(226,232,240,0.9)' }}>{isOwner ? 'ADMIN COMMAND CENTER' : isAdminOrOwner ? 'ADMIN DASHBOARD' : 'SALES DASHBOARD'}</h1>
+          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{isOwner ? 'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS' : isAdminOrOwner ? 'ADMIN ACCESS • ALL MODULES EXCEPT OWNER-ONLY' : 'ZADARMA CRM/PBX • TEAM CALENDAR'}</p>
         </div>
 
         {/* ACCORDION SECTIONS */}
@@ -503,8 +544,42 @@ export default function AdminDashboard() {
 
         <div id="section-auditdna">
           {isOwner && (
-            <AccordionSection title="AUDITDNA BRAIN" subtitle="Live Audits • Consumers • Partners • Complaints • AI/SI" icon="🧠" isOpen={openSections.auditdna} onToggle={() => toggle('auditdna')} badge="127 AUDITS">
-              <p style={{ ...glassText, fontSize: '11px' }}>AuditDNA Brain with notifications integrated...</p>
+            <AccordionSection title="AUDITDNA BRAIN" subtitle="Live Audits • Consumers • Partners • Complaints • AI/SI" icon="🧠" isOpen={openSections.auditdna} onToggle={() => toggle('auditdna')} badge={brainMetrics ? `${brainMetrics.completedTasks || 0} AUDITS` : 'LIVE'}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'BRAIN STATUS',    value: brainOnline ? '🟢 ONLINE' : '🔴 OFFLINE' },
+                  { label: 'TOTAL TASKS',      value: brainMetrics?.totalTasks     ?? '—' },
+                  { label: 'COMPLETED',        value: brainMetrics?.completedTasks ?? '—' },
+                  { label: 'ACTIVE NOW',       value: brainMetrics?.activeTasks    ?? '—' },
+                  { label: 'AVG RESPONSE',     value: brainMetrics?.avgResponseTime ? `${brainMetrics.avgResponseTime}ms` : '—' },
+                  { label: 'NINER MINERS',     value: '81 ACTIVE' }
+                ].map((stat, i) => (
+                  <div key={i} style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(148,163,184,0.15)', padding: '14px', textAlign: 'center' }}>
+                    <div style={{ ...glassText, fontSize: '8px', letterSpacing: '2px', color: 'rgba(148,163,184,0.5)', marginBottom: '6px' }}>{stat.label}</div>
+                    <div style={{ ...glassText, fontSize: '18px', color: '#cba658', fontWeight: '200' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+              {brainMiners && (
+                <div>
+                  <p style={{ ...glassText, fontSize: '9px', letterSpacing: '2px', color: 'rgba(203,166,88,0.7)', marginBottom: '12px' }}>MINER TEAMS</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+                    {Object.entries(brainMiners).map(([team, miners]) => (
+                      <div key={team} style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(148,163,184,0.1)', padding: '10px' }}>
+                        <div style={{ ...glassText, fontSize: '8px', color: '#cba658', letterSpacing: '1px', marginBottom: '6px', textTransform: 'uppercase' }}>
+                          {team.replace(/([A-Z])/g, ' $1').trim()}
+                        </div>
+                        {Array.isArray(miners) && miners.map((m, i) => (
+                          <div key={i} style={{ ...glassText, fontSize: '9px', color: 'rgba(148,163,184,0.6)', padding: '2px 0', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>{m.name}</span>
+                            <span style={{ color: m.status === 'ACTIVE' ? '#86efac' : '#fca5a5' }}>{m.status}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </AccordionSection>
           )}
         </div>
@@ -525,7 +600,119 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Other sections continue... */}
+        {/* PROPERTIES */}
+        <div id="section-properties">
+          {isAdminOrOwner && (
+            <AccordionSection title="PROPERTIES" subtitle="Listings • FSBO • Agent Uploads • Admin Uploads" icon="🏠" isOpen={openSections.properties} onToggle={() => toggle('properties')}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'TOTAL LISTINGS', value: propStats?.total ?? '—' },
+                  { label: 'FSBO', value: propStats?.fsbo ?? '—' },
+                  { label: 'AGENT UPLOADS', value: propStats?.agentUploads ?? '—' },
+                  { label: 'PENDING REVIEW', value: propStats?.pending ?? '—' },
+                ].map((stat, i) => (
+                  <div key={i} style={{ background: 'rgba(203,166,88,0.05)', border: '1px solid rgba(203,166,88,0.2)', padding: '16px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '2px', color: 'rgba(203,166,88,0.7)', marginBottom: '8px' }}>{stat.label}</div>
+                    <div style={{ fontSize: '24px', color: '#f8f6f1', fontWeight: '300' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/admin/property-upload')} style={{ ...styles.button, ...styles.buttonPrimary }}>MANAGE LISTINGS</button>
+            </AccordionSection>
+          )}
+        </div>
+
+        {/* CRM / PBX */}
+        <div id="section-crm">
+          <AccordionSection title="CRM / PBX" subtitle="Leads • Calls • Pipeline • Zadarma" icon="📞" isOpen={openSections.crm} onToggle={() => toggle('crm')}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+              {[
+                { label: 'TOTAL LEADS', value: leadStats?.total ?? '—' },
+                { label: 'HOT', value: leadStats?.hot ?? '—' },
+                { label: 'CALLS TODAY', value: leadStats?.callsToday ?? '—' },
+                { label: 'PIPELINE', value: leadStats?.pipeline ?? '—' },
+              ].map((stat, i) => (
+                <div key={i} style={{ background: 'rgba(203,166,88,0.05)', border: '1px solid rgba(203,166,88,0.2)', padding: '16px', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '9px', letterSpacing: '2px', color: 'rgba(203,166,88,0.7)', marginBottom: '8px' }}>{stat.label}</div>
+                  <div style={{ fontSize: '24px', color: '#f8f6f1', fontWeight: '300' }}>{stat.value}</div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => navigate('/admin/crm')} style={{ ...styles.button, ...styles.buttonPrimary }}>OPEN CRM SYSTEM</button>
+          </AccordionSection>
+        </div>
+
+        {/* CALENDAR */}
+        <div id="section-calendar">
+          <AccordionSection title="CALENDAR" subtitle="Ad Schedule • Bookings • Events" icon="📅" isOpen={openSections.calendar} onToggle={() => toggle('calendar')}>
+            <div style={{ padding: '24px', textAlign: 'center', color: 'rgba(248,246,241,0.5)', fontSize: '13px' }}>
+              Ad calendar and scheduling system
+            </div>
+            <button onClick={() => navigate('/admin/calendar')} style={{ ...styles.button, ...styles.buttonPrimary }}>OPEN AD CALENDAR</button>
+          </AccordionSection>
+        </div>
+
+        {/* MARKETING */}
+        <div id="section-marketing">
+          {isAdminOrOwner && (
+            <AccordionSection title="MARKETING" subtitle="Campaigns • Ads • Magazine • Analytics" icon="📊" isOpen={openSections.marketing} onToggle={() => toggle('marketing')}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <button onClick={() => navigate('/admin/marketing')} style={{ ...styles.button, ...styles.buttonPrimary }}>MARKETING DASHBOARD</button>
+                <button onClick={() => navigate('/admin/ads')} style={{ ...styles.button }}>AD MANAGEMENT</button>
+                <button onClick={() => navigate('/admin/magazine')} style={{ ...styles.button }}>MAGAZINE EDITOR</button>
+                <button onClick={() => navigate('/admin/calendar')} style={{ ...styles.button }}>AD CALENDAR</button>
+              </div>
+            </AccordionSection>
+          )}
+        </div>
+
+        {/* AGENTS */}
+        <div id="section-agents">
+          {isAdminOrOwner && (
+            <AccordionSection title="AGENTS" subtitle="Roster • Vetting • Commission • Performance" icon="👥" isOpen={openSections.agents} onToggle={() => toggle('agents')}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'TOTAL AGENTS', value: agentStats?.total ?? '—' },
+                  { label: 'ACTIVE', value: agentStats?.active ?? '—' },
+                  { label: 'PENDING VETTING', value: agentStats?.pending ?? '—' },
+                  { label: 'IN-HOUSE', value: agentStats?.inHouse ?? '—' },
+                ].map((stat, i) => (
+                  <div key={i} style={{ background: 'rgba(203,166,88,0.05)', border: '1px solid rgba(203,166,88,0.2)', padding: '16px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '2px', color: 'rgba(203,166,88,0.7)', marginBottom: '8px' }}>{stat.label}</div>
+                    <div style={{ fontSize: '24px', color: '#f8f6f1', fontWeight: '300' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <button onClick={() => navigate('/admin/vetting')} style={{ ...styles.button, ...styles.buttonPrimary }}>VETTING PANEL</button>
+                <button onClick={() => navigate('/admin/users')} style={{ ...styles.button }}>USER MANAGEMENT</button>
+              </div>
+            </AccordionSection>
+          )}
+        </div>
+
+        {/* ANALYTICS */}
+        <div id="section-analytics">
+          {isAdminOrOwner && (
+            <AccordionSection title="ANALYTICS" subtitle="Traffic • Leads • Revenue • Brain Performance" icon="📈" isOpen={openSections.analytics} onToggle={() => toggle('analytics')}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'PAGE VIEWS', value: propStats?.views ?? '—' },
+                  { label: 'LEAD CONV.', value: leadStats?.convRate ?? '—' },
+                  { label: 'BRAIN OPS', value: brainMetrics?.completedTasks ?? '—' },
+                  { label: 'AUDITS', value: auditStats?.total ?? '—' },
+                ].map((stat, i) => (
+                  <div key={i} style={{ background: 'rgba(203,166,88,0.05)', border: '1px solid rgba(203,166,88,0.2)', padding: '16px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '2px', color: 'rgba(203,166,88,0.7)', marginBottom: '8px' }}>{stat.label}</div>
+                    <div style={{ fontSize: '24px', color: '#f8f6f1', fontWeight: '300' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/admin/marketing')} style={{ ...styles.button, ...styles.buttonPrimary }}>FULL ANALYTICS</button>
+            </AccordionSection>
+          )}
+        </div>
+
       </div>
     </div>
   );

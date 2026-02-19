@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
+import Brain from '../services/Brain';
 import { useNavigate } from 'react-router-dom';
 
 export default function AgentRegistration() {
   const navigate = useNavigate();
+  const [lang, setLang] = useState('es');
+  const [agentType, setAgentType] = useState('external'); // 'inhouse' | 'external'
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
+    whatsapp: '',
+    company: '',
     licenseNumber: '',
-    ineNumber: ''
+    yearsExperience: '',
+    languages: 'both',
+    ineNumber: '',
+    rfc: '',
+    // Banking (encrypted, internal use only)
+    bankName: '',
+    clabe: '',
+    accountHolder: '',
+    // Mexico address
+    domicilio: '',
+    colonia: '',
+    municipio: '',
+    estado: 'Baja California',
+    cp: '',
+    // Coverage
+    territories: [],
+    propertyTypes: []
   });
-  const [inePhoto, setInePhoto] = useState(null);
+  const [ineFront, setIneFront] = useState(null);
+  const [ineBack, setIneBack]   = useState(null);
+  const [selfieIne, setSelfieIne] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -24,19 +47,12 @@ export default function AgentRegistration() {
     textShadow: '0 1px 15px rgba(0,0,0,0.2)'
   };
 
-  const handleIneUpload = (e) => {
+  const handleFileUpload = (setter, e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5000000) {
-        setError('File size must be under 5MB');
-        return;
-      }
-      setInePhoto({
-        file,
-        url: URL.createObjectURL(file)
-      });
-      setError('');
-    }
+    if (!file) return;
+    if (file.size > 5000000) { setError(lang === 'es' ? 'El archivo debe ser menor a 5MB' : 'File must be under 5MB'); return; }
+    setter({ file, url: URL.createObjectURL(file) });
+    setError('');
   };
 
   const generateCredentials = (email) => {
@@ -47,13 +63,16 @@ export default function AgentRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!inePhoto) {
-      setError('INE (Mexican ID) photo is required');
+    if (!ineFront || !ineBack) {
+      setError(lang === 'es' ? 'Se requieren fotos del INE (frente y reverso)' : 'INE photos (front and back) are required');
       return;
     }
-
-    if (formData.ineNumber.length !== 18) {
-      setError('INE number must be exactly 18 characters');
+    if (!selfieIne) {
+      setError(lang === 'es' ? 'Se requiere selfie con INE para verificación de identidad' : 'Selfie with INE required for identity verification');
+      return;
+    }
+    if (formData.ineNumber.length < 13) {
+      setError(lang === 'es' ? 'El número de INE debe tener al menos 13 caracteres' : 'INE number must be at least 13 characters');
       return;
     }
 
@@ -62,7 +81,7 @@ export default function AgentRegistration() {
 
     const agents = JSON.parse(localStorage.getItem('registered_agents') || '[]');
     
-    if (agents.some(a => a.email === formData.email || a.ineNumber === formData.ineNumber)) {
+    if (agents.some(a => a.email === formData.email)) {
       setError('Agent already registered with this email or INE number');
       setLoading(false);
       return;
@@ -72,15 +91,49 @@ export default function AgentRegistration() {
     
     const newAgent = {
       ...formData,
-      inePhotoUrl: inePhoto.url,
+      agentType,  // 'inhouse' | 'external'  — used for commission calculation (not shown to public)
+      // Commission logic (backend only):
+      // External: 2% platform fee
+      // In-House 5-10% total: platform gets 5%, agent gets rest
+      // In-House <5%: platform gets 2%
+      ineFrontUrl:  ineFront.url,
+      ineBackUrl:   ineBack.url,
+      selfieIneUrl: selfieIne.url,
       credentials: creds,
       registeredAt: new Date().toISOString(),
       status: 'pending',
+      activityLog: { loginCount: 0, lastLogin: null, propertiesUploaded: 0, membershipFeeOwed: false },
       id: 'agent-' + Date.now()
     };
 
+    // ── POST to Brain backend (POST /api/agents/register) ──────
+    const brainPayload = {
+      ...newAgent,
+      // Don't send base64 blobs to backend — send metadata only
+      ineFrontUrl:  '[FILE_PENDING_UPLOAD]',
+      ineBackUrl:   '[FILE_PENDING_UPLOAD]',
+      selfieIneUrl: '[FILE_PENDING_UPLOAD]'
+    };
+
+    const brainResult = await Brain.registerAgent(brainPayload);
+
+    // Also submit ID docs to verification route
+    await Brain.submitVerification({
+      agentEmail: formData.email,
+      agentName: `${formData.firstName} ${formData.lastName}`,
+      agentType,
+      ineNumber: formData.ineNumber,
+      submittedAt: new Date().toISOString(),
+      status: 'pending_review'
+    });
+
+    // Always save locally too (works offline)
     agents.push(newAgent);
     localStorage.setItem('registered_agents', JSON.stringify(agents));
+
+    if (brainResult) {
+      console.log('[BRAIN] Agent registered in backend:', brainResult);
+    }
 
     setSuccess(true);
     setCredentials(creds);
@@ -306,6 +359,12 @@ export default function AgentRegistration() {
       }}>
         {/* HEADER */}
         <div style={{ marginBottom: '40px', textAlign: 'center' }}>
+          <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '16px'}}>
+            <button type="button" onClick={() => setLang(lang === 'en' ? 'es' : 'en')} style={{padding: '8px 20px', background: 'rgba(203,166,88,0.15)', border: '1px solid rgba(203,166,88,0.4)', color: '#cba658', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', letterSpacing: '1px'}}>
+              {lang === 'en' ? '🌐 Español' : '🌐 English'}
+            </button>
+          </div>
+
           <h1 style={{ 
             ...glassText,
             fontSize: '32px',
@@ -315,7 +374,7 @@ export default function AgentRegistration() {
             letterSpacing: '6px',
             textTransform: 'uppercase'
           }}>
-            Agent Registration
+            {lang === 'es' ? 'Registro de Agente' : 'Agent Registration'}
           </h1>
           <p style={{ 
             ...glassText,
@@ -323,7 +382,34 @@ export default function AgentRegistration() {
             color: 'rgba(148, 163, 184, 0.7)',
             letterSpacing: '2px'
           }}>
-            Register to list properties - INE verification required
+            {lang === 'es' ? 'Regístrate para publicar propiedades — Se requiere verificación INE' : 'Register to list properties — INE verification required'}
+          </p>
+
+          {/* AGENT TYPE TOGGLE — Critical for commission calculation */}
+          <div style={{marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center'}}>
+            <button type="button" onClick={() => setAgentType('external')} style={{
+              padding: '12px 28px', cursor: 'pointer', fontSize: '13px', letterSpacing: '2px',
+              background: agentType === 'external' ? 'rgba(203,166,88,0.2)' : 'transparent',
+              border: agentType === 'external' ? '1px solid rgba(203,166,88,0.6)' : '1px solid rgba(148,163,184,0.3)',
+              color: agentType === 'external' ? '#cba658' : 'rgba(148,163,184,0.7)',
+              fontFamily: '"Helvetica Neue", sans-serif', transition: 'all 0.2s'
+            }}>
+              {lang === 'es' ? 'Agente Externo' : 'External Agent'}
+            </button>
+            <button type="button" onClick={() => setAgentType('inhouse')} style={{
+              padding: '12px 28px', cursor: 'pointer', fontSize: '13px', letterSpacing: '2px',
+              background: agentType === 'inhouse' ? 'rgba(184,148,77,0.3)' : 'transparent',
+              border: agentType === 'inhouse' ? '1px solid rgba(184,148,77,0.7)' : '1px solid rgba(148,163,184,0.3)',
+              color: agentType === 'inhouse' ? '#b8944d' : 'rgba(148,163,184,0.7)',
+              fontFamily: '"Helvetica Neue", sans-serif', transition: 'all 0.2s'
+            }}>
+              {lang === 'es' ? 'Agente In-House' : 'In-House Agent'}
+            </button>
+          </div>
+          <p style={{...glassText, fontSize: '10px', color: 'rgba(148,163,184,0.5)', marginTop: '8px', letterSpacing: '1px'}}>
+            {lang === 'es'
+              ? agentType === 'external' ? '2% tarifa de plataforma por marketing' : 'Comisión total In-House: 5-10% (plataforma: 5%)'
+              : agentType === 'external' ? '2% platform marketing fee' : 'In-House total commission: 5-10% (platform: 5%)'}
           </p>
         </div>
 
@@ -359,7 +445,7 @@ export default function AgentRegistration() {
               color: 'rgba(203, 166, 88, 0.8)',
               marginBottom: '28px'
             }}>
-              Contact Information
+              {lang === 'es' ? 'Información de Contacto' : 'Contact Information'}
             </h3>
 
             <div style={{ marginBottom: '20px' }}>
@@ -550,71 +636,33 @@ export default function AgentRegistration() {
                 marginBottom: '10px',
                 color: 'rgba(148, 163, 184, 0.7)'
               }}>
-                Upload INE Photo *
+                {lang === 'es' ? 'Verificación INE / Identificación Oficial *' : 'INE Verification / Official ID *'}
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleIneUpload}
-                style={{ display: 'none' }}
-                id="ine-upload"
-              />
-              <label
-                htmlFor="ine-upload"
-                style={{
-                  display: 'block',
-                  padding: '40px',
-                  background: inePhoto ? 'rgba(203, 166, 88, 0.08)' : 'rgba(30, 41, 59, 0.3)',
-                  border: '1px dashed rgba(148, 163, 184, 0.3)',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s'
-                }}
-              >
-                {inePhoto ? (
-                  <div>
-                    <img src={inePhoto.url} alt="INE" style={{ maxWidth: '350px', maxHeight: '220px', marginBottom: '16px' }} />
-                    <div style={{ 
-                      ...glassText,
-                      fontSize: '11px',
-                      color: 'rgba(16, 185, 129, 0.8)',
-                      letterSpacing: '2px'
-                    }}>
-                      INE Uploaded Successfully
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div style={{
-                      width: '50px',
-                      height: '50px',
-                      border: '1px solid rgba(148, 163, 184, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: '0 auto 16px',
-                      color: 'rgba(148, 163, 184, 0.5)',
-                      fontSize: '20px'
-                    }}>
-                      ID
-                    </div>
-                    <div style={{ 
-                      ...glassText,
-                      fontSize: '13px',
-                      color: 'rgba(203, 213, 225, 0.8)',
-                      marginBottom: '8px'
-                    }}>
-                      Click to upload INE photo
-                    </div>
-                    <div style={{ 
-                      ...glassText,
-                      fontSize: '10px',
-                      color: 'rgba(100, 116, 139, 0.6)'
-                    }}>
-                      Max file size: 5MB
-                    </div>
-                  </div>
-                )}
+              {/* INE FRONT */}
+              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(setIneFront, e)} style={{ display: 'none' }} id="ine-front" />
+              <label htmlFor="ine-front" style={{ display: 'block', padding: '20px', background: ineFront ? 'rgba(203,166,88,0.08)' : 'rgba(30,41,59,0.3)', border: '1px dashed rgba(148,163,184,0.3)', textAlign: 'center', cursor: 'pointer', marginBottom: '8px' }}>
+                {ineFront
+                  ? <div><img src={ineFront.url} alt="INE Front" style={{ maxWidth: '100%', maxHeight: '120px', marginBottom: '6px' }} /><div style={{ ...glassText, fontSize: '10px', color: 'rgba(16,185,129,0.8)', letterSpacing: '1px' }}>{lang === 'es' ? '✓ FRENTE SUBIDO' : '✓ FRONT UPLOADED'}</div></div>
+                  : <div style={{ ...glassText, fontSize: '11px', color: 'rgba(148,163,184,0.7)', letterSpacing: '1px' }}>{lang === 'es' ? 'INE — FRENTE *' : 'INE — FRONT *'}<br/><span style={{ fontSize: '9px', color: 'rgba(100,116,139,0.6)' }}>{lang === 'es' ? 'Haz clic para subir' : 'Click to upload'}</span></div>
+                }
+              </label>
+
+              {/* INE BACK */}
+              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(setIneBack, e)} style={{ display: 'none' }} id="ine-back" />
+              <label htmlFor="ine-back" style={{ display: 'block', padding: '20px', background: ineBack ? 'rgba(203,166,88,0.08)' : 'rgba(30,41,59,0.3)', border: '1px dashed rgba(148,163,184,0.3)', textAlign: 'center', cursor: 'pointer', marginBottom: '8px' }}>
+                {ineBack
+                  ? <div><img src={ineBack.url} alt="INE Back" style={{ maxWidth: '100%', maxHeight: '120px', marginBottom: '6px' }} /><div style={{ ...glassText, fontSize: '10px', color: 'rgba(16,185,129,0.8)', letterSpacing: '1px' }}>{lang === 'es' ? '✓ REVERSO SUBIDO' : '✓ BACK UPLOADED'}</div></div>
+                  : <div style={{ ...glassText, fontSize: '11px', color: 'rgba(148,163,184,0.7)', letterSpacing: '1px' }}>{lang === 'es' ? 'INE — REVERSO *' : 'INE — BACK *'}<br/><span style={{ fontSize: '9px', color: 'rgba(100,116,139,0.6)' }}>{lang === 'es' ? 'Haz clic para subir' : 'Click to upload'}</span></div>
+                }
+              </label>
+
+              {/* SELFIE WITH INE */}
+              <input type="file" accept="image/*" onChange={(e) => handleFileUpload(setSelfieIne, e)} style={{ display: 'none' }} id="ine-selfie" />
+              <label htmlFor="ine-selfie" style={{ display: 'block', padding: '20px', background: selfieIne ? 'rgba(203,166,88,0.08)' : 'rgba(30,41,59,0.3)', border: '1px dashed rgba(148,163,184,0.3)', textAlign: 'center', cursor: 'pointer' }}>
+                {selfieIne
+                  ? <div><img src={selfieIne.url} alt="Selfie INE" style={{ maxWidth: '100%', maxHeight: '120px', marginBottom: '6px' }} /><div style={{ ...glassText, fontSize: '10px', color: 'rgba(16,185,129,0.8)', letterSpacing: '1px' }}>{lang === 'es' ? '✓ SELFIE SUBIDA' : '✓ SELFIE UPLOADED'}</div></div>
+                  : <div style={{ ...glassText, fontSize: '11px', color: 'rgba(148,163,184,0.7)', letterSpacing: '1px' }}>{lang === 'es' ? 'SELFIE CON INE *' : 'SELFIE WITH INE *'}<br/><span style={{ fontSize: '9px', color: 'rgba(100,116,139,0.6)' }}>{lang === 'es' ? 'Para verificación de identidad' : 'For identity verification'}</span></div>
+                }
               </label>
             </div>
           </div>
@@ -638,7 +686,7 @@ export default function AgentRegistration() {
               transition: 'all 0.3s'
             }}
           >
-            {loading ? 'Registering...' : 'Register as Agent'}
+            {loading ? (lang === 'es' ? 'Registrando...' : 'Registering...') : (lang === 'es' ? 'Registrarme como Agente' : 'Register as Agent')}
           </button>
         </form>
 
@@ -657,7 +705,7 @@ export default function AgentRegistration() {
               fontFamily: '"Helvetica Neue", sans-serif'
             }}
           >
-            Already registered? Login
+            {lang === 'es' ? '¿Ya estás registrado? Iniciar sesión' : 'Already registered? Login'}
           </button>
         </div>
 

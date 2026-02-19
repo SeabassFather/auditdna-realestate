@@ -12,8 +12,6 @@ const path = require('path');
 const os = require('os');
 require('dotenv').config();
 
-const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 
 // ═══════════════════════════════════════════════════════════════
@@ -47,7 +45,6 @@ const brain = require('./Brain');
 
 console.log('🧠 THE BRAIN: Initializing 81 Niner Miners...');
 
-// Brain event listeners for real-time monitoring
 brain.on('taskAssigned', ({ workflowId, miner, team }) => {
   console.log(`⛏️  [BRAIN] Task assigned to ${miner} (${team}) - Workflow: ${workflowId}`);
 });
@@ -57,7 +54,6 @@ brain.on('taskCompleted', ({ workflowId, miner, duration }) => {
 });
 
 module.exports.brain = brain;
-
 
 // ═══════════════════════════════════════════════════════════════
 // APP INIT
@@ -77,31 +73,6 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// ═══════════════════════════════════════════════════════════════
-// SESSION SETUP (POSTGRES BACKED)
-// ═══════════════════════════════════════════════════════════════
-
-app.use(
-  session({
-    store: new pgSession({
-      pool,
-      tableName: 'user_sessions'
-    }),
-    name: 'auditdna.sid',
-    secret: process.env.SESSION_SECRET || 'auditdna-dev-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 8
-    }
-  })
-);
-
-console.log('✅ Sessions initialized (PostgreSQL)');
 
 // ═══════════════════════════════════════════════════════════════
 // REQUEST METRICS
@@ -186,6 +157,7 @@ const server = app.listen(PORT, () => {
 ════════════════════════════════════════════════════════════════
 ⛏️  YEEHAW! 81 NINER MINERS ARE LIVE! ⛏️
 🧠 THE BRAIN IS OPERATIONAL 🧠
+💰 MORTGAGE AUDIT SYSTEM READY! 💰
 ════════════════════════════════════════════════════════════════
 `);
 });

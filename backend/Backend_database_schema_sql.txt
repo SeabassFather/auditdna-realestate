@@ -1,0 +1,242 @@
+-- ============================================================================
+-- AUDITDNA DATABASE SCHEMA
+-- PostgreSQL 14+
+-- ============================================================================
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================================================
+-- USERS TABLE (Admin, Sales, etc.)
+-- ============================================================================
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL, -- 'owner', 'admin', 'sales', 'consumer'
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  pin VARCHAR(6),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- CONSUMERS TABLE
+-- ============================================================================
+CREATE TABLE consumers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  ssn VARCHAR(11), -- Encrypted
+  dob DATE,
+  property_address TEXT,
+  city VARCHAR(100),
+  state CHAR(2),
+  zip VARCHAR(10),
+  bank_name VARCHAR(255),
+  account_number VARCHAR(100), -- Encrypted
+  routing_number VARCHAR(9), -- Encrypted
+  photo_id_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- CASES TABLE
+-- ============================================================================
+CREATE TABLE cases (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  consumer_id UUID REFERENCES consumers(id),
+  case_number VARCHAR(50) UNIQUE NOT NULL,
+  loan_number VARCHAR(100),
+  lender_name VARCHAR(255),
+  lender_address TEXT,
+  lender_state CHAR(2),
+  servicer_name VARCHAR(255),
+  servicer_address TEXT,
+  servicer_state CHAR(2),
+  original_loan_date DATE,
+  original_loan_amount DECIMAL(12,2),
+  total_recovery DECIMAL(12,2),
+  commission_rate DECIMAL(5,2), -- 35 or 39
+  commission_amount DECIMAL(12,2),
+  status VARCHAR(50) DEFAULT 'registered',
+  -- Status: registered, uploaded, processing, legal_review, payment_pending, paid, filed, response_received, completed, cancelled
+  path_selected VARCHAR(20), -- 'escrow-35' or 'direct-39'
+  escrow_account_number VARCHAR(100),
+  creditor_deadline DATE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- DOCUMENTS TABLE
+-- ============================================================================
+CREATE TABLE documents (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  document_type VARCHAR(100) NOT NULL,
+  -- Types: photo_id, closing_disclosure, hud_1, loan_estimate, note, deed, 
+  -- title_policy, escrow_analysis, tax_bill, insurance, servicer_transfer, other
+  file_url TEXT NOT NULL,
+  file_name VARCHAR(255),
+  file_size BIGINT,
+  mime_type VARCHAR(100),
+  upload_date TIMESTAMP DEFAULT NOW(),
+  verified BOOLEAN DEFAULT FALSE
+);
+
+-- ============================================================================
+-- AUDIT RESULTS TABLE
+-- ============================================================================
+CREATE TABLE audit_results (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  total_recovery DECIMAL(12,2),
+  violations JSONB, -- Array of violation objects
+  chain_of_command JSONB, -- Array of servicer transfer objects
+  state_analysis JSONB, -- Multi-jurisdiction analysis
+  miner_data JSONB, -- All 60 miner results
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- SERVICER TRANSFERS TABLE (Chain of Command)
+-- ============================================================================
+CREATE TABLE servicer_transfers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  transfer_date DATE,
+  from_servicer VARCHAR(255),
+  to_servicer VARCHAR(255),
+  transfer_fee DECIMAL(12,2),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- EMAILS TABLE (Audit Trail)
+-- ============================================================================
+CREATE TABLE emails (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  recipient_type VARCHAR(50) NOT NULL,
+  -- Types: title, creditor, servicer, cfpb, state_agency, consumer
+  recipient_email VARCHAR(255) NOT NULL,
+  subject TEXT,
+  body TEXT,
+  attachments JSONB, -- Array of attachment URLs
+  sent_at TIMESTAMP DEFAULT NOW(),
+  delivered BOOLEAN DEFAULT FALSE,
+  opened BOOLEAN DEFAULT FALSE,
+  response_received BOOLEAN DEFAULT FALSE
+);
+
+-- ============================================================================
+-- RESPONSES TABLE (Incoming)
+-- ============================================================================
+CREATE TABLE responses (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  from_email VARCHAR(255),
+  from_entity VARCHAR(50), -- creditor, servicer, cfpb, state_agency, title, other
+  subject TEXT,
+  body TEXT,
+  attachments JSONB,
+  received_at TIMESTAMP DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'unread', -- unread, read, assigned, resolved
+  assigned_to UUID REFERENCES users(id)
+);
+
+-- ============================================================================
+-- SIGNATURES TABLE (Digital Signatures)
+-- ============================================================================
+CREATE TABLE signatures (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  consumer_id UUID REFERENCES consumers(id),
+  document_type VARCHAR(100),
+  signature_data TEXT, -- Base64 encoded signature image
+  signed_at TIMESTAMP DEFAULT NOW(),
+  ip_address VARCHAR(45),
+  device_info TEXT
+);
+
+-- ============================================================================
+-- PAYMENTS TABLE
+-- ============================================================================
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  amount DECIMAL(12,2),
+  payment_type VARCHAR(50), -- 'consumer_upfront', 'creditor_refund', 'commission'
+  payment_method VARCHAR(50), -- 'stripe', 'ach', 'wire', 'check'
+  stripe_payment_id VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'pending', -- pending, completed, failed, refunded
+  paid_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- FEE CONSENTS TABLE
+-- ============================================================================
+CREATE TABLE fee_consents (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  case_id UUID REFERENCES cases(id),
+  consumer_id UUID REFERENCES consumers(id),
+  path_selected VARCHAR(20), -- 'escrow-35' or 'direct-39'
+  upfront_fee_amount DECIMAL(10,2),
+  estimated_recovery DECIMAL(10,2),
+  estimated_commission DECIMAL(10,2),
+  bank_name VARCHAR(255),
+  account_number VARCHAR(100), -- Encrypted
+  routing_number VARCHAR(9), -- Encrypted
+  signature_data TEXT,
+  signed_at TIMESTAMP,
+  ip_address VARCHAR(45),
+  device_info TEXT,
+  all_checkboxes_checked BOOLEAN DEFAULT FALSE,
+  copy_sent_to_consumer BOOLEAN DEFAULT FALSE,
+  cancellation_deadline TIMESTAMP,
+  cancelled BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================================
+-- INDEXES
+-- ============================================================================
+CREATE INDEX idx_cases_consumer_id ON cases(consumer_id);
+CREATE INDEX idx_cases_status ON cases(status);
+CREATE INDEX idx_documents_case_id ON documents(case_id);
+CREATE INDEX idx_audit_results_case_id ON audit_results(case_id);
+CREATE INDEX idx_emails_case_id ON emails(case_id);
+CREATE INDEX idx_responses_case_id ON responses(case_id);
+CREATE INDEX idx_responses_status ON responses(status);
+CREATE INDEX idx_signatures_case_id ON signatures(case_id);
+CREATE INDEX idx_payments_case_id ON payments(case_id);
+
+-- ============================================================================
+-- SEED DATA (Admin User)
+-- ============================================================================
+-- Password: Admin2026! (hashed with bcrypt)
+INSERT INTO users (email, password_hash, role, first_name, last_name, pin)
+VALUES (
+  'saul@auditdna.com',
+  '$2b$10$xyz...', -- Replace with actual bcrypt hash
+  'owner',
+  'Saul',
+  'Garcia',
+  '060905'
+);
+
+-- Demo user
+INSERT INTO users (email, password_hash, role, first_name, last_name, pin)
+VALUES (
+  'demo@auditdna.com',
+  '$2b$10$xyz...', -- Replace with actual bcrypt hash
+  'consumer',
+  'Demo',
+  'User',
+  '0000'
+);
