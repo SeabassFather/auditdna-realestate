@@ -31,6 +31,8 @@ import CRMSystem from './pages/CRMSystem';
 import AdCalendar from './pages/AdCalendar';
 import AIAgents from './pages/AIAgents';
 import PlatformSettings from './pages/PlatformSettings';
+import InternalMessenger from './components/InternalMessenger';
+import SecureEscrowPortal from './pages/SecureEscrowPortal';
 
 // FLOATING ANIMATION - Subtle water-like effect
 const floatStyles = `
@@ -65,22 +67,25 @@ const CREDENTIALS = {
 
   // ---- ADMINS (All modules except owner-only: brain/analytics) ----
   admins: [
-    { email: 'jl-02@eb.com',    password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin JL' },
+    { email: 'gl@eb.com',        password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Gibran Lyle' },
     { email: 'ab-03@eb.com',    password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin AB' },
     { email: 'admin01@eb.com',  password: 'Admin2026!', pin: '0101', role: 'admin', name: 'Admin 01' },
     { email: 'admin02@eb.com',  password: 'Admin2026!', pin: '0202', role: 'admin', name: 'Admin 02' },
     { email: 'admin03@eb.com',  password: 'Admin2026!', pin: '0303', role: 'admin', name: 'Admin 03' },
     { email: 'admin04@eb.com',  password: 'Admin2026!', pin: '0404', role: 'admin', name: 'Admin 04' },
-    { email: 'admin05@eb.com',  password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin 05' }
+    { email: 'admin05@eb.com',  password: 'Admin2026!', pin: '0505', role: 'admin', name: 'Admin 05' },
+    { email: 'og01@eb.com',      password: 'Admin2026!', pin: '0606', role: 'admin', name: 'Admin OG01' }
   ],
 
-  // ---- SALES TEAM (Email, Marketing, CRM, Lifestyle, Magazine) ----
+  // ---- SALES TEAM (MexicoRealEstate, Developments, USAMortgage, Marketing, Email) ----
+  // NO access to AuditDNADirect
   sales: [
-    { email: 'sales01@eb.com', password: 'Sales2026!', pin: '1001', role: 'sales', name: 'Sales 01' },
-    { email: 'sales02@eb.com', password: 'Sales2026!', pin: '1002', role: 'sales', name: 'Sales 02' },
-    { email: 'sales03@eb.com', password: 'Sales2026!', pin: '1003', role: 'sales', name: 'Sales 03' },
-    { email: 'sales04@eb.com', password: 'Sales2026!', pin: '1004', role: 'sales', name: 'Sales 04' },
-    { email: 'sales05@eb.com', password: 'Sales2026!', pin: '1005', role: 'sales', name: 'Sales 05' }
+    { email: 'sales01@eb.com', password: 'Sales2026!',  pin: '1001', role: 'sales', name: 'Sales 01' },
+    { email: 'sales02@eb.com', password: 'Sales2026!',  pin: '1002', role: 'sales', name: 'Sales 02' },
+    { email: 'sales03@eb.com', password: 'Sales2026!',  pin: '1003', role: 'sales', name: 'Sales 03' },
+    { email: 'sales04@eb.com', password: 'Sales2026!',  pin: '1004', role: 'sales', name: 'Sales 04' },
+    { email: 'sales05@eb.com', password: 'Sales2026!',  pin: '1005', role: 'sales', name: 'Sales 05' },
+    { email: 'fjlm@eb.com',    password: 'Admin2026!!', pin: '1006', role: 'sales', name: 'FJLM Agent', type: 'real_estate_agent', access: ['mexico-real-estate','developments','usa-mortgage','marketing','email'] }
   ],
 
   // ---- REAL ESTATE AGENTS (Mexico RE, Loans, Lifestyle ONLY) ----
@@ -127,7 +132,6 @@ const ALL_USERS = [
   CREDENTIALS.demo
 ];
 
-const findUserByEmail = (email) => ALL_USERS.find(u => u.email === email);
 const findUserByPin   = (pin)   => ALL_USERS.find(u => u.pin === pin);
 
 const getPinsByRole = () => ({
@@ -325,8 +329,6 @@ function LandingPage() {
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [pinError, setPinError] = useState('');
-  const PINS = getPinsByRole();
-
   const handleAdminClick = () => {
     if (!isAuthenticated) {
       navigate('/login');
@@ -339,7 +341,6 @@ function LandingPage() {
 
   const handlePinSubmit = () => {
     const PINS = getPinsByRole();
-    const matchedUser = findUserByPin(adminPin);
 
     if (adminPin === CREDENTIALS.owner.pin) {
       sessionStorage.setItem('admin_access_level', 'owner');
@@ -469,7 +470,7 @@ function LandingPage() {
             ENJOY BAJA
           </h1>
           <p style={{ ...glassText, fontSize: isMobile ? '10px' : '12px', letterSpacing: '4px', color: 'rgba(255, 255, 255, 0.95)' }}>
-            PREMIUM REAL ESTATE & LIFESTYLE
+            PREMIUM MORTGAGE AND REAL ESTATE SERVICES WITH LIFESTYLE: MEXICO & USA
           </p>
         </div>
 
@@ -488,7 +489,9 @@ function LandingPage() {
                 position: 'relative', height: isMobile ? '200px' : '260px',
                 overflow: 'hidden', cursor: 'pointer', transition: 'all 0.4s ease',
                 border: hoveredCard === card.id ? '1px solid rgba(203, 166, 88, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
-                animation: card.float
+                borderRadius: '16px',
+                animation: card.float,
+                boxShadow: hoveredCard === card.id ? '0 25px 50px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.3)'
               }}
             >
               <div style={{
@@ -610,6 +613,16 @@ function AdminRoute({ children }) {
   return children;
 }
 
+// AuditDNA Direct — owner + admin ONLY (no sales)
+function AuditRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div style={{ background: '#0f172a', minHeight: '100vh' }} />;
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  const accessLevel = sessionStorage.getItem('admin_access_level');
+  if (!accessLevel || !['owner', 'admin'].includes(accessLevel)) return <Navigate to="/" />;
+  return children;
+}
+
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -625,8 +638,6 @@ function AgentProtectedRoute({ children }) {
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
   const [authorized, setAuthorized] = useState(false);
-  const PINS = getPinsByRole();
-
   useEffect(() => {
     const auth = sessionStorage.getItem('agent_content_authorized');
     const accessLevel = sessionStorage.getItem('admin_access_level');
@@ -701,6 +712,7 @@ function DemoWrapper({ children }) {
 // =============================================
 // ADMIN PLACEHOLDER
 // =============================================
+// eslint-disable-next-line no-unused-vars
 function AdminPlaceholder({ title }) {
   const navigate = useNavigate();
   return (
@@ -723,9 +735,23 @@ function AppContent() {
   const accessLevel = sessionStorage.getItem('admin_access_level');
   const showAdminNav = (accessLevel === 'owner' || accessLevel === 'admin') && location.pathname !== '/login';
 
+  // Internal messenger — visible to all logged-in staff except on login page
+  const staffRoles = ['owner', 'admin', 'sales', 'agent'];
+  const showMessenger = staffRoles.includes(accessLevel) && location.pathname !== '/login';
+  const messengerUser = (() => {
+    try { return JSON.parse(sessionStorage.getItem('eb_user') || '{}'); } catch { return {}; }
+  })();
+
   return (
     <>
       {showAdminNav && <AdminFloatingNav />}
+      {showMessenger && (
+        <InternalMessenger
+          myEmail={messengerUser.email || sessionStorage.getItem('user_email') || ''}
+          myName={messengerUser.name  || sessionStorage.getItem('user_name')  || 'Staff'}
+          myRole={accessLevel || 'staff'}
+        />
+      )}
       <Routes>
         {/* PUBLIC */}
         <Route path="/login" element={<Login />} />
@@ -737,7 +763,7 @@ function AppContent() {
         <Route path="/" element={<LandingPage />} />
         
         {/* AUDITDNA - PUBLIC ACCESS */}
-        <Route path="/audit-direct" element={<AuditDNADirect />} />
+        <Route path="/audit-direct" element={<AuditRoute><AuditDNADirect /></AuditRoute>} />
         
         {/* LIFESTYLE - PUBLIC */}
         <Route path="/lifestyle" element={<BajaLuxuryGuide />} />
@@ -766,6 +792,9 @@ function AppContent() {
         <Route path="/admin/agents" element={<AdminRoute><AIAgents /></AdminRoute>} />
         <Route path="/admin/settings" element={<AdminRoute><PlatformSettings /></AdminRoute>} />
         
+        {/* SECURE ESCROW PORTAL */}
+        <Route path="/escrow/:caseId" element={<AdminRoute><SecureEscrowPortal standalone={true} myRole="auditdna" myName="AuditDNA Team" /></AdminRoute>} />
+
         {/* CATCH ALL */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import PropertySearch from '../components/PropertySearch';
 import ModuleNavBar from '../components/ModuleNavBar';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 // ================================================================
 // BRAIN.JS — SI INTEGRATION LAYER
 // All events logged for analytics, audit trail & SI learning
@@ -27,6 +29,33 @@ const Brain = {
   logListing:      (id, t) => Brain.log('listing_submitted', { listingId: id, type: t }),
   logAccordion:    (s) => Brain.log('accordion_opened', { section: s }),
   logPhotoAI:      (m, i) => Brain.log('ai_photo_miner_applied', { miner: m, photoIndex: i }),
+
+  // Cross-module bridge — fires when user is pushed to USAMortgage from MRE
+  logMortgageCTA:  (trigger, userData = {}) => Brain.log('mortgage_cta_clicked', {
+    trigger,           // 'buyer_panel_cta' | 'refi_cta' | 'loan_prequalify'
+    sourceModule: 'MexicoRealEstate',
+    targetModule: 'USAMortgage',
+    ...userData,
+  }),
+
+  // SI signals — tracks user intent for AI scoring
+  logLoanIntent:   (data) => Brain.log('si_loan_intent_detected', {
+    confidence: data.budgetMin >= 385000 ? 'high' : data.budgetMin >= 250000 ? 'medium' : 'low',
+    ...data,
+  }),
+
+  // Cross-module handoff — seeds USAMortgage with buyer data
+  seedMortgage: (userData) => {
+    try {
+      sessionStorage.setItem('mre_mortgage_handoff', JSON.stringify({
+        ...userData,
+        sourceModule: 'MexicoRealEstate',
+        handoffAt: new Date().toISOString(),
+        intent: 'mexico_property_purchase',
+      }));
+    } catch {}
+    Brain.logMortgageCTA('buyer_panel_cta', userData);
+  },
 };
 
 // ================================================================
@@ -104,6 +133,7 @@ function PhotoMinerPanel({ photos, setPhotos, language }) {
       };
       reader.readAsDataURL(file);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photos.length, en]);
 
   const onDrop = (e) => { e.preventDefault(); setDragging(false); processFiles(e.dataTransfer.files); };
@@ -484,18 +514,301 @@ function FSBOListingFlow({ language, navigate }) {
             <button onClick={()=>setStep(3)} style={{ padding:'12px 20px', background:'rgba(148,163,184,0.1)', border:'1px solid rgba(148,163,184,0.2)', color:'#94a3b8', cursor:'pointer', fontSize:'10px', letterSpacing:'1px' }}>{en?'← BACK':'← ATRÁS'}</button>
             <button onClick={()=>{
               if(!accepted){alert(en?'You must accept commission terms':'Debes aceptar los términos');return;}
-              const listing={ id:Date.now(), ...form, photos:photos.map(p=>p.current), type:'fsbo', status:'pending_review', commissionRate:6, createdAt:new Date().toISOString() };
-              const existing=JSON.parse(localStorage.getItem('enjoybaja_listings')||'[]');
-              existing.push(listing);
-              localStorage.setItem('enjoybaja_listings',JSON.stringify(existing));
-              Brain.logListing(listing.id,'fsbo');
-              setSubmitted(true);
+              const listing = {
+                ...form,
+                photos: photos.map(p => p.current),
+                type: 'fsbo', uploadedBy: 'fsbo', commissionRate: 6,
+              };
+              fetch(`${API_URL}/api/properties`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(listing),
+              })
+              .then(r => r.json())
+              .then(d => {
+                if (d.success) { Brain.logListing(d.property.id, 'fsbo'); setSubmitted(true); }
+                else alert('Submission error: ' + (d.error || 'Unknown'));
+              })
+              .catch(() => alert('Network error — check your connection and try again.'));
             }} disabled={!accepted} style={{ flex:1, padding:'12px', background:accepted?`linear-gradient(135deg,${G},#b8944d)`:'rgba(148,163,184,0.2)', border:'none', color:accepted?'#0f172a':'#64748b', fontWeight:'700', cursor:accepted?'pointer':'not-allowed', fontSize:'11px', letterSpacing:'2px' }}>
               {en?'SUBMIT LISTING FOR REVIEW ⬡':'ENVIAR PROPIEDAD PARA REVISIÓN ⬡'}
             </button>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+
+// ================================================================
+// WIRED FORM COMPONENTS — All POST to /api/leads
+// ================================================================
+
+function useLeadForm(initialState) {
+  const [form, setForm]     = React.useState(initialState);
+  const [sending, setSend]  = React.useState(false);
+  const [sent, setSent]     = React.useState(false);
+  const [err, setErr]       = React.useState('');
+  const submit = (payload, apiUrl, onSuccess) => {
+    setSend(true); setErr('');
+    // SI intent signal — log before network call
+    if (payload.source === 'buyer' || payload.source === 'mortgage') {
+      Brain.logLoanIntent({ ...payload });
+    }
+    fetch(`${apiUrl}/api/leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        setSent(true);
+        if (onSuccess) onSuccess(d.lead);
+      } else {
+        setErr(d.error || 'Submission failed');
+      }
+    })
+    .catch(() => setErr('Network error — please try again.'))
+    .finally(() => setSend(false));
+  };
+  return { form, setForm, sending, sent, err, submit };
+}
+
+function SuccessBanner({ language, message }) {
+  return (
+    <div style={{ padding:'20px', background:'rgba(203,166,88,0.08)', border:'1px solid rgba(203,166,88,0.3)', color:'#cba658', fontSize:'12px', letterSpacing:'1px', textAlign:'center' }}>
+      ✓ {message || (language==='english' ? 'Submitted successfully. We will contact you within 24 hours.' : 'Enviado con éxito. Nos contactaremos en 24 horas.')}
+    </div>
+  );
+}
+
+// ── BUYER INQUIRY — 2-column: form + USA Mortgage CTA ─────────
+function BuyerForm({ language, API_URL, G, fieldStyle, navigate, isMobile }) {
+  const { form, setForm, sending, sent, err, submit } = useLeadForm({
+    nombre:'', email:'', phone:'', budgetRange:'', message:'', isUSCitizen: false,
+  });
+  const en = language === 'english';
+  const budgetMap = { '$100K-$250K USD': [100000,250000], '$250K-$500K USD': [250000,500000], '$500K-$1M USD': [500000,1000000], '$1M+ USD': [1000000,null] };
+
+  // SI: detect if budget qualifies for USA mortgage (>= $250K)
+  const budget    = budgetMap[form.budgetRange];
+  const qualifies = budget && budget[0] >= 250000;
+
+  // Cross-module handoff → USAMortgage
+  const goToMortgage = () => {
+    Brain.seedMortgage({
+      nombre: form.nombre, email: form.email, phone: form.phone,
+      budgetMin: budget?.[0], budgetMax: budget?.[1],
+      message: form.message, isUSCitizen: form.isUSCitizen,
+    });
+    Brain.logMortgageCTA('buyer_panel_cta', { nombre: form.nombre });
+    if (navigate) navigate('/usa-mortgage');
+  };
+
+  if (sent) return (
+    <div>
+      <SuccessBanner language={language} />
+      {form.isUSCitizen && (
+        <div style={{ marginTop:'12px', padding:'14px 16px', background:'rgba(203,166,88,0.06)', border:'1px solid rgba(203,166,88,0.25)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'12px', flexWrap:'wrap' }}>
+          <span style={{ color:'#94a3b8', fontSize:'11px' }}>🇺🇸 {en ? 'As a U.S. citizen you may qualify for USA mortgage financing on this property.' : 'Como ciudadano americano puede calificar para financiamiento hipotecario USA.'}</span>
+          <button onClick={goToMortgage} style={{ padding:'8px 16px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'700', fontSize:'9px', letterSpacing:'2px', cursor:'pointer', whiteSpace:'nowrap' }}>
+            {en ? 'EXPLORE USA LOANS →' : 'VER PRÉSTAMOS USA →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'24px', alignItems:'start' }}>
+
+      {/* ── LEFT: Buyer Inquiry Form ── */}
+      <div style={{ display:'grid', gap:'10px' }}>
+        <input value={form.nombre} onChange={e=>setForm({...form,nombre:e.target.value})} placeholder={en?'Full Name / Nombre Completo':'Nombre Completo'} style={fieldStyle} />
+        <input value={form.email}  onChange={e=>setForm({...form,email:e.target.value})}  placeholder="Email" type="email" style={fieldStyle} />
+        <input value={form.phone}  onChange={e=>setForm({...form,phone:e.target.value})}  placeholder={en?'Phone / WhatsApp':'Teléfono / WhatsApp'} style={fieldStyle} />
+        <select value={form.budgetRange} onChange={e=>setForm({...form,budgetRange:e.target.value})} style={{...fieldStyle,cursor:'pointer'}}>
+          <option value="">{en?'Budget Range':'Rango de Presupuesto'}</option>
+          <option>$100K-$250K USD</option><option>$250K-$500K USD</option><option>$500K-$1M USD</option><option>$1M+ USD</option>
+        </select>
+        <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} placeholder={en?'Tell us about your ideal property...':'Cuéntenos sobre su propiedad ideal...'} rows={3} style={{...fieldStyle,resize:'vertical'}} />
+
+        {/* U.S. Citizen checkbox — triggers SI loan intent signal */}
+        <label style={{ display:'flex', alignItems:'center', gap:'8px', cursor:'pointer', color:'#94a3b8', fontSize:'11px', userSelect:'none' }}>
+          <input type="checkbox" checked={form.isUSCitizen} onChange={e=>{
+            setForm({...form,isUSCitizen:e.target.checked});
+            if (e.target.checked) Brain.log('si_us_citizen_flagged', { nombre: form.nombre, budget: form.budgetRange });
+          }} style={{ accentColor: G, width:'14px', height:'14px' }} />
+          {en ? 'I am a U.S. Citizen / Permanent Resident' : 'Soy Ciudadano Americano / Residente Permanente'}
+        </label>
+
+        {err && <p style={{color:'#fca5a5',fontSize:'11px',margin:0}}>{err}</p>}
+        <button disabled={sending||!form.nombre||!form.email} onClick={()=>{
+          const range = budgetMap[form.budgetRange] || [null,null];
+          submit({
+            source:'buyer', nombre:form.nombre, email:form.email, phone:form.phone,
+            message:form.message, budgetMin:range[0], budgetMax:range[1],
+            tipoInteres: form.isUSCitizen ? 'us_citizen_buyer' : 'buyer',
+          }, API_URL);
+        }} style={{ padding:'12px', background:sending?'rgba(203,166,88,0.4)':`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px', opacity:(sending||!form.nombre||!form.email)?0.5:1 }}>
+          {sending?'...':(en?'SUBMIT INQUIRY':'ENVIAR SOLICITUD')}
+        </button>
+      </div>
+
+      {/* ── RIGHT: USA Mortgage CTA Card ── */}
+      <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+
+        {/* Header badge */}
+        <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+          <span style={{ fontSize:'20px', lineHeight:1 }}>🇺🇸</span>
+          <div>
+            <div style={{ fontSize:'8px', letterSpacing:'3px', color:G, fontWeight:'700' }}>USA CITIZENS ONLY</div>
+            <div style={{ fontSize:'8px', letterSpacing:'1px', color:'#475569' }}>{en?'EXCLUSIVE FINANCING PROGRAM':'PROGRAMA EXCLUSIVO DE FINANCIAMIENTO'}</div>
+          </div>
+        </div>
+
+        {/* Main info card */}
+        <div style={{ background:'rgba(203,166,88,0.05)', border:'1px solid rgba(203,166,88,0.2)', padding:'16px' }}>
+          <h4 style={{ color:'#f1f5f9', fontSize:'12px', fontWeight:'300', letterSpacing:'2px', marginBottom:'10px', lineHeight:'1.5' }}>
+            {en ? 'BUY IN MEXICO WITH A U.S. MORTGAGE LOAN' : 'COMPRA EN MÉXICO CON HIPOTECA AMERICANA'}
+          </h4>
+          <p style={{ color:'#64748b', fontSize:'10px', lineHeight:'1.7', marginBottom:'12px' }}>
+            {en
+              ? 'Skip Mexican financing. U.S. citizens can leverage familiar U.S. mortgage products to purchase property in Baja California.'
+              : 'Olvídese del financiamiento mexicano. Los ciudadanos americanos pueden usar hipotecas de EE.UU. para comprar en Baja California.'}
+          </p>
+
+          {/* Quick stats */}
+          <div style={{ display:'grid', gap:'6px', marginBottom:'14px' }}>
+            {[
+              ['Min. Property Value', '$385,000 USD'],
+              ['Down Payment',        '35 – 45%'],
+              ['Loan Terms',          '15 – 30 Years'],
+              ['Min. Credit Score',   '680+'],
+              ['Specialist',          'Saul Garcia · NMLS #337526'],
+            ].map(([label, val]) => (
+              <div key={label} style={{ display:'flex', justifyContent:'space-between', borderBottom:'1px solid rgba(203,166,88,0.07)', paddingBottom:'5px' }}>
+                <span style={{ color:'#475569', fontSize:'10px' }}>{label}</span>
+                <span style={{ color:G, fontSize:'10px', fontWeight:'600' }}>{val}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* SI badge — shows if budget qualifies */}
+          {qualifies && (
+            <div style={{ background:'rgba(203,166,88,0.1)', border:'1px solid rgba(203,166,88,0.3)', padding:'8px 10px', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px' }}>
+              <span style={{ fontSize:'10px' }}>⚡</span>
+              <span style={{ color:G, fontSize:'9px', letterSpacing:'1px' }}>
+                {en ? 'SI: YOUR BUDGET MAY QUALIFY — EXPLORE LOAN OPTIONS' : 'SI: SU PRESUPUESTO PUEDE CALIFICAR'}
+              </span>
+            </div>
+          )}
+
+          {/* CTA buttons */}
+          <div style={{ display:'grid', gap:'8px' }}>
+            <button onClick={goToMortgage} style={{ padding:'11px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'700', cursor:'pointer', fontSize:'9px', letterSpacing:'2px' }}>
+              {en ? 'EXPLORE USA MORTGAGE MODULE →' : 'VER MÓDULO HIPOTECA USA →'}
+            </button>
+            <button onClick={()=>{
+              Brain.logMortgageCTA('whatsapp_cta', { nombre: form.nombre });
+              window.open('https://wa.me/526463402686?text=I%20am%20a%20US%20citizen%20interested%20in%20Mexico%20property%20financing','_blank');
+            }} style={{ padding:'10px', background:'transparent', border:'1px solid rgba(203,166,88,0.3)', color:'#94a3b8', fontSize:'9px', letterSpacing:'2px', cursor:'pointer' }}>
+              {en ? '💬 WHATSAPP A SPECIALIST' : '💬 WHATSAPP CON ESPECIALISTA'}
+            </button>
+          </div>
+        </div>
+
+        {/* Fideicomiso note */}
+        <div style={{ padding:'10px 12px', background:'rgba(15,23,42,0.6)', border:'1px solid rgba(148,163,184,0.08)' }}>
+          <p style={{ color:'#334155', fontSize:'9px', lineHeight:'1.6', margin:0 }}>
+            {en
+              ? '⚖️ Restricted zone properties require a Fideicomiso (bank trust). Our team handles the full legal setup.'
+              : '⚖️ Propiedades en zona restringida requieren Fideicomiso. Nuestro equipo gestiona el trámite legal completo.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── REFERRAL PARTNER ──────────────────────────────────────────
+function PartnerForm({ language, API_URL, G, fieldStyle }) {
+  const { form, setForm, sending, sent, err, submit } = useLeadForm({
+    nombre:'', email:'', phone:'', company:'', licenseNum:''
+  });
+  const en = language === 'english';
+  if (sent) return <SuccessBanner language={language} />;
+  return (
+    <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
+      <input value={form.nombre}     onChange={e=>setForm({...form,nombre:e.target.value})}     placeholder={en?'Full Name / Nombre Completo':'Nombre Completo'} style={fieldStyle} />
+      <input value={form.email}      onChange={e=>setForm({...form,email:e.target.value})}      placeholder="Email" type="email" style={fieldStyle} />
+      <input value={form.phone}      onChange={e=>setForm({...form,phone:e.target.value})}      placeholder={en?'Phone / WhatsApp':'Teléfono / WhatsApp'} style={fieldStyle} />
+      <input value={form.company}    onChange={e=>setForm({...form,company:e.target.value})}    placeholder={en?'Company / Agency':'Empresa / Agencia'} style={fieldStyle} />
+      <input value={form.licenseNum} onChange={e=>setForm({...form,licenseNum:e.target.value})} placeholder={en?'License # (if applicable)':'Licencia # (si aplica)'} style={fieldStyle} />
+      {err && <p style={{color:'#fca5a5',fontSize:'11px',margin:0}}>{err}</p>}
+      <button disabled={sending||!form.nombre||!form.email} onClick={()=>
+        submit({ source:'partner', nombre:form.nombre, email:form.email, phone:form.phone, company:form.company, licenseNum:form.licenseNum }, API_URL)
+      } style={{ padding:'12px', background:sending?'rgba(203,166,88,0.4)':`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px', opacity:(sending||!form.nombre||!form.email)?0.5:1 }}>
+        {sending?'...':(en?'APPLY AS REFERRAL PARTNER':'APLICAR COMO SOCIO')}
+      </button>
+    </div>
+  );
+}
+
+// ── AGENT REGISTRATION ────────────────────────────────────────
+function AgentForm({ language, API_URL, G, fieldStyle }) {
+  const { form, setForm, sending, sent, err, submit } = useLeadForm({
+    licenseNum:'', municipio:'', specialization:''
+  });
+  const en = language === 'english';
+  const regUser = (() => { try { return JSON.parse(sessionStorage.getItem('mre_agent_registered')||'{}'); } catch { return {}; } })();
+  if (sent) return <SuccessBanner language={language} />;
+  return (
+    <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
+      <input value={form.licenseNum}     onChange={e=>setForm({...form,licenseNum:e.target.value})}     placeholder={en?'Real Estate License #':'Licencia Inmobiliaria #'} style={fieldStyle} />
+      <input value={form.municipio}      onChange={e=>setForm({...form,municipio:e.target.value})}      placeholder={en?'Primary Market / City':'Mercado Principal / Ciudad'} style={fieldStyle} />
+      <select value={form.specialization} onChange={e=>setForm({...form,specialization:e.target.value})} style={{...fieldStyle,cursor:'pointer'}}>
+        <option value="">{en?'Specialization':'Especialización'}</option>
+        <option>Residential / Residencial</option>
+        <option>Commercial / Comercial</option>
+        <option>Land / Terrenos</option>
+        <option>Luxury / Lujo</option>
+        <option>Coastal / Costa</option>
+      </select>
+      {err && <p style={{color:'#fca5a5',fontSize:'11px',margin:0}}>{err}</p>}
+      <button disabled={sending||!form.licenseNum} onClick={()=>
+        submit({ source:'agent', nombre:regUser.nombre||regUser.name, email:regUser.email, licenseNum:form.licenseNum, municipio:form.municipio, tipoInteres:form.specialization }, API_URL)
+      } style={{ padding:'12px', background:sending?'rgba(203,166,88,0.4)':`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px', opacity:(sending||!form.licenseNum)?0.5:1 }}>
+        {sending?'...':(en?'COMPLETE AGENT PROFILE':'COMPLETAR PERFIL DE AGENTE')}
+      </button>
+    </div>
+  );
+}
+
+// ── APPRAISAL REQUEST ─────────────────────────────────────────
+function AppraisalForm({ language, API_URL, G, fieldStyle }) {
+  const { form, setForm, sending, sent, err, submit } = useLeadForm({
+    propAddress:'', propCity:'', propState:'', nombre:'', email:'', phone:'', notes:''
+  });
+  const en = language === 'english';
+  if (sent) return <SuccessBanner language={language} />;
+  return (
+    <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
+      <input value={form.propAddress} onChange={e=>setForm({...form,propAddress:e.target.value})} placeholder={en?'Calle / Street':'Calle'} style={fieldStyle} />
+      <input value={form.propCity}    onChange={e=>setForm({...form,propCity:e.target.value})}    placeholder={en?'Colonia / City':'Colonia / Ciudad'} style={fieldStyle} />
+      <input value={form.propState}   onChange={e=>setForm({...form,propState:e.target.value})}   placeholder={en?'State / Estado':'Estado'} style={fieldStyle} />
+      <input value={form.nombre}      onChange={e=>setForm({...form,nombre:e.target.value})}      placeholder={en?'Your Name':'Su Nombre'} style={fieldStyle} />
+      <input value={form.email}       onChange={e=>setForm({...form,email:e.target.value})}       placeholder="Email" type="email" style={fieldStyle} />
+      <input value={form.phone}       onChange={e=>setForm({...form,phone:e.target.value})}       placeholder={en?'Phone / WhatsApp':'Teléfono'} style={fieldStyle} />
+      <textarea value={form.notes}    onChange={e=>setForm({...form,notes:e.target.value})}       placeholder={en?'Additional notes...':'Notas adicionales...'} rows={3} style={{...fieldStyle,resize:'vertical'}} />
+      {err && <p style={{color:'#fca5a5',fontSize:'11px',margin:0}}>{err}</p>}
+      <button disabled={sending||!form.nombre||!form.email} onClick={()=>
+        submit({ source:'appraisal', nombre:form.nombre, email:form.email, phone:form.phone, propAddress:form.propAddress, propCity:form.propCity, propState:form.propState, notes:form.notes }, API_URL)
+      } style={{ padding:'12px', background:sending?'rgba(203,166,88,0.4)':`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px', opacity:(sending||!form.nombre||!form.email)?0.5:1 }}>
+        {sending?'...':(en?'REQUEST APPRAISAL / SOLICITAR AVALÚO':'SOLICITAR AVALÚO')}
+      </button>
     </div>
   );
 }
@@ -511,7 +824,6 @@ export default function MexicoRealEstate() {
   const [registered, setRegistered]   = useState(false);
   const [registeredUser, setRegUser]  = useState(null);
   const [showGate, setShowGate]       = useState(false);
-  const [gateFor, setGateFor]         = useState(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -527,7 +839,7 @@ export default function MexicoRealEstate() {
 
   const toggleSection = (id) => {
     if (GATED.includes(id) && !registered) {
-      setGateFor(id); setShowGate(true); setExpanded(id);
+      setShowGate(true); setExpanded(id);
       Brain.logAccordion(id + '_gate_triggered');
       return;
     }
@@ -572,7 +884,7 @@ export default function MexicoRealEstate() {
         {/* HEADER */}
         <div style={{ textAlign:'center', marginBottom:'28px' }}>
           <h1 style={{ fontSize:isMobile?'26px':'36px', fontWeight:'200', color:'#f1f5f9', letterSpacing:'4px', marginBottom:'6px', textShadow:'0 2px 20px rgba(0,0,0,0.4)' }}>MEXICO REAL ESTATE</h1>
-          <p style={{ color:'rgba(148,163,184,0.6)', fontSize:'11px', letterSpacing:'3px', marginBottom:'20px', fontWeight:'300' }}>BIENES RAÍCES EN MÉXICO • FULL SERVICE PLATFORM</p>
+          <p style={{ color:'#ffffff', fontSize:'13px', letterSpacing:'3px', marginBottom:'20px', fontWeight:'700', textShadow:'0 2px 6px rgba(0,0,0,0.9)' }}>BIENES RAÍCES EN MÉXICO • FULL SERVICE PLATFORM</p>
           <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:'10px', flexWrap:'wrap', marginBottom:'16px' }}>
             <button onClick={()=>setLanguage(l=>l==='english'?'spanish':'english')} style={{ padding:'6px 16px', background:'rgba(203,166,88,0.12)', border:'1px solid rgba(203,166,88,0.25)', color:G, cursor:'pointer', fontSize:'10px', letterSpacing:'2px' }}>
               {language==='english'?'ESPAÑOL':'ENGLISH'}
@@ -613,15 +925,14 @@ export default function MexicoRealEstate() {
               <div style={{ padding:'20px', borderTop:'1px solid rgba(203,166,88,0.1)' }}>
                 {section.id==='search' && <PropertySearch language={language} />}
                 {section.id==='buyer' && (
-                  <div><p style={{ color:'#94a3b8', marginBottom:'16px', fontSize:'12px', letterSpacing:'0.5px' }}>{language==='english'?'Express your interest. Our team will contact you within 24 hours.':'Exprese su interés. Nuestro equipo le contactará en 24 horas.'}</p>
-                  <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
-                    <input placeholder={language==='english'?'Full Name / Nombre Completo':'Nombre Completo'} style={fieldStyle} />
-                    <input placeholder="Email" type="email" style={fieldStyle} />
-                    <input placeholder={language==='english'?'Phone / WhatsApp':'Teléfono / WhatsApp'} style={fieldStyle} />
-                    <select style={{...fieldStyle,cursor:'pointer'}}><option>{language==='english'?'Budget Range':'Rango de Presupuesto'}</option><option>$100K-$250K USD</option><option>$250K-$500K USD</option><option>$500K-$1M USD</option><option>$1M+ USD</option></select>
-                    <textarea placeholder={language==='english'?'Tell us about your ideal property...':'Cuéntenos sobre su propiedad ideal...'} rows={3} style={{...fieldStyle,resize:'vertical'}} />
-                    <button style={{ padding:'12px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px' }}>{language==='english'?'SUBMIT INQUIRY':'ENVIAR SOLICITUD'}</button>
-                  </div></div>
+                  <div>
+                    <p style={{ color:'#94a3b8', marginBottom:'16px', fontSize:'12px', letterSpacing:'0.5px' }}>
+                      {language==='english'
+                        ? 'Express your interest. Our team will contact you within 24 hours.'
+                        : 'Exprese su interés. Nuestro equipo le contactará en 24 horas.'}
+                    </p>
+                    <BuyerForm language={language} API_URL={API_URL} G={G} fieldStyle={fieldStyle} navigate={navigate} isMobile={isMobile} />
+                  </div>
                 )}
                 {section.id==='upload' && <FSBOListingFlow language={language} navigate={navigate} />}
                 {section.id==='refi' && (
@@ -640,35 +951,14 @@ export default function MexicoRealEstate() {
                 )}
                 {section.id==='partner' && (
                   <div><p style={{ color:'#94a3b8', marginBottom:'16px', fontSize:'12px' }}>{language==='english'?'Join our referral network and earn commissions.':'Únase a nuestra red y gane comisiones.'}</p>
-                  <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
-                    <input placeholder={language==='english'?'Full Name / Nombre Completo':'Nombre Completo'} style={fieldStyle} />
-                    <input placeholder="Email" type="email" style={fieldStyle} />
-                    <input placeholder={language==='english'?'Phone / WhatsApp':'Teléfono / WhatsApp'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'Company / Agency':'Empresa / Agencia'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'License # (if applicable)':'Licencia # (si aplica)'} style={fieldStyle} />
-                    <button style={{ padding:'12px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px' }}>{language==='english'?'APPLY AS REFERRAL PARTNER':'APLICAR COMO SOCIO'}</button>
-                  </div></div>
+                  <PartnerForm language={language} API_URL={API_URL} G={G} fieldStyle={fieldStyle} /></div>
                 )}
                 {section.id==='agent' && (
                   <div><p style={{ color:'#94a3b8', marginBottom:'16px', fontSize:'12px' }}>{language==='english'?'You are verified. Complete your agent profile.':'Estás verificado. Completa tu perfil de agente.'}</p>
-                  <div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
-                    <input placeholder={language==='english'?'Real Estate License #':'Licencia Inmobiliaria #'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'Primary Market / City':'Mercado Principal / Ciudad'} style={fieldStyle} />
-                    <select style={{...fieldStyle,cursor:'pointer'}}><option>{language==='english'?'Specialization':'Especialización'}</option><option>Residential / Residencial</option><option>Commercial / Comercial</option><option>Land / Terrenos</option><option>Luxury / Lujo</option><option>Coastal / Costa</option></select>
-                    <button style={{ padding:'12px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px' }}>{language==='english'?'COMPLETE AGENT PROFILE':'COMPLETAR PERFIL DE AGENTE'}</button>
-                  </div></div>
+                  <AgentForm language={language} API_URL={API_URL} G={G} fieldStyle={fieldStyle} /></div>
                 )}
                 {section.id==='appraisal' && (
-                  <div><div style={{ display:'grid', gap:'10px', maxWidth:'500px' }}>
-                    <input placeholder={language==='english'?'Calle / Street':'Calle'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'Colonia / City':'Colonia / Ciudad'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'State / Estado':'Estado'} style={fieldStyle} />
-                    <input placeholder={language==='english'?'Your Name':'Su Nombre'} style={fieldStyle} />
-                    <input placeholder="Email" type="email" style={fieldStyle} />
-                    <input placeholder={language==='english'?'Phone / WhatsApp':'Teléfono'} style={fieldStyle} />
-                    <textarea placeholder={language==='english'?'Additional notes...':'Notas adicionales...'} rows={3} style={{...fieldStyle,resize:'vertical'}} />
-                    <button style={{ padding:'12px', background:`linear-gradient(135deg,${G},#b8944d)`, border:'none', color:'#0f172a', fontWeight:'600', cursor:'pointer', fontSize:'11px', letterSpacing:'2px' }}>{language==='english'?'REQUEST APPRAISAL / SOLICITAR AVALÚO':'SOLICITAR AVALÚO'}</button>
-                  </div></div>
+                  <div><AppraisalForm language={language} API_URL={API_URL} G={G} fieldStyle={fieldStyle} /></div>
                 )}
                 {section.id==='legal' && (
                   <div>

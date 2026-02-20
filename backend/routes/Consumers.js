@@ -60,12 +60,12 @@ const uploadFields = multer({
 
 // ── EMAIL TRANSPORT ───────────────────────────────────────────────────────────
 const mailer = nodemailer.createTransport({
-  host:   process.env.SMTP_HOST || 'smtp.gmail.com',
-  port:   parseInt(process.env.SMTP_PORT || '587'),
+  host:   process.env.EMAIL_SMTP_HOST || 'mail.mexausafg.com',
+  port:   parseInt(process.env.EMAIL_SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || process.env.EMAIL_FROM || 'noreply@auditdna.com',
-    pass: process.env.SMTP_PASS || process.env.EMAIL_PASS || ''
+    user: process.env.EMAIL_SMTP_USER || process.env.EMAIL_FROM_NAME || 'noreply@auditdna.com',
+    pass: process.env.EMAIL_SMTP_PASS || process.env.EMAIL_PASS || ''
   }
 });
 
@@ -354,7 +354,7 @@ router.post('/register', (req, res) => {
     // ── Send confirmation email ──
     try {
       await mailer.sendMail({
-        from:    `"AuditDNA" <${process.env.EMAIL_FROM || 'noreply@auditdna.com'}>`,
+        from:    `"AuditDNA" <${process.env.EMAIL_FROM_NAME || 'noreply@auditdna.com'}>`,
         to:      email,
         subject: `✅ AuditDNA Registration Confirmed — PIN: ${pin}`,
         html:    buildEmailHTML(consumer, pin, otp, !!pdfBuffer),
@@ -480,7 +480,7 @@ router.post('/:email/email-receipt', async (req, res) => {
     const ref       = consumer.consumer_ref || 'receipt';
 
     await mailer.sendMail({
-      from:    `"AuditDNA" <${process.env.EMAIL_FROM || 'noreply@auditdna.com'}>`,
+      from:    `"AuditDNA" <${process.env.EMAIL_FROM_NAME || 'noreply@auditdna.com'}>`,
       to:      target,
       subject: `AuditDNA — Your Registration Receipt (${ref})`,
       html:    `<div style="font-family:Helvetica;padding:24px;background:#0f172a;color:#e2e8f0;">

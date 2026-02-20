@@ -254,6 +254,10 @@ export default function EmailMarketing() {
 
   // ── Compose ────────────────────────────────────────────────
   const [emailSubject,    setEmailSubject]    = useState('');
+  const [emailCC,         setEmailCC]         = useState('');
+  const [emailBCC,        setEmailBCC]         = useState('');
+  const [emailReplyTo,    setEmailReplyTo]     = useState('');
+  const [showCCFields,    setShowCCFields]     = useState(false);
   const [emailContent,    setEmailContent]    = useState('');
   const [attachments,     setAttachments]     = useState([]);
   const [selectedChannels, setSelectedChannels] = useState(['email']);
@@ -306,6 +310,10 @@ export default function EmailMarketing() {
   // ── CSV Upload ─────────────────────────────────────────────
   const [csvUploading, setCsvUploading] = useState(false);
   const [csvCategory,  setCsvCategory]  = useState('buyers');
+  const [manualName,    setManualName]    = useState('');
+  const [manualEmail,   setManualEmail]   = useState('');
+  const [manualPhone,   setManualPhone]   = useState('');
+  const [manualCat,     setManualCat]     = useState('buyers');
 
   // ── Refs ───────────────────────────────────────────────────
   const videoRef        = useRef(null);
@@ -375,7 +383,10 @@ export default function EmailMarketing() {
   const loadAnalytics = async () => {
     try {
       const res = await fetch(`${API}/api/email/analytics`);
-      if (res.ok) setAnalytics(prev => ({ ...prev, ...(await res.json()) }));
+      if (res.ok) {
+        const data = await res.json();
+        setAnalytics(prev => ({ ...prev, ...data }));
+      }
     } catch { /* use defaults */ }
   };
 
@@ -426,6 +437,29 @@ export default function EmailMarketing() {
 
     } catch (e) { alert('CSV parse error: ' + e.message); }
     finally { setCsvUploading(false); if (csvInputRef.current) csvInputRef.current.value = ''; }
+  };
+
+  // ── Manual Contact Add ───────────────────────────────────────
+  const addManualContact = () => {
+    const email = manualEmail.trim().toLowerCase();
+    const name  = manualName.trim();
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+      alert('Please enter a valid email address.'); return;
+    }
+    if (contacts.some(c => c.email === email)) {
+      alert('This email is already in your list.'); return;
+    }
+    const newContact = {
+      id:       `manual_${Date.now()}`,
+      name:     name || email,
+      email,
+      phone:    manualPhone.trim(),
+      category: manualCat,
+      source:   'manual',
+    };
+    setContacts(prev => [...prev, newContact]);
+    setSelectedIds(prev => [...prev, newContact.id]);
+    setManualName(''); setManualEmail(''); setManualPhone('');
   };
 
   // ═══════════════════════════════════════════════════════════
@@ -574,7 +608,10 @@ export default function EmailMarketing() {
     setSending(true); setSendResult(null);
     try {
       const formData = new FormData();
-      formData.append('subject', emailSubject);
+      formData.append('subject',  emailSubject);
+      if (emailCC)      formData.append('cc',       emailCC);
+      if (emailBCC)     formData.append('bcc',      emailBCC);
+      if (emailReplyTo) formData.append('replyTo',  emailReplyTo);
       formData.append('body', emailContent);
       formData.append('recipients', JSON.stringify(selectedContacts.filter(c => c.email).map(c => ({ name: c.name, email: c.email, phone: c.phone }))));
       formData.append('channels', JSON.stringify(selectedChannels));
@@ -804,6 +841,35 @@ export default function EmailMarketing() {
             ))}
           </div>
 
+          {/* Manual Contact Entry */}
+          <div style={{ padding: '8px', background: 'rgba(30,41,59,0.5)', border: `1px solid ${C.borderSlate}`, marginBottom: '6px' }}>
+            <div style={{ color: C.gold, fontSize: '9px', letterSpacing: '1px', marginBottom: '6px', fontWeight: '700' }}>➕ ADD CONTACT MANUALLY</div>
+            <input
+              type="text" placeholder="Full Name"
+              value={manualName} onChange={e => setManualName(e.target.value)}
+              style={{ ...s.input, fontSize: '10px', padding: '5px 8px', marginBottom: '4px' }}
+            />
+            <input
+              type="email" placeholder="Email Address *"
+              value={manualEmail} onChange={e => setManualEmail(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addManualContact()}
+              style={{ ...s.input, fontSize: '10px', padding: '5px 8px', marginBottom: '4px' }}
+            />
+            <input
+              type="tel" placeholder="Phone (optional)"
+              value={manualPhone} onChange={e => setManualPhone(e.target.value)}
+              style={{ ...s.input, fontSize: '10px', padding: '5px 8px', marginBottom: '4px' }}
+            />
+            <select value={manualCat} onChange={e => setManualCat(e.target.value)}
+              style={{ ...s.input, fontSize: '10px', padding: '4px 6px', marginBottom: '6px' }}>
+              {LIST_CATEGORIES.filter(c => c.id !== 'all').map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+            </select>
+            <button onClick={addManualContact}
+              style={{ ...s.btn, width: '100%', justifyContent: 'center', fontSize: '10px', padding: '6px', background: C.gold, color: C.bg, fontWeight: '700' }}>
+              ➕ Add to List
+            </button>
+          </div>
+
           {/* CSV Upload */}
           <div style={{ padding: '8px', background: 'rgba(30,41,59,0.5)', border: `1px solid ${C.borderSlate}` }}>
             <div style={{ color: C.silverDark, fontSize: '9px', letterSpacing: '1px', marginBottom: '5px' }}>UPLOAD CSV DATABASE</div>
@@ -843,6 +909,40 @@ export default function EmailMarketing() {
                   <label style={s.label}>Subject</label>
                   <input type="text" value={emailSubject} onChange={e => setEmailSubject(e.target.value)} placeholder="Campaign subject line..." style={s.input} />
                 </div>
+
+                {/* CC / BCC / Reply-To toggle */}
+                <div style={{ marginBottom: '8px' }}>
+                  <button onClick={() => setShowCCFields(p => !p)}
+                    style={{ ...s.btn2, fontSize: '9px', padding: '3px 8px', color: showCCFields ? C.gold : C.silverDark, borderColor: showCCFields ? C.gold : C.borderSlate }}>
+                    {showCCFields ? '▲' : '▼'} CC / BCC / Reply-To
+                  </button>
+                </div>
+
+                {showCCFields && (
+                  <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'column', gap: '6px', padding: '8px', background: 'rgba(15,23,42,0.5)', border: `1px solid ${C.borderSlate}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ ...s.label, width: '56px', marginBottom: 0, flexShrink: 0 }}>CC</label>
+                      <input type="text" value={emailCC} onChange={e => setEmailCC(e.target.value)}
+                        placeholder="cc@example.com, cc2@example.com"
+                        style={{ ...s.input, flex: 1, fontSize: '10px', padding: '4px 8px' }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ ...s.label, width: '56px', marginBottom: 0, flexShrink: 0 }}>BCC</label>
+                      <input type="text" value={emailBCC} onChange={e => setEmailBCC(e.target.value)}
+                        placeholder="bcc@example.com, bcc2@example.com"
+                        style={{ ...s.input, flex: 1, fontSize: '10px', padding: '4px 8px' }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ ...s.label, width: '56px', marginBottom: 0, flexShrink: 0 }}>Reply-To</label>
+                      <input type="text" value={emailReplyTo} onChange={e => setEmailReplyTo(e.target.value)}
+                        placeholder="replies@enjoybaja.com"
+                        style={{ ...s.input, flex: 1, fontSize: '10px', padding: '4px 8px' }} />
+                    </div>
+                    <div style={{ fontSize: '8px', color: C.silverDark, lineHeight: '1.4' }}>
+                      Separate multiple addresses with commas. CC/BCC apply to every recipient.
+                    </div>
+                  </div>
+                )}
 
                 {/* Voice to Text */}
                 <div style={{ display: 'flex', gap: '5px', marginBottom: '8px', alignItems: 'center' }}>

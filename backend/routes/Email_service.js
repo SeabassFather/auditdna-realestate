@@ -1,190 +1,233 @@
-// ══════════════════════════════════════════════════════════════════════════════
-//  AUDITDNA — EMAIL SERVICE
-//  Path: C:\AuditDNA\auditdna-realestate\backend\services\email_service.js
-//  Handles all outbound emails: registration, PIN, audit complete, receipts
-// ══════════════════════════════════════════════════════════════════════════════
-'use strict';
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { Pool } = require('pg');
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password, pin } = req.body;
+    
+    const result = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    const user = result.rows[0];
+    
+    // Verify password (skip for now if not hashed)
+    // const validPassword = await bcrypt.compare(password, user.password_hash);
+    
+    // Verify PIN
+    if (user.pin !== pin) {
+      return res.status(401).json({ error: 'Invalid PIN' });
+    }
+    
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'temp-secret',
+      { expiresIn: '24h' }
+    );
+    
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// EMAIL MARKETING ROUTES
+// POST /api/emails/send-campaign   — bulk email dispatch
+// POST /api/emails/generate-claude — AI Niner Miner content gen
+// GET  /api/emails/analytics       — campaign stats
+// GET  /api/emails/campaigns       — campaign history
+// ═══════════════════════════════════════════════════════════════
 
 const nodemailer = require('nodemailer');
+const multer     = require('multer');
 
-// ── TRANSPORT ─────────────────────────────────────────────────────────────────
-const createTransport = () => nodemailer.createTransport({
-  host:   process.env.EMAIL_SMTP_HOST || 'mail.mexausafg.com',
-  port:   parseInt(process.env.EMAIL_SMTP_PORT) || 587,
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const analyticsStore = {
+  totalSent: 0, delivered: 0, opened: 0, clicked: 0,
+  smsSent: 0, campaigns: 0, history: [],
+};
+
+const createTransporter = () => nodemailer.createTransport({
+  host:   process.env.EMAIL_SMTP_HOST   || 'mail.mexausafg.com',
+  port:   parseInt(process.env.EMAIL_SMTP_PORT || '587'),
   secure: process.env.EMAIL_SMTP_SECURE === 'true',
   auth: {
     user: process.env.EMAIL_SMTP_USER || 'saul@mexausafg.com',
-    pass: process.env.EMAIL_SMTP_PASS
+    pass: process.env.EMAIL_SMTP_PASS,
   },
-  tls: { rejectUnauthorized: false }
+  tls: { rejectUnauthorized: false },
 });
 
-const FROM = `"${process.env.EMAIL_FROM_NAME || 'AuditDNA'}" <${process.env.EMAIL_SMTP_USER || 'saul@mexausafg.com'}>`;
+const sleep       = (ms) => new Promise(r => setTimeout(r, ms));
+const BATCH_SIZE  = 10;
+const BATCH_DELAY = 2000;
 
-// ── SHARED STYLES ─────────────────────────────────────────────────────────────
-const styles = {
-  wrapper:  'font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;',
-  header:   'background:#1e293b;padding:30px;text-align:center;border-bottom:2px solid #cba658;',
-  body:     'padding:30px;',
-  footer:   'background:#1e293b;padding:20px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid #334155;',
-  gold:     'color:#cba658;',
-  label:    'color:#94a3b8;font-size:11px;letter-spacing:1px;text-transform:uppercase;',
-  value:    'color:#e2e8f0;font-size:14px;margin-bottom:12px;',
-  pinBox:   'background:#1e293b;border:2px solid #cba658;border-radius:8px;padding:20px;text-align:center;margin:20px 0;',
-  pinText:  'font-size:36px;font-weight:700;letter-spacing:12px;color:#cba658;',
-  btnWrap:  'text-align:center;margin:24px 0;',
-  btn:      'background:linear-gradient(135deg,#cba658,#b8944d);color:#0f172a;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:1px;display:inline-block;'
-};
-
-// ── 1. REGISTRATION CONFIRMATION ──────────────────────────────────────────────
-const sendRegistrationEmail = async ({ email, fullName, pin, consumerRef, propertyAddress, photoIDReceived, selfieReceived }) => {
-  const transporter = createTransport();
-  await transporter.sendMail({
-    from:    FROM,
-    to:      email,
-    subject: `Your AuditDNA Account — PIN: ${pin} — Ref: ${consumerRef}`,
-    html: `
-    <div style="${styles.wrapper}">
-      <div style="${styles.header}">
-        <h1 style="${styles.gold}margin:0;font-size:24px;letter-spacing:3px;">AUDITDNA</h1>
-        <p style="margin:6px 0 0;font-size:11px;letter-spacing:2px;color:#94a3b8;">MORTGAGE AUDIT SERVICES | NMLS #337526</p>
-      </div>
-      <div style="${styles.body}">
-        <h2 style="${styles.gold}margin-top:0;">Welcome, ${fullName}</h2>
-        <p style="color:#94a3b8;">Your account has been created. Save your PIN — you will need it to access your audit results.</p>
-
-        <div style="${styles.pinBox}">
-          <p style="${styles.label}margin:0 0 8px;">YOUR ACCESS PIN</p>
-          <div style="${styles.pinText}">${pin}</div>
-          <p style="color:#64748b;font-size:11px;margin:8px 0 0;">Keep this confidential — do not share</p>
-        </div>
-
-        <table style="width:100%;border-collapse:collapse;margin:20px 0;">
-          <tr><td style="${styles.label}padding:8px 0;">Reference ID</td><td style="${styles.value}padding:8px 0;">${consumerRef}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Email</td><td style="${styles.value}padding:8px 0;">${email}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Property</td><td style="${styles.value}padding:8px 0;">${propertyAddress || 'On file'}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Photo ID</td><td style="padding:8px 0;color:${photoIDReceived ? '#86efac' : '#f87171'}">${photoIDReceived ? '✓ Received' : '✗ Not submitted'}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Selfie</td><td style="padding:8px 0;color:${selfieReceived ? '#86efac' : '#f87171'}">${selfieReceived ? '✓ Received' : '✗ Not submitted'}</td></tr>
-        </table>
-
-        <div style="${styles.btnWrap}">
-          <a href="https://enjoybaja.com/audit-recovery" style="${styles.btn}">START MY MORTGAGE AUDIT →</a>
-        </div>
-
-        <p style="color:#64748b;font-size:11px;line-height:1.6;">
-          You are receiving this email because you registered for mortgage audit services with AuditDNA, 
-          a service of MFG, Inc. NMLS #337526. If you did not register, please contact us immediately.
-        </p>
-      </div>
-      <div style="${styles.footer}">
-        AuditDNA | MFG, Inc. | NMLS #337526<br>
-        saul@mexausafg.com | 831-251-3116<br>
-        <a href="https://enjoybaja.com" style="color:#cba658;">enjoybaja.com</a>
-      </div>
-    </div>`
-  });
-  console.log(`✅ [EMAIL] Registration sent to: ${email}`);
-};
-
-// ── 2. AUDIT COMPLETE ─────────────────────────────────────────────────────────
-const sendAuditCompleteEmail = async ({ email, fullName, caseId, totalViolations, totalRecovery, ourFee, consumerReceives, selectedPath }) => {
-  const transporter = createTransport();
-  const fmt = n => `$${Math.round(n).toLocaleString()}`;
-  await transporter.sendMail({
-    from:    FROM,
-    to:      email,
-    subject: `Your Audit Results — ${totalViolations} Violations Found — ${fmt(consumerReceives)} Recovery — Case ${caseId}`,
-    html: `
-    <div style="${styles.wrapper}">
-      <div style="${styles.header}">
-        <h1 style="${styles.gold}margin:0;font-size:24px;letter-spacing:3px;">AUDITDNA</h1>
-        <p style="margin:6px 0 0;font-size:11px;letter-spacing:2px;color:#94a3b8;">AUDIT RESULTS</p>
-      </div>
-      <div style="${styles.body}">
-        <h2 style="${styles.gold}margin-top:0;">Audit Complete, ${fullName}</h2>
-        <p style="color:#94a3b8;">Our 6-tier mortgage audit has identified violations in your loan. Here is your summary:</p>
-
-        <div style="background:#1e293b;border-radius:8px;padding:24px;margin:20px 0;">
-          <table style="width:100%;border-collapse:collapse;">
-            <tr>
-              <td style="padding:12px;text-align:center;border-right:1px solid #334155;">
-                <div style="font-size:28px;font-weight:700;color:#cba658;">${totalViolations}</div>
-                <div style="${styles.label}">Violations Found</div>
-              </td>
-              <td style="padding:12px;text-align:center;border-right:1px solid #334155;">
-                <div style="font-size:28px;font-weight:700;color:#cba658;">${fmt(totalRecovery)}</div>
-                <div style="${styles.label}">Total Recovery</div>
-              </td>
-              <td style="padding:12px;text-align:center;">
-                <div style="font-size:28px;font-weight:700;color:#86efac;">${fmt(consumerReceives)}</div>
-                <div style="${styles.label}">You Receive</div>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <table style="width:100%;border-collapse:collapse;margin:20px 0;">
-          <tr><td style="${styles.label}padding:8px 0;">Case ID</td><td style="${styles.value}padding:8px 0;">${caseId}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Path Selected</td><td style="${styles.value}padding:8px 0;">${selectedPath === 'escrow' ? 'Escrow (39% fee)' : 'Direct (30% fee)'}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">Our Fee</td><td style="${styles.value}padding:8px 0;">${fmt(ourFee)}</td></tr>
-          <tr><td style="${styles.label}padding:8px 0;">You Receive</td><td style="padding:8px 0;color:#86efac;font-size:18px;font-weight:700;">${fmt(consumerReceives)}</td></tr>
-        </table>
-
-        <p style="color:#94a3b8;font-size:12px;">
-          ⚠️ You have a 3-day cooling off period to cancel this agreement at no cost. 
-          After that period, we will begin recovery proceedings on your behalf.
-        </p>
-
-        <div style="${styles.btnWrap}">
-          <a href="https://enjoybaja.com/audit-recovery" style="${styles.btn}">VIEW FULL RESULTS →</a>
-        </div>
-      </div>
-      <div style="${styles.footer}">
-        AuditDNA | MFG, Inc. | NMLS #337526 | saul@mexausafg.com
-      </div>
-    </div>`
-  });
-  console.log(`✅ [EMAIL] Audit results sent to: ${email}`);
-};
-
-// ── 3. OTP PHONE VERIFICATION ─────────────────────────────────────────────────
-const sendOTPEmail = async ({ email, otp, fullName }) => {
-  const transporter = createTransport();
-  await transporter.sendMail({
-    from:    FROM,
-    to:      email,
-    subject: `AuditDNA — Phone Verification Code: ${otp}`,
-    html: `
-    <div style="${styles.wrapper}">
-      <div style="${styles.header}">
-        <h1 style="${styles.gold}margin:0;font-size:24px;letter-spacing:3px;">AUDITDNA</h1>
-      </div>
-      <div style="${styles.body}">
-        <h2 style="${styles.gold}margin-top:0;">Phone Verification</h2>
-        <p style="color:#94a3b8;">Hi ${fullName}, enter this code to verify your phone number:</p>
-        <div style="${styles.pinBox}">
-          <p style="${styles.label}margin:0 0 8px;">VERIFICATION CODE</p>
-          <div style="${styles.pinText}">${otp}</div>
-          <p style="color:#64748b;font-size:11px;margin:8px 0 0;">Expires in 10 minutes</p>
-        </div>
-      </div>
-      <div style="${styles.footer}">AuditDNA | MFG, Inc. | NMLS #337526</div>
-    </div>`
-  });
-  console.log(`✅ [EMAIL] OTP sent to: ${email}`);
-};
-
-// ── TEST CONNECTION ───────────────────────────────────────────────────────────
-const testConnection = async () => {
+// POST /api/emails/send-campaign
+router.post('/send-campaign', upload.any(), async (req, res) => {
+  const t0 = Date.now();
   try {
-    const transporter = createTransport();
-    await transporter.verify();
-    console.log('✅ [EMAIL] SMTP connection verified');
-    return true;
-  } catch (err) {
-    console.error(`⚠️  [EMAIL] SMTP connection failed: ${err.message}`);
-    return false;
-  }
-};
+    const { subject, body, recipients: rRaw, channels: cRaw, smsContent, cc, bcc, replyTo } = req.body;
+    const recipients = JSON.parse(rRaw || '[]');
+    const channels   = JSON.parse(cRaw  || '["email"]');
+    if (!recipients.length) return res.status(400).json({ success: false, error: 'No recipients' });
 
-module.exports = { sendRegistrationEmail, sendAuditCompleteEmail, sendOTPEmail, testConnection };
+    const attachments = (req.files || []).map(f => ({
+      filename: f.originalname, content: f.buffer, contentType: f.mimetype,
+    }));
+
+    const FROM = `"${process.env.EMAIL_FROM_NAME || 'AuditDNA | EnjoyBaja'}" <${process.env.EMAIL_SMTP_USER || 'saul@mexausafg.com'}>`;
+    const results = { emailSent: 0, emailFailed: 0, smsSent: 0, errors: [] };
+
+    if (channels.includes('email')) {
+      const emailRec = recipients.filter(r => r.email);
+      let transporter = null;
+      try {
+        transporter = createTransporter();
+        await transporter.verify();
+        console.log('✅ [EMAIL] SMTP connected');
+      } catch (e) {
+        console.error('❌ [EMAIL] SMTP failed:', e.message);
+        results.errors.push(`SMTP: ${e.message}`);
+      }
+
+      if (transporter && emailRec.length > 0) {
+        for (let i = 0; i < emailRec.length; i += BATCH_SIZE) {
+          await Promise.allSettled(emailRec.slice(i, i + BATCH_SIZE).map(async (r) => {
+            try {
+              const first = r.name?.split(' ')[0] || 'there';
+              const personalized = (body || '').replace(/\[Name\]/gi, first);
+              const isHtml = personalized.includes('<');
+              const html = isHtml ? personalized : personalized.replace(/\n/g, '<br>');
+              await transporter.sendMail({
+                from: FROM, to: `"${r.name || ''}" <${r.email}>`,
+                ...(cc      ? { cc }      : {}),
+                ...(bcc     ? { bcc }     : {}),
+                ...(replyTo ? { replyTo } : {}),
+                subject: subject || '(No Subject)',
+                text: personalized.replace(/<[^>]+>/g, ''),
+                html: `<div style="font-family:Helvetica Neue,Arial,sans-serif;max-width:600px;margin:0 auto">
+                  <div style="background:#0f172a;padding:20px;text-align:center">
+                    <h2 style="color:#cba658;font-weight:300;letter-spacing:4px;font-size:16px;margin:0">ENJOY BAJA</h2>
+                  </div>
+                  <div style="padding:32px 24px;background:#fff;line-height:1.7;font-size:14px;color:#1e293b">${html}</div>
+                  <div style="background:#f1f5f9;padding:16px;font-size:11px;color:#64748b;text-align:center;border-top:3px solid #cba658">
+                    <strong>EnjoyBaja | CM Products International | NMLS #337526</strong><br>
+                    📞 +52 646 340 2686 | 📧 saul@mexausafg.com<br>
+                    <a href="mailto:unsubscribe@enjoybaja.com?subject=Unsubscribe" style="color:#94a3b8">Unsubscribe</a>
+                  </div></div>`,
+                attachments,
+                headers: { 'X-Mailer': 'AuditDNA-EmailMarketing/2.0', 'List-Unsubscribe': '<mailto:unsubscribe@enjoybaja.com>' },
+              });
+              results.emailSent++;
+            } catch (e) { results.emailFailed++; results.errors.push(`${r.email}: ${e.message}`); }
+          }));
+          if (i + BATCH_SIZE < emailRec.length) await sleep(BATCH_DELAY);
+        }
+      }
+    }
+
+    if (channels.includes('sms') || channels.includes('whatsapp')) {
+      results.smsSent = recipients.filter(r => r.phone).length;
+      console.log(`[SMS] ${results.smsSent} recipients logged — wire Twilio to activate`);
+    }
+
+    analyticsStore.totalSent += results.emailSent;
+    analyticsStore.delivered += results.emailSent;
+    analyticsStore.smsSent   += results.smsSent;
+    analyticsStore.campaigns += 1;
+    analyticsStore.history.unshift({
+      id: `EB-${Date.now()}`, subject: subject?.substring(0, 80),
+      recipients: recipients.length, emailSent: results.emailSent,
+      smsSent: results.smsSent, channels, errors: results.errors.length,
+      duration: Date.now() - t0, sentAt: new Date().toISOString(),
+    });
+    if (analyticsStore.history.length > 100) analyticsStore.history.pop();
+
+    console.log(`📧 [CAMPAIGN] ✅ ${results.emailSent} sent | ${results.emailFailed} failed | ${Date.now()-t0}ms`);
+    res.json({ success: true, ...results, channels: channels.length, duration: Date.now() - t0 });
+  } catch (err) {
+    console.error('[EMAIL] Campaign error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/emails/analytics
+router.get('/analytics', (req, res) => {
+  const { totalSent, delivered, opened, clicked, smsSent, campaigns } = analyticsStore;
+  res.json({
+    totalSent, delivered, opened, clicked, smsSent, campaigns,
+    openRate:  totalSent > 0 ? +((opened  / totalSent) * 100).toFixed(1) : 0,
+    clickRate: opened   > 0 ? +((clicked / opened)    * 100).toFixed(1) : 0,
+  });
+});
+
+// GET /api/emails/campaigns
+router.get('/campaigns', (req, res) => {
+  res.json({ success: true, campaigns: analyticsStore.history });
+});
+
+// POST /api/emails/generate-claude  (also aliased at /api/claude/generate-email in server.js)
+router.post('/generate-claude', async (req, res) => {
+  try {
+    const { prompt, miner, context = {} } = req.body;
+    const ai = req.app.get('ai');
+    if (!ai)            return res.status(500).json({ success: false, error: 'AI not initialized' });
+    if (!prompt?.trim()) return res.status(400).json({ success: false, error: 'Prompt required' });
+
+    const MINER_PROMPTS = {
+      content:  'You are Content Miner, expert email copywriter for EnjoyBaja. Return JSON: {"subject":"...","content":"..."}',
+      subject:  'You are Subject Sniper, high open-rate subject specialist. Return JSON: {"subject":"...","alternatives":["...","..."]}',
+      property: 'You are Property Scout, Baja California listings expert. Return JSON: {"subject":"...","content":"..."}',
+      mortgage: 'You are Loan Ranger, NMLS-compliant mortgage specialist (NMLS #337526). Return JSON: {"subject":"...","content":"..."}',
+      social:   'You are Social Marshal, social media expert. Return JSON: {"content":"...","hashtags":["tag1","tag2"]}',
+      sms:      'You are SMS Buckaroo, under 160 chars. Return JSON: {"content":"..."}',
+      segment:  'You are Segment Sheriff, targeting expert. Return JSON: {"subject":"...","content":"...","targetAudience":"..."}',
+      calendar: 'You are Calendar Cowboy, timing optimizer. Return JSON: {"subject":"...","content":"...","bestSendTime":"..."}',
+    };
+
+    const raw = await ai.ask(
+      `Company: EnjoyBaja | NMLS #337526 | +52 646 340 2686\nChannels: ${(context.channels||['email']).join(', ')}\nRequest: ${prompt}\nRespond ONLY with valid JSON.`,
+      MINER_PROMPTS[miner] || MINER_PROMPTS.content
+    );
+
+    let parsed;
+    try { parsed = JSON.parse(raw.replace(/```json\n?|\n?```/g, '').trim()); }
+    catch { parsed = { subject: `EnjoyBaja — ${prompt.substring(0, 60)}`, content: raw }; }
+
+    res.json({ success: true, ...parsed });
+  } catch (err) {
+    console.error('[CLAUDE] generate error:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+module.exports = router;
