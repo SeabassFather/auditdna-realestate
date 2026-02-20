@@ -7,19 +7,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Brain from '../services/Brain';
+import EmailMarketing from '../modules/EmailMarketing';
 
 // ========== CONFIG ==========
-const ZADARMA_CONFIG = {
-  apiKey: '5765aborv0pw9ylc',
-  apiSecret: '1fa016d4b2e7b173c188',
-  baseUrl: 'https://api.zadarma.com',
-  pbxNumber: '+526463402686'
-};
+// ZADARMA: config lives in .env — ZADARMA_API_KEY, ZADARMA_API_SECRET
 
-const CALENDAR_CONFIG = {
-  ownerPrivate: 'sgarcia1911@gmail.com',
-  teamShared: '982168e401754cc327337c323863b6c8de38ed85f70c04a620b6d593bd478d05@group.calendar.google.com'
-};
+// CALENDAR: config lives in .env — GOOGLE_CALENDAR_OWNER, GOOGLE_CALENDAR_TEAM
 
 // ========== STYLES ==========
 const glassText = {
@@ -47,13 +40,13 @@ function Sidebar({ isOpen, toggle, navigate, accessLevel, unreadCount, brainMetr
     { icon: '📞', label: 'CRM / PBX', section: 'crm', owner: false },
     { icon: '📅', label: 'Calendar', section: 'calendar', owner: false },
     { icon: '📊', label: 'Marketing', section: 'marketing', owner: true },
+    { icon: '📧', label: 'Email Marketing', section: 'email', owner: false },
     { icon: '👥', label: 'Agents', section: 'agents', owner: true },
     { icon: '📈', label: 'Analytics', section: 'analytics', owner: true },
     { icon: '🎓', label: 'Training Center', section: 'training', owner: true },
     { icon: '🔔', label: 'Notifications', section: 'notifications', owner: true, badge: unreadCount > 0 ? `${unreadCount}` : null }
   ];
 
-  const isOwner = accessLevel === 'owner';
   const isAdminOrOwner = accessLevel === 'owner' || accessLevel === 'admin';
 
   return (
@@ -453,7 +446,7 @@ export default function AdminDashboard() {
   // ────────────────────────────────────────────────────────────
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [accessLevel, setAccessLevel] = useState('sales');
-  const [openSections, setOpenSections] = useState({ command: true, auditdna: false, crm: false, properties: false, calendar: false, marketing: false, agents: false, analytics: false, training: false, notifications: false });
+  const [openSections, setOpenSections] = useState({ command: true, auditdna: false, crm: false, properties: false, calendar: false, marketing: false, email: false, agents: false, analytics: false, training: false, notifications: false });
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
   // NOTIFICATION SYSTEM
@@ -471,7 +464,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const level = sessionStorage.getItem('admin_access_level') || 'sales';
     setAccessLevel(level);
-    if (level === 'sales') setOpenSections({ command: false, auditdna: false, crm: true, properties: false, calendar: false, marketing: false, agents: false, analytics: false, training: false, notifications: false });
+    if (level === 'sales') setOpenSections({ command: false, auditdna: false, crm: true, properties: false, calendar: false, marketing: false, email: false, agents: false, analytics: false, training: false, notifications: false });
   }, []);
 
   useEffect(() => {
@@ -495,7 +488,6 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => { sessionStorage.removeItem('admin_access_level'); logout(); navigate('/'); };
-  const isOwner = accessLevel === 'owner';
   const isAdminOrOwner = accessLevel === 'owner' || accessLevel === 'admin';
 
   return (
@@ -512,7 +504,7 @@ export default function AdminDashboard() {
             </button>
           )}
           <div onClick={() => navigate('/')} style={{ ...glassText, fontSize: '11px', letterSpacing: '4px', color: 'rgba(203,166,88,0.9)', cursor: 'pointer' }}>ENJOY BAJA</div>
-          <div style={{ ...glassText, fontSize: '9px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)', padding: '4px 12px', background: 'rgba(203,166,88,0.1)', border: '1px solid rgba(203,166,88,0.2)' }}>{isOwner ? 'OWNER ACCESS' : isAdminOrOwner ? 'ADMIN ACCESS' : 'SALES ACCESS'}</div>
+          <div style={{ ...glassText, fontSize: '9px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)', padding: '4px 12px', background: 'rgba(203,166,88,0.1)', border: '1px solid rgba(203,166,88,0.2)' }}>{accessLevel === 'owner' ? 'OWNER ACCESS' : isAdminOrOwner ? 'ADMIN ACCESS' : 'SALES ACCESS'}</div>
           {isAdminOrOwner && unreadCount > 0 && (
             <div onClick={() => toggle('notifications')} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)', borderRadius: '12px', cursor: 'pointer' }}>
               <span>🔔</span>
@@ -529,13 +521,13 @@ export default function AdminDashboard() {
       {/* MAIN CONTENT */}
       <div style={{ position: 'relative', zIndex: 1, padding: '100px 48px 60px', paddingLeft: isAdminOrOwner && sidebarOpen ? '288px' : '48px', maxWidth: '1600px', margin: '0 auto', transition: 'padding-left 0.3s' }}>
         <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ ...glassText, fontSize: '32px', letterSpacing: '6px', marginBottom: '8px', color: 'rgba(226,232,240,0.9)' }}>{isOwner ? 'ADMIN COMMAND CENTER' : isAdminOrOwner ? 'ADMIN DASHBOARD' : 'SALES DASHBOARD'}</h1>
-          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{isOwner ? 'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS' : isAdminOrOwner ? 'ADMIN ACCESS • ALL MODULES EXCEPT OWNER-ONLY' : 'ZADARMA CRM/PBX • TEAM CALENDAR'}</p>
+          <h1 style={{ ...glassText, fontSize: '32px', letterSpacing: '6px', marginBottom: '8px', color: 'rgba(226,232,240,0.9)' }}>{accessLevel === 'owner' ? 'ADMIN COMMAND CENTER' : isAdminOrOwner ? 'ADMIN DASHBOARD' : 'SALES DASHBOARD'}</h1>
+          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{accessLevel === 'owner' ? 'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS' : isAdminOrOwner ? 'ADMIN ACCESS • ALL MODULES EXCEPT OWNER-ONLY' : 'ZADARMA CRM/PBX • TEAM CALENDAR'}</p>
         </div>
 
         {/* ACCORDION SECTIONS */}
         <div id="section-command">
-          {isOwner && (
+          {accessLevel === 'owner' && (
             <AccordionSection title="COMMAND CENTER" subtitle="All Modules • Quick Actions" icon="⚡" isOpen={openSections.command} onToggle={() => toggle('command')}>
               <p style={{ ...glassText, fontSize: '11px' }}>Command Center content here...</p>
             </AccordionSection>
@@ -543,7 +535,7 @@ export default function AdminDashboard() {
         </div>
 
         <div id="section-auditdna">
-          {isOwner && (
+          {accessLevel === 'owner' && (
             <AccordionSection title="AUDITDNA BRAIN" subtitle="Live Audits • Consumers • Partners • Complaints • AI/SI" icon="🧠" isOpen={openSections.auditdna} onToggle={() => toggle('auditdna')} badge={brainMetrics ? `${brainMetrics.completedTasks || 0} AUDITS` : 'LIVE'}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
                 {[
@@ -585,7 +577,7 @@ export default function AdminDashboard() {
         </div>
 
         <div id="section-training">
-          {isOwner && (
+          {accessLevel === 'owner' && (
             <AccordionSection title="TRAINING CENTER" subtitle="Photo Upload Tutorials • System Guides • Best Practices" icon="🎓" isOpen={openSections.training} onToggle={() => toggle('training')}>
               <TrainingCenter />
             </AccordionSection>
@@ -593,7 +585,7 @@ export default function AdminDashboard() {
         </div>
 
         <div id="section-notifications">
-          {isOwner && (
+          {accessLevel === 'owner' && (
             <AccordionSection title="NOTIFICATION CENTER" subtitle="Real-Time Alerts • Email Pings • Activity Feed" icon="🔔" isOpen={openSections.notifications} onToggle={() => toggle('notifications')} badge={unreadCount > 0 ? `${unreadCount} NEW` : null}>
               <NotificationCenter notifications={notifications} setNotifications={setNotifications} />
             </AccordionSection>
@@ -664,6 +656,21 @@ export default function AdminDashboard() {
               </div>
             </AccordionSection>
           )}
+        </div>
+
+        {/* EMAIL MARKETING COMMAND CENTER */}
+        <div id="section-email">
+          <AccordionSection
+            title="EMAIL MARKETING"
+            subtitle="Bulk Email • CSV Upload • Video/Voice • AI Miners • Scheduler • Multi-Channel"
+            icon="📧"
+            isOpen={openSections.email}
+            onToggle={() => toggle('email')}
+          >
+            <div style={{ margin: '-24px', overflow: 'hidden' }}>
+              <EmailMarketing />
+            </div>
+          </AccordionSection>
         </div>
 
         {/* AGENTS */}
