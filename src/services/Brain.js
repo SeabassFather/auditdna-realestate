@@ -88,6 +88,27 @@ const Brain = {
     } catch {}
     return null;
   },
+
+  // ── Session / Auth events (used by AuthContext, AgentRegistration, etc.) ──
+  logSessionEvent: (eventType, payload = {}) => {
+    try {
+      fetch(`${API}/api/brain/events`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ events: [{ type: eventType, payload, timestamp: Date.now() }] }),
+      }).catch(() => {});
+    } catch {}
+  },
+
+  // ── Aliases — different components use different method names ─
+  logEvent:       (type, payload = {}) => Brain.log(type, payload),
+  trackEvent:     (type, payload = {}) => Brain.log(type, payload),
+  logAction:      (type, payload = {}) => Brain.log(type, payload),
+  logAgentEvent:  (type, payload = {}) => Brain.log(type, payload),
+  logEscrowEvent: (type, payload = {}) => Brain.log(type, payload),
+  logPortalEvent: (type, payload = {}) => Brain.log(type, payload),
+  ingestEvent:    (type, payload = {}) => Brain.log(type, payload),
 };
 
-export default Brain;
+const BrainRef = Brain;
+export default BrainRef;
