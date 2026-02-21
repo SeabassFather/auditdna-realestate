@@ -330,6 +330,7 @@ function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight && window.innerHeight <= 500);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
 
@@ -337,7 +338,10 @@ function LandingPage() {
   const handleAdminClick = () => setShowLoginOverlay(true);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsLandscape(window.innerWidth > window.innerHeight && window.innerHeight <= 500);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -441,7 +445,7 @@ function LandingPage() {
 
         {/* 5 CARDS */}
         <div style={{
-          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)',
+          display: 'grid', gridTemplateColumns: isMobile && !isLandscape ? '1fr' : 'repeat(5, 1fr)',
           gap: isMobile ? '16px' : '20px', maxWidth: '1600px', margin: '0 auto', width: '100%'
         }}>
           {cards.map((card) => (
@@ -451,7 +455,7 @@ function LandingPage() {
               onMouseEnter={() => setHoveredCard(card.id)}
               onMouseLeave={() => setHoveredCard(null)}
               style={{
-                position: 'relative', height: isMobile ? '200px' : '260px',
+                position: 'relative', height: isLandscape ? '140px' : isMobile ? '200px' : '260px',
                 overflow: 'hidden', cursor: 'pointer', transition: 'all 0.4s ease',
                 border: hoveredCard === card.id ? '1px solid rgba(203, 166, 88, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '16px',
