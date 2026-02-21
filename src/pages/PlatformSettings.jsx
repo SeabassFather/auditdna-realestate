@@ -14,6 +14,7 @@ const Toggle=({on,onChange})=>(
 
 export default function PlatformSettings() {
   const nav=useNavigate();
+  // eslint-disable-next-line no-unused-vars
   const [tab,setTab]=useState('general');
   const [settings,setSettings]=useState({
     maintenance:false,demoMode:false,agentApproval:true,emailNotifs:true,

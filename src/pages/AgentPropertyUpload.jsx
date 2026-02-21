@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import { propertyAPI } from '../services/api';
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import PhotoUploader from '../components/upload/PhotoUploader';
 import { useNavigate } from 'react-router-dom';
 

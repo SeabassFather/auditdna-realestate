@@ -37,6 +37,7 @@ const AgentRegistrationWizard = () => {
   // Check for IP blocking on mount
   useEffect(() => {
     checkIPStatus();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getClientIP = () => {

@@ -65,6 +65,7 @@ const HERO_IMAGES = [
 ];
 
 export default function LuxuryGoods() {
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);

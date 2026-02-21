@@ -7,6 +7,7 @@ import Developments from './pages/Developments';
 import USAMortgage from './pages/USAMortgage';
 import URLA1003 from './pages/URLA1003';
 import Login from './pages/Login';
+import LandingPageAuth from './pages/LandingPage';
 import AgentRegistration from './pages/AgentRegistration';
 import AdminDashboard from './pages/AdminDashboard';
 import LuxuryGoods from './components/LuxuryGoods';
@@ -85,7 +86,10 @@ const CREDENTIALS = {
     { email: 'sales03@eb.com', password: 'Sales2026!',  pin: '1003', role: 'sales', name: 'Sales 03' },
     { email: 'sales04@eb.com', password: 'Sales2026!',  pin: '1004', role: 'sales', name: 'Sales 04' },
     { email: 'sales05@eb.com', password: 'Sales2026!',  pin: '1005', role: 'sales', name: 'Sales 05' },
-    { email: 'fjlm@eb.com',    password: 'Admin2026!!', pin: '1006', role: 'sales', name: 'FJLM Agent', type: 'real_estate_agent', access: ['mexico-real-estate','developments','usa-mortgage','marketing','email'] }
+    { email: 'fjlm@eb.com',    password: 'Admin2026!!',       pin: '1006', role: 'sales', name: 'FJLM Agent', type: 'real_estate_agent', access: ['mexico-real-estate','developments','usa-mortgage','marketing','email'] },
+    { email: 'moi@eb.com',     password: 'IcanIamIwill2026!',  pin: '7194', role: 'sales', name: 'Moi' },
+    { email: 'ema@eb.com',     password: 'CasaCaracol321',     pin: '9229', role: 'sales', name: 'Ema' },
+    { email: 'lucero@eb.com',  password: 'Caracola123',        pin: '6613', role: 'sales', name: 'Lucero' }
   ],
 
   // ---- REAL ESTATE AGENTS (Mexico RE, Loans, Lifestyle ONLY) ----
@@ -132,6 +136,7 @@ const ALL_USERS = [
   CREDENTIALS.demo
 ];
 
+// eslint-disable-next-line no-unused-vars
 const findUserByPin   = (pin)   => ALL_USERS.find(u => u.pin === pin);
 
 const getPinsByRole = () => ({
@@ -326,50 +331,10 @@ function LandingPage() {
   const { isAuthenticated, logout } = useAuth();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [adminPin, setAdminPin] = useState('');
-  const [pinError, setPinError] = useState('');
-  const handleAdminClick = () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    setShowAdminModal(true);
-    setAdminPin('');
-    setPinError('');
-  };
+  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
 
-  const handlePinSubmit = () => {
-    const PINS = getPinsByRole();
-
-    if (adminPin === CREDENTIALS.owner.pin) {
-      sessionStorage.setItem('admin_access_level', 'owner');
-      sessionStorage.setItem('admin_user_name', CREDENTIALS.owner.name);
-      sessionStorage.setItem('admin_user_email', CREDENTIALS.owner.email);
-      setShowAdminModal(false);
-      setAdminPin('');
-      navigate('/admin');
-    } else if (PINS.admin.includes(adminPin)) {
-      const adminUser = CREDENTIALS.admins.find(a => a.pin === adminPin);
-      sessionStorage.setItem('admin_access_level', 'admin');
-      sessionStorage.setItem('admin_user_name', adminUser?.name || 'Admin');
-      sessionStorage.setItem('admin_user_email', adminUser?.email || '');
-      setShowAdminModal(false);
-      setAdminPin('');
-      navigate('/admin');
-    } else if (PINS.sales.includes(adminPin)) {
-      const salesUser = CREDENTIALS.sales.find(s => s.pin === adminPin);
-      sessionStorage.setItem('admin_access_level', 'sales');
-      sessionStorage.setItem('admin_user_name', salesUser?.name || 'Sales');
-      sessionStorage.setItem('admin_user_email', salesUser?.email || '');
-      setShowAdminModal(false);
-      setAdminPin('');
-      navigate('/admin');
-    } else {
-      setPinError('Invalid PIN — Contact sg01@eb.com for access');
-      setAdminPin('');
-    }
-  };
+  // Open glass login card overlay — works for everyone: staff, agents, guests
+  const handleAdminClick = () => setShowLoginOverlay(true);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -447,11 +412,11 @@ function LandingPage() {
                 background: 'rgba(203, 166, 88, 0.15)', border: '1px solid rgba(203, 166, 88, 0.3)',
                 color: 'rgba(203, 166, 88, 0.9)', fontSize: '9px', letterSpacing: '2px', cursor: 'pointer'
               }}>ADMIN</button>
-              <button onClick={() => navigate('/login')} style={{
+              <button onClick={() => setShowLoginOverlay(true)} style={{
                 ...glassText, padding: '8px 16px',
                 background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)',
                 color: 'rgba(148, 163, 184, 0.8)', fontSize: '9px', letterSpacing: '2px', cursor: 'pointer'
-              }}>AGENT LOGIN</button>
+              }}>LOGIN</button>
             </>
           )}
         </div>
@@ -529,8 +494,12 @@ function LandingPage() {
 
         {/* FOOTER CITIES */}
         <div style={{ textAlign: 'center', marginTop: '60px', paddingTop: '40px', borderTop: '1px solid rgba(203, 213, 225, 0.1)' }}>
-          <p style={{ ...glassText, fontSize: '10px', color: 'rgba(148, 163, 184, 0.5)', letterSpacing: '2px' }}>
+          <p style={{ ...glassText, fontSize: '10px', color: '#ffffff', letterSpacing: '2px', fontWeight: '700' }}>
             Valle de Guadalupe - Ensenada - La Paz - San Jose del Cabo - Rosarito - Tijuana
+          </p>
+          <p style={{ ...glassText, fontSize: '9px', color: 'rgba(255,255,255,0.55)', letterSpacing: '1px', marginTop: '12px', lineHeight: '1.8', fontWeight: '400' }}>
+            For marketing services of products, ads or real estate — feel free to text via WhatsApp.<br/>
+            Mexico regions are available for territory management. All agents and companies are verified before acceptance.
           </p>
         </div>
       </div>
@@ -546,54 +515,19 @@ function LandingPage() {
         </p>
       </div>
 
-      {/* ADMIN PIN MODAL */}
-      {showAdminModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0, 0, 0, 0.85)', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(10px)'
-        }} onClick={() => setShowAdminModal(false)}>
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.98)', border: '1px solid rgba(203, 166, 88, 0.3)',
-            padding: '40px', maxWidth: '360px', width: '90%', textAlign: 'center'
-          }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ ...glassText, fontSize: '14px', letterSpacing: '4px', color: '#cba658', marginBottom: '8px' }}>
-              ADMIN ACCESS
-            </h3>
-            <p style={{ ...glassText, fontSize: '10px', color: 'rgba(148, 163, 184, 0.6)', marginBottom: '24px', letterSpacing: '1px' }}>
-              Enter your security PIN
-            </p>
-            <input
-              type="password"
-              value={adminPin}
-              onChange={(e) => setAdminPin(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handlePinSubmit()}
-              placeholder="--------"
-              maxLength={8}
-              style={{
-                width: '100%', padding: '16px', background: 'rgba(30, 41, 59, 0.6)',
-                border: pinError ? '1px solid rgba(248, 113, 113, 0.5)' : '1px solid rgba(148, 163, 184, 0.2)',
-                color: '#e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '10px',
-                outline: 'none', marginBottom: '12px', boxSizing: 'border-box'
-              }}
-              autoFocus
-            />
-            {pinError && <p style={{ fontSize: '10px', color: '#f87171', marginBottom: '12px', letterSpacing: '1px' }}>{pinError}</p>}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-              <button onClick={() => setShowAdminModal(false)} style={{
-                flex: 1, padding: '12px', background: 'transparent',
-                border: '1px solid rgba(148, 163, 184, 0.3)', color: 'rgba(148, 163, 184, 0.8)',
-                fontSize: '10px', letterSpacing: '2px', cursor: 'pointer'
-              }}>CANCEL</button>
-              <button onClick={handlePinSubmit} style={{
-                flex: 1, padding: '12px', background: 'rgba(203, 166, 88, 0.2)',
-                border: '1px solid rgba(203, 166, 88, 0.5)', color: '#cba658',
-                fontSize: '10px', letterSpacing: '2px', cursor: 'pointer'
-              }}>ENTER</button>
-            </div>
-            <p style={{ ...glassText, fontSize: '8px', color: 'rgba(148, 163, 184, 0.4)', marginTop: '20px', letterSpacing: '1px' }}>
-              Owner: 8 digits | Admin: 4 digits | Sales: 4 digits
-            </p>
+      {/* GLASS LOGIN OVERLAY — floats over the 5-card page */}
+      {showLoginOverlay && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          onClick={() => setShowLoginOverlay(false)}
+        >
+          <div onClick={e => e.stopPropagation()}>
+            <LandingPageAuth onClose={() => setShowLoginOverlay(false)} overlayMode />
           </div>
         </div>
       )}

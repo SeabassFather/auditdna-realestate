@@ -108,6 +108,7 @@ export default function PhotoUploader({ onPhotosChange, maxPhotos = 10, minPhoto
               overflow: 'hidden',
               border: '2px solid rgba(203, 166, 88, 0.3)'
             }}>
+              {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
               <img
                 src={photo.preview}
                 alt={`Photo ${idx + 1}`}

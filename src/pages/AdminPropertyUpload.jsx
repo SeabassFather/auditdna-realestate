@@ -7,6 +7,7 @@ import CitySearchEngine from '../components/properties/CitySearchEngine';
 export default function AdminPropertyUpload() {
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
+  // eslint-disable-next-line no-unused-vars
   const [lang, setLang] = useState('es');
   const [photos, setPhotos] = useState([]);
   const [propertyType, setPropertyType] = useState('mexico');

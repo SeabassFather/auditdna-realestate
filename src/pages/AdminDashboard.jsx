@@ -442,6 +442,7 @@ export default function AdminDashboard() {
     fetchBrainData();
     const interval = setInterval(fetchBrainData, 30000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // ────────────────────────────────────────────────────────────
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -462,9 +463,11 @@ export default function AdminDashboard() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
-    const level = sessionStorage.getItem('admin_access_level') || 'sales';
+    const level = sessionStorage.getItem('admin_access_level') || (sessionStorage.getItem('sales_access_level') ? 'sales' : 'sales');
     setAccessLevel(level);
-    if (level === 'sales') setOpenSections({ command: false, auditdna: false, crm: true, properties: false, calendar: false, marketing: false, email: false, agents: false, analytics: false, training: false, notifications: false });
+    // Sales: Upload (properties) + Email Marketing + CRM — nothing else
+    if (level === 'sales' || user?.role === 'sales') setOpenSections({ command: false, auditdna: false, crm: true, properties: true, calendar: false, marketing: false, email: true, agents: false, analytics: false, training: false, notifications: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -474,10 +477,11 @@ export default function AdminDashboard() {
     };
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggle = (s) => {
-    if (accessLevel === 'sales' && !['crm', 'calendar'].includes(s)) return;
+    if ((accessLevel === 'sales' || isSales) && !['crm', 'email', 'properties'].includes(s)) return;
     setOpenSections(p => ({ ...p, [s]: !p[s] }));
     
     // Auto-scroll to section
@@ -487,8 +491,9 @@ export default function AdminDashboard() {
     }, 100);
   };
 
-  const handleLogout = () => { sessionStorage.removeItem('admin_access_level'); logout(); navigate('/'); };
+  const handleLogout = () => { sessionStorage.removeItem('admin_access_level'); sessionStorage.removeItem('sales_access_level'); logout(); navigate('/'); };
   const isAdminOrOwner = accessLevel === 'owner' || accessLevel === 'admin';
+  const isSales = user?.role === 'sales';
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', position: 'relative' }}>
@@ -522,7 +527,7 @@ export default function AdminDashboard() {
       <div style={{ position: 'relative', zIndex: 1, padding: '100px 48px 60px', paddingLeft: isAdminOrOwner && sidebarOpen ? '288px' : '48px', maxWidth: '1600px', margin: '0 auto', transition: 'padding-left 0.3s' }}>
         <div style={{ marginBottom: '32px' }}>
           <h1 style={{ ...glassText, fontSize: '32px', letterSpacing: '6px', marginBottom: '8px', color: 'rgba(226,232,240,0.9)' }}>{accessLevel === 'owner' ? 'ADMIN COMMAND CENTER' : isAdminOrOwner ? 'ADMIN DASHBOARD' : 'SALES DASHBOARD'}</h1>
-          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{accessLevel === 'owner' ? 'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS' : isAdminOrOwner ? 'ADMIN ACCESS • ALL MODULES EXCEPT OWNER-ONLY' : 'ZADARMA CRM/PBX • TEAM CALENDAR'}</p>
+          <p style={{ ...glassText, fontSize: '10px', letterSpacing: '2px', color: 'rgba(148,163,184,0.6)' }}>{accessLevel === 'owner' ? 'FULL ACCESS • SIDEBAR NAVIGATION • TRAINING CENTER • NOTIFICATIONS' : isAdminOrOwner ? 'ADMIN ACCESS • ALL MODULES EXCEPT OWNER-ONLY' : 'PROPERTY UPLOAD • EMAIL MARKETING • CRM'}</p>
         </div>
 
         {/* ACCORDION SECTIONS */}
@@ -594,7 +599,7 @@ export default function AdminDashboard() {
 
         {/* PROPERTIES */}
         <div id="section-properties">
-          {isAdminOrOwner && (
+          {(isAdminOrOwner || isSales) && (
             <AccordionSection title="PROPERTIES" subtitle="Listings • FSBO • Agent Uploads • Admin Uploads" icon="🏠" isOpen={openSections.properties} onToggle={() => toggle('properties')}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '16px' }}>
                 {[

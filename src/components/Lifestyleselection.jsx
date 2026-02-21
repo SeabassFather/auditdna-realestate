@@ -1732,6 +1732,481 @@ function LifestyleSection() {
         </div>
       </div>
 
+      {/* ═══════════════════════════════════════════════════════════════════
+           CASA DE CARACOL — MAGAZINE FEATURED PROPERTY EDITORIAL
+           EnjoyBaja Collection · Ensenada, Baja California
+           Luxury Estate · Private Viewings By Appointment Only
+           ═══════════════════════════════════════════════════════════════════ */}
+      <div style={{
+        background: 'linear-gradient(180deg, #060d1a 0%, #0a1120 15%, #0f172a 50%, #0a1120 85%, #060d1a 100%)',
+        padding: '0',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+
+        {/* ── Ambient background glow ── */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 70% 40% at 15% 50%, rgba(203,166,88,0.05) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 85% 30%, rgba(203,213,225,0.03) 0%, transparent 70%)',
+        }} />
+
+        {/* ─────────────────────────────────────────────────────────────
+            SECTION MASTHEAD
+        ───────────────────────────────────────────────────────────── */}
+        <div style={{padding: '100px 24px 60px', textAlign: 'center', position: 'relative'}}>
+          <div style={{maxWidth: '900px', margin: '0 auto'}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '36px'}}>
+              <div style={{height: '1px', flex: 1, maxWidth: 120, background: 'linear-gradient(to right, transparent, #cba658)'}} />
+              <span style={{fontSize: '10px', letterSpacing: '7px', color: '#cba658', fontWeight: '700', whiteSpace: 'nowrap'}}>
+                {language === 'es' ? 'PROPIEDAD INSIGNIA · INVIERNO 2026' : 'SIGNATURE PROPERTY · WINTER 2026'}
+              </span>
+              <div style={{height: '1px', flex: 1, maxWidth: 120, background: 'linear-gradient(to left, transparent, #cba658)'}} />
+            </div>
+
+            <h2 style={{fontSize: 'clamp(52px,7vw,88px)', fontWeight: '200', color: '#f1f5f9', margin: '0', lineHeight: 1.05, letterSpacing: '4px'}}>
+              CASA DE
+            </h2>
+            <h2 style={{fontSize: 'clamp(52px,7vw,88px)', fontWeight: '800', color: '#cba658', margin: '0 0 20px', lineHeight: 1.05, letterSpacing: '10px'}}>
+              CARACOL
+            </h2>
+
+            <p style={{fontSize: '13px', color: '#94a3b8', letterSpacing: '5px', fontWeight: '300', margin: '0 0 28px'}}>
+              {language === 'es'
+                ? 'ENSENADA, BAJA CALIFORNIA, MÉXICO'
+                : 'ENSENADA, BAJA CALIFORNIA, MÉXICO'}
+            </p>
+
+            {/* Price badge */}
+            <div style={{display: 'inline-flex', alignItems: 'center', gap: '16px', border: '1px solid rgba(203,166,88,0.4)', padding: '14px 36px', background: 'rgba(203,166,88,0.06)'}}>
+              <span style={{fontSize: '11px', letterSpacing: '3px', color: '#94a3b8', fontWeight: '600'}}>
+                {language === 'es' ? 'PRECIO DE VENTA' : 'ASKING PRICE'}
+              </span>
+              <div style={{width: '1px', height: '20px', background: 'rgba(203,166,88,0.4)'}} />
+              <span style={{fontSize: '22px', fontWeight: '700', color: '#cba658', letterSpacing: '2px'}}>$15,000,000 USD</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            FULL-WIDTH COLLAGE WITH INTEL OVERLAYS
+        ───────────────────────────────────────────────────────────── */}
+        <div style={{position: 'relative', margin: '0 0 0'}}>
+
+          {/* Main collage */}
+          <div style={{position: 'relative', overflow: 'hidden'}}>
+            <img
+              src="/src/assets/casas_collage_7x7.jpg"
+              alt="Casa de Caracol — Ensenada Luxury Estate"
+              style={{
+                width: '100%',
+                display: 'block',
+                maxHeight: '92vh',
+                objectFit: 'cover',
+                objectPosition: 'top center',
+                filter: 'brightness(0.88) contrast(1.05)',
+              }}
+              onError={(e) => {
+                // Fallback gradient if image path not resolved
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+
+            {/* Fallback placeholder */}
+            <div style={{
+              display: 'none', width: '100%', height: '700px',
+              background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+              alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px',
+            }}>
+              <span style={{fontSize: '48px', opacity: 0.3}}>🏛</span>
+              <span style={{color: '#94a3b8', fontSize: '13px', letterSpacing: '3px'}}>PLACE casas_collage_7x7.jpg IN /src/assets/</span>
+            </div>
+
+            {/* Dark gradient vignette overlay */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to bottom, rgba(6,13,26,0.3) 0%, transparent 15%, transparent 70%, rgba(6,13,26,0.85) 100%), linear-gradient(to right, rgba(6,13,26,0.4) 0%, transparent 20%, transparent 80%, rgba(6,13,26,0.4) 100%)',
+              pointerEvents: 'none',
+            }} />
+
+            {/* ── INTEL SNIPPET 1: Top-left — History badge ── */}
+            <div style={{
+              position: 'absolute', top: '5%', left: '3%',
+              background: 'rgba(6,13,26,0.88)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(203,166,88,0.5)',
+              padding: '18px 24px', maxWidth: '260px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cba658', fontWeight: '700', marginBottom: '10px'}}>
+                {language === 'es' ? 'CONSTRUIDA C.' : 'BUILT C.'} 1998
+              </div>
+              <p style={{fontSize: '12px', color: '#cbd5e1', lineHeight: '1.7', margin: 0}}>
+                {language === 'es'
+                  ? 'Concebida a finales del siglo XX, esta obra maestra del brutalismo curvilíneo fue diseñada por un visionario arquitecto local inspirado en la geometría orgánica del molusco nautilus.'
+                  : 'Conceived at the close of the 20th century, this masterwork of curvilinear brutalism was designed by a visionary local architect inspired by the organic geometry of the nautilus shell.'}
+              </p>
+            </div>
+
+            {/* ── INTEL SNIPPET 2: Top-right — Architecture badge ── */}
+            <div style={{
+              position: 'absolute', top: '5%', right: '3%',
+              background: 'rgba(6,13,26,0.88)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(203,213,225,0.3)',
+              padding: '18px 24px', maxWidth: '250px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cbd5e1', fontWeight: '700', marginBottom: '10px'}}>
+                {language === 'es' ? 'ESTILO ARQUITECTÓNICO' : 'ARCHITECTURAL STYLE'}
+              </div>
+              <p style={{fontSize: '12px', color: '#94a3b8', lineHeight: '1.7', margin: 0}}>
+                {language === 'es'
+                  ? 'Modernismo Orgánico del Pacífico. Fachadas curvas en concreto blanco con muros cortina de cristal templado orientados al horizonte costero.'
+                  : 'Pacific Organic Modernism. Sweeping white-concrete curved facades with floor-to-ceiling tempered glass curtain walls aligned to the coastal horizon.'}
+              </p>
+            </div>
+
+            {/* ── INTEL SNIPPET 3: Mid-left — Port view ── */}
+            <div style={{
+              position: 'absolute', top: '38%', left: '3%',
+              background: 'rgba(6,13,26,0.85)', backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(203,166,88,0.3)',
+              padding: '14px 20px', maxWidth: '230px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cba658', fontWeight: '700', marginBottom: '8px'}}>
+                {language === 'es' ? 'VISTA PANORÁMICA' : 'PANORAMIC VIEW'}
+              </div>
+              <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.6', margin: 0}}>
+                {language === 'es'
+                  ? '270° de vista ininterrumpida — Puerto de Ensenada, Bahía de Todos Santos y el horizonte del Pacífico Sur.'
+                  : '270° unobstructed sightline — Port of Ensenada, Bahía de Todos Santos and the Southern Pacific horizon.'}
+              </p>
+            </div>
+
+            {/* ── INTEL SNIPPET 4: Mid-right — Staircase ── */}
+            <div style={{
+              position: 'absolute', top: '38%', right: '3%',
+              background: 'rgba(6,13,26,0.85)', backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(203,213,225,0.2)',
+              padding: '14px 20px', maxWidth: '220px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cbd5e1', fontWeight: '700', marginBottom: '8px'}}>
+                {language === 'es' ? 'ESCALERA HELICOIDAL' : 'HELICAL STAIRCASE'}
+              </div>
+              <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.6', margin: 0}}>
+                {language === 'es'
+                  ? 'Escalera de acero y vidrio de 3 pisos en espiral libre — el elemento arquitectónico central de la propiedad.'
+                  : 'Freestanding 3-story steel and glass spiral staircase — the central architectural signature of the estate.'}
+              </p>
+            </div>
+
+            {/* ── INTEL SNIPPET 5: Lower-left — Scale ── */}
+            <div style={{
+              position: 'absolute', bottom: '14%', left: '3%',
+              background: 'rgba(6,13,26,0.88)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(203,166,88,0.4)',
+              padding: '16px 22px', maxWidth: '240px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cba658', fontWeight: '700', marginBottom: '8px'}}>
+                {language === 'es' ? 'ESCALA DE LA PROPIEDAD' : 'ESTATE SCALE'}
+              </div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', marginTop: '4px'}}>
+                {[
+                  {n: '4', l: language === 'es' ? 'Niveles' : 'Levels'},
+                  {n: '±2,800', l: language === 'es' ? 'm² Const.' : 'm² Built'},
+                  {n: '±1.5 Ha', l: language === 'es' ? 'Terreno' : 'Land'},
+                  {n: '1', l: language === 'es' ? 'Helipuerto' : 'Helipad Site'},
+                ].map((s,i) => (
+                  <div key={i}>
+                    <div style={{fontSize: '18px', fontWeight: '700', color: '#f1f5f9', lineHeight: 1}}>{s.n}</div>
+                    <div style={{fontSize: '10px', color: '#94a3b8', letterSpacing: '1px', marginTop: '2px'}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── INTEL SNIPPET 6: Lower-right — Investment ── */}
+            <div style={{
+              position: 'absolute', bottom: '14%', right: '3%',
+              background: 'rgba(6,13,26,0.88)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(203,213,225,0.3)',
+              padding: '16px 22px', maxWidth: '240px',
+            }}>
+              <div style={{fontSize: '9px', letterSpacing: '4px', color: '#cbd5e1', fontWeight: '700', marginBottom: '10px'}}>
+                {language === 'es' ? 'POTENCIAL DE INVERSIÓN' : 'INVESTMENT POTENTIAL'}
+              </div>
+              <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.65', margin: 0}}>
+                {language === 'es'
+                  ? 'Uso mixto posible — boutique hotel, sede corporativa o residencia de lujo privada. Zona costera de alta plusvalía en Ensenada.'
+                  : 'Mixed-use eligible — boutique hotel conversion, corporate headquarters or ultra-private luxury residence. High-appreciation coastal zone.'}
+              </p>
+            </div>
+
+            {/* ── EnjoyBaja watermark ── */}
+            <div style={{
+              position: 'absolute', bottom: '4%', left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              background: 'rgba(6,13,26,0.8)', backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(203,166,88,0.35)', padding: '10px 24px',
+            }}>
+              <div style={{width: '5px', height: '5px', background: '#cba658', borderRadius: '50%', flexShrink: 0}} />
+              <span style={{fontSize: '9px', letterSpacing: '5px', color: '#cba658', fontWeight: '700'}}>ENJOYBAJA.COM EXCLUSIVE COLLECTION</span>
+              <div style={{width: '5px', height: '5px', background: '#cba658', borderRadius: '50%', flexShrink: 0}} />
+            </div>
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            EDITORIAL BODY — Two-column layout
+        ───────────────────────────────────────────────────────────── */}
+        <div style={{padding: '80px 24px', maxWidth: '1400px', margin: '0 auto'}}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,0.9fr)',
+            gap: '80px',
+            alignItems: 'start',
+          }}>
+
+            {/* ── LEFT: Editorial copy ── */}
+            <div>
+              {/* Pull quote */}
+              <div style={{borderLeft: '3px solid #cba658', paddingLeft: '32px', marginBottom: '52px'}}>
+                <p style={{
+                  fontSize: 'clamp(18px,2.2vw,26px)', fontWeight: '200', fontStyle: 'italic',
+                  color: '#f1f5f9', lineHeight: 1.65, margin: 0,
+                }}>
+                  {language === 'es'
+                    ? '"Una de las obras arquitectónicas más audaces de la Baja California del siglo XX — un caracol de concreto y cristal que mira al océano desde las alturas de Ensenada."'
+                    : '"One of Baja California\'s most audacious 20th-century architectural works — a concrete and glass nautilus gazing out over the Pacific from the heights of Ensenada."'}
+                </p>
+              </div>
+
+              {/* Body editorial */}
+              <div style={{fontSize: '15px', color: '#94a3b8', lineHeight: '1.9', marginBottom: '40px'}}>
+                <p style={{margin: '0 0 20px'}}>
+                  {language === 'es'
+                    ? 'Casa de Caracol se alza sobre Ensenada como una sinfonía de curvas en concreto blanco, un monumento arquitectónico que desafía la geometría convencional y abraza el horizonte del Pacífico. Construida a finales de los años noventa, esta obra singular tomó su nombre de la espiral perfecta del nautilus — una referencia visible en cada línea de su fachada y en la dramática escalera helicoidal de acero y cristal que vertebra sus cuatro niveles.'
+                    : 'Casa de Caracol rises above Ensenada like a symphony in white concrete, an architectural monument that defies conventional geometry and embraces the Pacific horizon. Built in the late 1990s, this singular work took its name from the perfect spiral of the nautilus — a reference visible in every line of its facade and in the dramatic helical steel-and-glass staircase that anchors its four levels.'}
+                </p>
+                <p style={{margin: '0 0 20px'}}>
+                  {language === 'es'
+                    ? 'Con más de 2,800 m² de construcción distribuidos en cuatro plantas, y emplazada sobre un predio de aproximadamente 1.5 hectáreas con vista directa al Puerto de Ensenada y la Bahía de Todos Santos, esta propiedad no tiene comparación en el mercado inmobiliario de Baja California. Sus muros cortina de vidrio templado crean una presencia luminosa de día y una baliza arquitectónica de noche, visible desde el malecón y la bahía.'
+                    : 'With over 2,800 m² of built space across four floors, set on approximately 1.5 hectares with direct sight lines to the Port of Ensenada and Bahía de Todos Santos, this estate has no equal in the Baja California real estate market. Its tempered glass curtain walls create a luminous daytime presence and an architectural beacon at night, visible from the waterfront and the bay.'}
+                </p>
+                <p style={{margin: 0}}>
+                  {language === 'es'
+                    ? 'La propiedad ofrece múltiples posibilidades de uso: residencia de lujo privada, boutique hotel de ultra-premium, sede corporativa o activo de inversión patrimonial. En una zona costera de alta plusvalía, con turismo náutico internacional en crecimiento y a solo 90 minutos del cruce fronterizo de San Diego–Tijuana, el potencial de retorno es excepcional.'
+                    : 'The property is eligible for multiple use cases: ultra-private luxury residence, boutique hotel conversion, corporate campus or generational investment asset. In a high-appreciation coastal zone, with growing international nautical tourism and just 90 minutes from the San Diego–Tijuana border crossing, return potential is exceptional.'}
+                </p>
+              </div>
+
+              {/* Key facts grid */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+                borderTop: '1px solid rgba(148,163,184,0.15)',
+                borderLeft: '1px solid rgba(148,163,184,0.15)',
+                marginBottom: '48px',
+              }}>
+                {[
+                  {label: language === 'es' ? 'AÑO CONSTRUIDO' : 'YEAR BUILT',         val: 'c. 1998'},
+                  {label: language === 'es' ? 'CONSTRUCCIÓN' : 'BUILT AREA',           val: '±2,800 m²'},
+                  {label: language === 'es' ? 'TERRENO' : 'LAND',                      val: '±1.5 Ha'},
+                  {label: language === 'es' ? 'NIVELES' : 'LEVELS',                    val: '4'},
+                  {label: language === 'es' ? 'ESTILO' : 'STYLE',                      val: language === 'es' ? 'Modernismo Orgánico' : 'Organic Modernism'},
+                  {label: language === 'es' ? 'USO POSIBLE' : 'ELIGIBLE USE',          val: language === 'es' ? 'Mixto' : 'Mixed Use'},
+                  {label: language === 'es' ? 'VISTA' : 'VIEW',                        val: language === 'es' ? 'Puerto + Pacífico' : 'Port + Pacific'},
+                  {label: language === 'es' ? 'DISTANCIA SD' : 'FROM SAN DIEGO',       val: '~90 min'},
+                  {label: language === 'es' ? 'PRECIO' : 'ASKING PRICE',               val: '$15M USD'},
+                ].map((item, i) => (
+                  <div key={i} style={{
+                    padding: '18px 20px',
+                    borderBottom: '1px solid rgba(148,163,184,0.15)',
+                    borderRight: '1px solid rgba(148,163,184,0.15)',
+                  }}>
+                    <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', fontWeight: '700', marginBottom: '8px', textTransform: 'uppercase'}}>{item.label}</div>
+                    <div style={{fontSize: '14px', color: '#f1f5f9', fontWeight: '400'}}>{item.val}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Historical timeline */}
+              <div>
+                <div style={{fontSize: '10px', letterSpacing: '4px', color: '#cbd5e1', fontWeight: '700', marginBottom: '24px'}}>
+                  {language === 'es' ? 'LÍNEA DE TIEMPO ARQUITECTÓNICA' : 'ARCHITECTURAL TIMELINE'}
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '0'}}>
+                  {[
+                    {yr: '1995', ev: language === 'es' ? 'Inicio del concepto — el arquitecto visionario propone una residencia inspirada en el nautilus para la colina costera de Ensenada' : 'Concept origin — visionary architect proposes a nautilus-inspired residence for Ensenada\'s coastal hillside'},
+                    {yr: '1998', ev: language === 'es' ? 'Inicio de construcción — se vierte el concreto blanco de las fachadas curvas y los pilares maestros' : 'Construction begins — white concrete curved facades and master pillar pours begin'},
+                    {yr: '2002', ev: language === 'es' ? 'Estructura completa — la escalera helicoidal de acero y vidrio es instalada como pieza central' : 'Structure complete — the helical steel-and-glass staircase installed as centrepiece'},
+                    {yr: '2008', ev: language === 'es' ? 'Reconocido como hito arquitectónico de Ensenada — visible desde la bahía y el malecón' : 'Recognised as Ensenada architectural landmark — visible from the bay and waterfront'},
+                    {yr: '2026', ev: language === 'es' ? 'Primera vez disponible al mercado — oferta exclusiva, solo para compradores calificados' : 'First time to market — exclusive offering, qualified buyers only'},
+                  ].map((t, i) => (
+                    <div key={i} style={{display: 'flex', gap: '0', borderLeft: '2px solid rgba(203,166,88,0.3)', paddingLeft: '24px', paddingBottom: '24px', position: 'relative'}}>
+                      <div style={{
+                        position: 'absolute', left: '-7px', top: '2px',
+                        width: '12px', height: '12px', background: i === 4 ? '#cba658' : '#1e293b',
+                        border: `2px solid ${i === 4 ? '#cba658' : 'rgba(203,166,88,0.5)'}`,
+                        borderRadius: '50%', flexShrink: 0,
+                      }} />
+                      <div>
+                        <div style={{fontSize: '11px', fontWeight: '700', color: '#cba658', letterSpacing: '2px', marginBottom: '5px'}}>{t.yr}</div>
+                        <div style={{fontSize: '12px', color: '#94a3b8', lineHeight: '1.6'}}>{t.ev}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── RIGHT: Contact card + Appointment module ── */}
+            <div style={{position: 'sticky', top: '20px'}}>
+
+              {/* Main contact card */}
+              <div style={{
+                background: 'linear-gradient(160deg, #1e293b 0%, #0f172a 100%)',
+                border: '1px solid rgba(203,166,88,0.4)',
+                marginBottom: '2px',
+              }}>
+                {/* Card header */}
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(203,166,88,0.15) 0%, transparent 100%)',
+                  borderBottom: '1px solid rgba(203,166,88,0.25)',
+                  padding: '28px 32px',
+                }}>
+                  <div style={{fontSize: '9px', letterSpacing: '5px', color: '#cba658', fontWeight: '700', marginBottom: '8px'}}>
+                    {language === 'es' ? 'VISITAS PRIVADAS' : 'PRIVATE VIEWINGS'}
+                  </div>
+                  <h3 style={{fontSize: '22px', fontWeight: '300', color: '#f1f5f9', margin: '0', lineHeight: 1.3}}>
+                    {language === 'es' ? 'Solo con Cita Previa' : 'By Appointment Only'}
+                  </h3>
+                </div>
+
+                <div style={{padding: '32px'}}>
+                  {/* Bilingual viewing notice */}
+                  <p style={{fontSize: '13px', color: '#94a3b8', lineHeight: '1.8', margin: '0 0 28px', borderBottom: '1px solid rgba(148,163,184,0.1)', paddingBottom: '28px'}}>
+                    {language === 'es'
+                      ? 'Para programar una visita confidencial a esta exclusiva propiedad con vista panorámica al Puerto de Ensenada y al Océano Pacífico, comuníquese directamente con el agente exclusivo.'
+                      : 'To schedule a confidential tour of this extraordinary hilltop estate overlooking the Port of Ensenada and the Pacific Southern Rim, contact the exclusive listing agent directly.'}
+                  </p>
+
+                  {/* Agent */}
+                  <div style={{marginBottom: '32px'}}>
+                    <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', marginBottom: '12px', fontWeight: '700'}}>
+                      {language === 'es' ? 'AGENTE EXCLUSIVO' : 'EXCLUSIVE AGENT'}
+                    </div>
+                    <div style={{fontSize: '20px', fontWeight: '400', color: '#f1f5f9', marginBottom: '4px'}}>Saul Garcia</div>
+                    <div style={{fontSize: '11px', color: '#cba658', letterSpacing: '2px'}}>EnjoyBaja Real Estate · Principal</div>
+                  </div>
+
+                  {/* Contact methods */}
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px'}}>
+                    <a
+                      href="https://wa.me/526463402686?text=Hello%2C%20I%20am%20interested%20in%20a%20private%20viewing%20of%20Casa%20de%20Caracol"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '14px',
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg, rgba(203,166,88,0.12) 0%, transparent 100%)',
+                        border: '1px solid rgba(203,166,88,0.35)',
+                        textDecoration: 'none', transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{
+                        width: '36px', height: '36px', flexShrink: 0,
+                        background: 'rgba(203,166,88,0.15)',
+                        border: '1px solid rgba(203,166,88,0.4)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '16px',
+                      }}>💬</div>
+                      <div>
+                        <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', fontWeight: '700', marginBottom: '3px'}}>WHATSAPP</div>
+                        <div style={{fontSize: '15px', color: '#cba658', fontWeight: '500'}}>+52 646 340 2686</div>
+                      </div>
+                    </a>
+
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '14px',
+                      padding: '16px 20px',
+                      border: '1px solid rgba(203,213,225,0.15)',
+                    }}>
+                      <div style={{
+                        width: '36px', height: '36px', flexShrink: 0,
+                        background: 'rgba(203,213,225,0.08)',
+                        border: '1px solid rgba(203,213,225,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '16px',
+                      }}>✉</div>
+                      <div>
+                        <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', fontWeight: '700', marginBottom: '3px'}}>
+                          {language === 'es' ? 'TEXTO / SMS' : 'TEXT / SMS'}
+                        </div>
+                        <div style={{fontSize: '14px', color: '#cbd5e1'}}>+52 646 340 2686</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Serious inquiries notice */}
+                  <div style={{
+                    background: 'rgba(203,166,88,0.06)',
+                    border: '1px solid rgba(203,166,88,0.2)',
+                    padding: '16px 20px',
+                    marginBottom: '28px',
+                  }}>
+                    <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.7', margin: 0, textAlign: 'center'}}>
+                      {language === 'es'
+                        ? '⚠ Las visitas están sujetas a disponibilidad. Solo compradores calificados e interesados serios. Las visitas son estrictamente por cita previa.'
+                        : '⚠ Viewings are strictly by appointment and subject to availability. Qualified buyers and serious inquiries only.'}
+                    </p>
+                  </div>
+
+                  {/* Spanish notice */}
+                  {language === 'en' && (
+                    <div style={{borderTop: '1px solid rgba(148,163,184,0.1)', paddingTop: '24px'}}>
+                      <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', marginBottom: '10px', fontWeight: '700'}}>EN ESPAÑOL</div>
+                      <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.7', margin: 0, fontStyle: 'italic'}}>
+                        Visitas privadas solo con cita previa. Para programar una visita confidencial comuníquese con Saul Garcia vía WhatsApp al +52 646 340 2686. Las visitas están sujetas a disponibilidad. Solo interesados serios.
+                      </p>
+                    </div>
+                  )}
+                  {language === 'es' && (
+                    <div style={{borderTop: '1px solid rgba(148,163,184,0.1)', paddingTop: '24px'}}>
+                      <div style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8', marginBottom: '10px', fontWeight: '700'}}>IN ENGLISH</div>
+                      <p style={{fontSize: '11px', color: '#94a3b8', lineHeight: '1.7', margin: 0, fontStyle: 'italic'}}>
+                        Private viewings by appointment. Contact Saul Garcia via WhatsApp: +52 646 340 2686. Appointments required. Availability is limited to qualified buyers and serious inquiries only.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* EnjoyBaja footer badge */}
+              <div style={{
+                padding: '16px 32px',
+                background: 'rgba(15,23,42,0.6)',
+                border: '1px solid rgba(203,166,88,0.2)',
+                borderTop: 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <span style={{fontSize: '9px', letterSpacing: '3px', color: '#94a3b8'}}>ENJOYBAJA.COM</span>
+                <div style={{width: '1px', height: '16px', background: 'rgba(148,163,184,0.2)'}} />
+                <span style={{fontSize: '9px', letterSpacing: '2px', color: '#cba658'}}>EXCLUSIVE LISTING</span>
+                <div style={{width: '1px', height: '16px', background: 'rgba(148,163,184,0.2)'}} />
+                <span style={{fontSize: '9px', letterSpacing: '2px', color: '#94a3b8'}}>WINTER 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            FULL-WIDTH SECTION DIVIDER before guide tabs
+        ───────────────────────────────────────────────────────────── */}
+        <div style={{
+          height: '1px',
+          background: 'linear-gradient(to right, transparent, rgba(203,166,88,0.4) 30%, rgba(203,166,88,0.4) 70%, transparent)',
+          margin: '0 0 0',
+        }} />
+      </div>
+      {/* ═══ END CASA DE CARACOL FEATURED PROPERTY ═══ */}
+
       {/* FILTER SECTION - Horizontal tabs left to right */}
       <div style={{position: 'sticky', top: 0, zIndex: 100, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(203,166,88,0.2)', padding: '20px 0'}}>
         <div style={{maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '8px', padding: '0 24px', flexWrap: 'wrap'}}>

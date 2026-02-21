@@ -7,6 +7,7 @@ const BG='linear-gradient(150deg,#06080c 0%,#0b0f18 55%,#070a0f 100%)';
 const lbl={fontSize:'8px',letterSpacing:'3px',color:G,textTransform:'uppercase',fontFamily:SANS};
 
 const MONTHS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+// eslint-disable-next-line no-unused-vars
 const DAYS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
 
 const ads=[

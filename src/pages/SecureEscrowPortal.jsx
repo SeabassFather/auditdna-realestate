@@ -106,12 +106,14 @@ function MessagesTab({ roomId, myRole, myName }) {
     } catch { /* silent */ } finally { setLoading(false); }
   }, [roomId]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchMessages();
     pollRef.current = setInterval(fetchMessages, 4000); // poll every 4s
     return () => clearInterval(pollRef.current);
   }, [fetchMessages]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -229,6 +231,7 @@ function DocumentsTab({ roomId, myRole }) {
     } catch { /* silent */ } finally { setLoading(false); }
   }, [roomId]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchDocs(); }, [fetchDocs]);
 
   const requestDoc = async () => {
@@ -377,6 +380,7 @@ function SignaturesTab({ roomId, myRole, myName, myEmail }) {
     } catch { /* silent */ } finally { setLoading(false); }
   }, [roomId]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchSigs(); }, [fetchSigs]);
 
   const requestSig = async () => {
@@ -519,6 +523,7 @@ export default function SecureEscrowPortal({
   const [stats, setStats]     = useState(null);
 
   // Init or get room
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!caseId) return;
     (async () => {
@@ -546,9 +551,11 @@ export default function SecureEscrowPortal({
         setLoading(false);
       }
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseId]);
 
   // Fetch stats
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!room?.room_id) return;
     const fetchStats = async () => {

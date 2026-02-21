@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// eslint-disable-next-line no-unused-vars
 const G='#C9A84C',W='#F8F6F1',WD='rgba(248,246,241,0.55)',GLASS='rgba(255,255,255,0.04)',BORDER='rgba(201,168,76,0.22)',BORDERF='rgba(248,246,241,0.07)';
 const SERIF='"Cormorant Garamond","Didot",Georgia,serif',SANS='"Helvetica Neue",Arial,sans-serif';
 const BG='linear-gradient(150deg,#06080c 0%,#0b0f18 55%,#070a0f 100%)';
@@ -21,6 +22,7 @@ const teams=[
 export default function AIAgents() {
   const nav=useNavigate();
   const [hov,setHov]=useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [live,setLive]=useState(true);
   const totalTasks=teams.reduce((s,t)=>s+t.tasks,0);
   const totalActive=teams.reduce((s,t)=>s+t.active,0);

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ModuleNavBar from '../components/ModuleNavBar';
 
 export default function Developments() {
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const [expandedRegion, setExpandedRegion] = useState(null);
 

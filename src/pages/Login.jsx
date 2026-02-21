@@ -19,6 +19,11 @@ const USERS = [
   { email: 'sales03@eb.com', password: 'Sales2026!',    pin: '1003',     role: 'sales', name: 'Sales 03' },
   { email: 'sales04@eb.com', password: 'Sales2026!',    pin: '1004',     role: 'sales', name: 'Sales 04' },
   { email: 'sales05@eb.com', password: 'Sales2026!',    pin: '1005',     role: 'sales', name: 'Sales 05' },
+  // ── NAMED SALES ACCOUNTS ──────────────────────────────────────
+  { email: 'moi@eb.com',    password: 'IcanIamIwill2026!', pin: '7194', role: 'sales', name: 'Moi' },
+  { email: 'ema@eb.com',    password: 'CasaCaracol321',    pin: '9229', role: 'sales', name: 'Ema' },
+  { email: 'lucero@eb.com', password: 'Caracola123',       pin: '6613', role: 'sales', name: 'Lucero' },
+  // ─────────────────────────────────────────────────────────────
   { email: 'demo@eb.com',    password: 'Demo2026!',     pin: '0000',     role: 'demo',  name: 'Demo User' },
   ...Array.from({ length: 51 }, (_, i) => {
     const n = String(i).padStart(2, '0');
