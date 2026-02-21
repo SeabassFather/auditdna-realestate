@@ -1,0 +1,39 @@
+/* ================================================================
+   ENJOYBAJA — App.css
+   Clean slate — CRA boilerplate removed
+   All styling is handled inline in components
+   ================================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar on horizontal swipe elements (nav tabs, carousels) */
+.scroll-hide::-webkit-scrollbar { display: none; }
+.scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth scrolling globally */
+html { scroll-behavior: smooth; }
+
+/* Images never overflow their container */
+img { max-width: 100%; display: block; }
+
+/* Remove default button/input appearance */
+button { font-family: inherit; }
+input, textarea, select { font-family: inherit; }
